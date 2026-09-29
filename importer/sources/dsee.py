@@ -121,27 +121,60 @@ def to_entry(item, det):
             "rz": "nein", "q": 100 if ea == 0 else None, "ea": ea, "max": mx, "frist": frist(f.get("Bewerbungsfrist")),
             "url": (det["links"] or [item["detail"]])[0], "urlOk": True, "quellseite": item["detail"], "hin": hin,
             "kirche": "unklar", "quelle": "scrape", "stand": date.today().isoformat(),
-            "lizenz": "Daten: Förderdatenbank der DSEE – Nutzung nur mit Freigabe"}
+            "lizenz": "Förderdatenbank der DSEE (foerderdatenbank.d-s-e-e.de)"}
 
 
-def fetch(cfg=None, probe=False):
+def bekannte_eintraege():
+    """DSEE-Einträge vom letzten Lauf (data/programme.json), Schlüssel = Detailseite."""
+    import json
+    from pathlib import Path
+    f = Path(__file__).resolve().parents[2] / "data" / "programme.json"
+    if not f.exists():
+        return {}
+    try:
+        return {e["quellseite"]: e for e in json.loads(f.read_text(encoding="utf-8")) if e.get("src") == "dsee" and e.get("quellseite")}
+    except Exception:
+        return {}
+
+
+def fetch(cfg=None, probe=False, session=None):
+    """Liest alle Listenseiten; Detailseiten nur für neue Einträge oder wenn der letzte Abruf älter als
+    'auffrischen_tage' ist. So lädt nur der erste Lauf alle ~1.300 Detailseiten, danach wenige pro Nacht."""
     cfg = cfg or {}
-    s = PoliteSession(delay=cfg.get("delay", 4))
+    s = session or PoliteSession(delay=cfg.get("delay", 4))
     max_pages = cfg.get("max_pages", 60)
-    out, page, total = [], 1, None
+    frisch = cfg.get("auffrischen_tage", 14)
+    max_details = cfg.get("max_details_pro_lauf", 1500)
+    alt = {} if probe else bekannte_eintraege()
+    heute = date.today()
+    out, page, total, details = [], 1, None, 0
     while True:
         url = BASE if page == 1 else f"{BASE}p{page}"
         items, t = parse_list(s.get(url).text, url)
+        if page == 1 and not items:
+            raise RuntimeError("Keine Einträge auf der Startseite erkannt – Seitenaufbau der DSEE hat sich vermutlich geändert.")
         total = total or t
         for it in items:
+            e = alt.get(it["detail"])
+            if e and e.get("stand") and (heute - date.fromisoformat(e["stand"])).days < frisch:
+                out.append(e)
+                continue
+            if details >= max_details:
+                if e:
+                    out.append(e)
+                continue
             try:
                 out.append(to_entry(it, parse_detail(s.get(it["detail"]).text)))
+                details += 1
             except Exception as ex:
                 print("  übersprungen:", it["detail"], ex)
+                if e:
+                    out.append(e)
             if probe:
                 print(out[-1] if out else "kein Eintrag")
                 return []
         page += 1
         if not items or page > max_pages or (total and page > total):
             break
+    print(f"  DSEE: {len(out)} Einträge, davon {details} Detailseiten neu geladen")
     return out
