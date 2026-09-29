@@ -43,11 +43,20 @@ jobs:
         run: python -m importer.run
 
       - name: Importergebnis speichern
+        # Holt vorher neuere Änderungen (z. B. Ihre Bearbeitungen oder einen parallelen Lauf) und versucht es bis zu 3-mal.
+        # Scheitert es trotzdem, wird die Seite dennoch veröffentlicht.
+        continue-on-error: true
         run: |
           git config user.name "fordernavi-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/programme.json data/import.log.json 2>/dev/null || true
-          if git diff --cached --quiet; then echo "Keine Änderungen."; else git commit -m "Datenimport $(date -u +%Y-%m-%d)"; git push; fi
+          if git diff --cached --quiet; then echo "Keine Änderungen."; exit 0; fi
+          git commit -m "Datenimport $(date -u +%Y-%m-%d)"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0
+            echo "Versuch $i fehlgeschlagen, neuer Versuch in 10 s"; git rebase --abort 2>/dev/null || true; sleep 10
+          done
+          exit 1
 
       - name: Handy-Version bauen
         run: python build.py --site --kontakt "${{ vars.MELDE_EMAIL }}"
@@ -70,4 +79,3 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
-
