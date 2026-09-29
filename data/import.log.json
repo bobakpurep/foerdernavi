@@ -1,5 +1,5 @@
 {
- "start": "2026-09-29T20:59:58",
+ "start": "2026-09-29T21:01:46",
  "quellen": [
   {
    "quelle": "Förderdatenbank des Bundes",
@@ -9,9 +9,9 @@
   {
    "quelle": "EU Funding & Tenders",
    "ok": true,
-   "anzahl": 401
+   "anzahl": 402
   }
  ],
- "ende": "2026-09-29T21:01:03",
- "gesamt": 2320
+ "ende": "2026-09-29T21:02:41",
+ "gesamt": 2321
 }
