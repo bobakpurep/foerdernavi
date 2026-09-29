@@ -18,7 +18,7 @@ def compact(data):
     """Lange Originaltexte weglassen (Detail steht auf der verlinkten Seite), Hinweise kürzen."""
     out = []
     for e in data:
-        e = {k: v for k, v in e.items() if k not in ("text", "stand") and v not in (None, "", [])}
+        e = {k: v for k, v in e.items() if k not in ("text", "stand") and (k in ("z", "th") or v not in (None, "", []))}
         if len(e.get("hin", "")) > 380:
             e["hin"] = e["hin"][:377].rsplit(" ", 1)[0] + " …"
         out.append(e)
@@ -49,7 +49,11 @@ self.addEventListener("fetch",e=>{const u=new URL(e.request.url);if(e.request.me
 
 
 def icons(out):
-    from PIL import Image, ImageDraw
+    try:
+        from PIL import Image, ImageDraw
+    except ImportError:   # ohne Pillow: Seite trotzdem bauen, nur ohne App-Symbole
+        print("Hinweis: Pillow fehlt, App-Symbole werden übersprungen (pip install Pillow)")
+        return
     for size, name in ((192, "icon-192.png"), (512, "icon-512.png"), (180, "apple-touch-icon.png")):
         s = size / 100
         im = Image.new("RGB", (size, size), "#16324F")
