@@ -6,7 +6,7 @@ eu_sedia:
   enabled: true
   max_pages: 20
 dsee:
-  enabled: false
+  enabled: true
   delay: 4
   max_pages: 60
 scrape: []
