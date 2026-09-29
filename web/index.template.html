@@ -331,7 +331,9 @@ const QUELLE={ki:"KI-Wissen, ungeprüft",geprueft:"geprüft",teilgeprueft:"teilw
 const STATUS=[["idee","Idee"],["vorbereitung","In Vorbereitung"],["eingereicht","Eingereicht"],["bewilligt","Bewilligt"],["nachweis","Verwendungsnachweis"],["abgeschlossen","Abgeschlossen"],["abgelehnt","Abgelehnt"]];
 const CHECK=["Förderrichtlinie vollständig gelesen","Antragsberechtigung geprüft","Nicht vor Bewilligung mit dem Projekt beginnen (vorzeitiger Maßnahmebeginn)","Kosten- und Finanzierungsplan erstellt","Eigenanteil gesichert","Nachweis der Gemeinnützigkeit (falls Verein/Kirche)","Satzung / Registerauszug","Angebote oder Kostenvoranschläge","Projektbeschreibung","Kontakt zur Förderstelle aufgenommen","Antrag eingereicht (Datum notieren)","Bewilligungsbescheid abgelegt","Frist für Verwendungsnachweis notiert"];
 
-let DATA=SEED.slice();
+// Fehlende Listenfelder ergänzen, damit Filter nie an unvollständigen Einträgen abbrechen
+const fix=arr=>arr.map(p=>Object.assign(p,{z:Array.isArray(p.z)?p.z:[],th:Array.isArray(p.th)?p.th:[]}));
+let DATA=fix(SEED.slice());
 const SRC=[["basis","Geprüfte Grunddaten"],["fdb","Förderdatenbank des Bundes"],["eu_sedia","EU Funding & Tenders"],["dsee","DSEE"],["web","Websites (Kreise, Städte, Stiftungen)"],["meldung","Geprüfte Meldungen"]];
 const srcOf=p=>p.id.startsWith("meldung-")?"meldung":!p.src?"basis":["fdb","eu_sedia","dsee"].includes(p.src)?p.src:"web";
 const srcOn=new Set(SRC.map(x=>x[0]));
@@ -401,10 +403,10 @@ function match(p){
   if(!srcOn.has(srcOf(p)))return false;
   if($("#hideExpired")&&$("#hideExpired").checked&&isoFrist(p.frist)&&p.frist<HEUTE)return false;
   if(p.ort&&p.ort.length&&S.ort&&!p.ort.some(o=>norm(S.ort).includes(norm(o))||norm(o).includes(norm(S.ort))))return false;
-  if(S.wer&&!p.z.includes(S.wer))return false;
+  if(S.wer&&!(p.z||[]).includes(S.wer))return false;
   if(S.wer==="kirche"&&p.kirche==="nein")return false;
   if(!["DE","EU","lokal"].includes(p.r)&&S.land&&p.r!==S.land)return false;
-  if(S.themen.size&&!p.th.some(t=>S.themen.has(t)))return false;
+  if(S.themen.size&&!(p.th||[]).some(t=>S.themen.has(t)))return false;
   if(S.ohneRueck&&p.rz!=="nein")return false;
   if(S.art==="darlehen"&&p.a!=="darlehen")return false;
   if(S.art==="kombination"&&p.a!=="kombination")return false;
@@ -670,7 +672,7 @@ function korrForm(p){const f={q:el("input",{type:"number",value:p.q??""}),ea:el(
   const lab=(t,n)=>el("div",{class:"field"},el("label",{},t),n);const num=v=>v===""?null:+v;
   const save=async gepr=>{const felder={q:num(f.q.value),ea:num(f.ea.value),max:num(f.max.value),frist:f.frist.value,url:f.url.value,hin:f.hin.value,kirche:f.kirche.value,versteckt:f.versteckt.checked};
     if(gepr){if(!f.beleg.value.trim()){toast("Für „geprüft“ bitte den Beleg-Link angeben");return;}felder.quelle="geprueft";felder.pruef={datum:HEUTE,belege:[f.beleg.value.trim()],durch:"Redaktion"};}
-    try{await api("/admin/eintrag/"+encodeURIComponent(p.id),{method:"PUT",body:JSON.stringify({felder})});toast("Gespeichert");const r=await fetch(API+"/programme");DATA=await r.json();renderSrc();update();}catch(e){toast(e.message);}};
+    try{await api("/admin/eintrag/"+encodeURIComponent(p.id),{method:"PUT",body:JSON.stringify({felder})});toast("Gespeichert");const r=await fetch(API+"/programme");DATA=fix(await r.json());renderSrc();update();}catch(e){toast(e.message);}};
   $("#kForm").replaceChildren(el("h3",{},p.t),el("p",{class:"note"},"Quelle: "+(QUELLE[p.quelle]||p.quelle)+" · ID "+p.id),
     el("div",{class:"grid2"},lab("Förderquote %",f.q),lab("Eigenanteil %",f.ea),lab("Höchstbetrag €",f.max),lab("Frist",f.frist),lab("Link",f.url),lab("Für Kirchen möglich",f.kirche),lab("Beleg-Link (für geprüft)",f.beleg)),
     lab("Beschreibung",f.hin),el("label",{class:"check"},f.versteckt,el("span",{},"Eintrag ausblenden (z. B. Programm beendet)")),
@@ -705,7 +707,7 @@ $("#wAdd").addEventListener("click",async()=>{try{const j=await api("/admin/webs
 $("#rSet").addEventListener("click",async()=>{try{await api("/admin/rolle",{method:"POST",body:JSON.stringify({email:val("#rMail"),rolle:val("#rRolle"),ort:val("#rOrt")})});$("#rNote").textContent="Gespeichert.";}catch(e){$("#rNote").textContent=e.message;}});
 $("#kSuche").addEventListener("input",e=>{const q=e.target.value.trim().toLowerCase();const box=$("#kTreffer");box.replaceChildren();if(q.length<3)return;
   DATA.filter(p=>p.t.toLowerCase().includes(q)).slice(0,8).forEach(p=>box.append(el("button",{class:"btn small ghost",style:"margin:4px 6px 4px 0",onclick:()=>korrForm(p)},p.t)));});
-$("#hideExpired").addEventListener("change",update);
+$("#hideExpired").addEventListener("change",()=>update());
 $("#mLand").append(...Object.entries(LAENDER).map(([k,v])=>el("option",{value:k},v)));
 
 /* ---------- Datenstand ---------- */
@@ -717,7 +719,7 @@ $("#mLand").append(...Object.entries(LAENDER).map(([k,v])=>el("option",{value:k}
 load();
 (function(){const k=kiSettings();let prov=k.prov;try{prov=prov||localStorage.getItem(KEY+":kiprov");}catch(e){}if(prov)$("#kiProv").value=prov;if(k.key)$("#kiKey").value=k.key;if(k.model)$("#kiModel").value=k.model;})();
 renderStep();renderSrc();renderAll();kiUi();
-if(API){fetch(API+"/programme").then(r=>r.ok?r.json():null).then(j=>{if(Array.isArray(j)&&j.length){DATA=j;renderSrc();update();}}).catch(()=>{});
+if(API){fetch(API+"/programme").then(r=>r.ok?r.json():null).then(j=>{if(Array.isArray(j)&&j.length){DATA=fix(j);renderSrc();update();}}).catch(()=>{});
   loadMe().then(()=>{if(token())pullState();});
   const rt=new URLSearchParams(location.search).get("reset");if(rt){go("konto");resetPanel(rt);}}
 if(window.claude&&window.claude.use){
