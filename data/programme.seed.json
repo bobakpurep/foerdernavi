@@ -1,0 +1,1152 @@
+[
+ {
+  "id": "ba-gruendungszuschuss",
+  "t": "Gründungszuschuss",
+  "g": "Bundesagentur für Arbeit",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "gruender"
+  ],
+  "th": [
+   "gruendung",
+   "lebensunterhalt"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": 0,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://www.arbeitsagentur.de",
+  "hin": "Für Arbeitslose mit noch mindestens 150 Tagen Anspruch auf Arbeitslosengeld I. 6 Monate in Höhe des zuletzt bezogenen ALG I plus 300 € monatlich, danach bis zu 9 weitere Monate 300 € (§ 94 SGB III). Tragfähigkeit per fachkundiger Stellungnahme nachweisen. Ermessensleistung. Antrag vor Aufnahme der Selbstständigkeit.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://lxgesetze.de/sgb-iii/94",
+    "https://www.betanet.de/gruendungszuschuss.html?pdf=487"
+   ]
+  }
+ },
+ {
+  "id": "jc-einstiegsgeld",
+  "t": "Einstiegsgeld bei Existenzgründung",
+  "g": "Jobcenter",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "gruender",
+   "privat"
+  ],
+  "th": [
+   "gruendung",
+   "lebensunterhalt"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": 0,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://www.arbeitsagentur.de",
+  "hin": "Für Menschen in der Grundsicherung (seit 1. Juli 2026 heißt das Bürgergeld „Grundsicherungsgeld“; das Einstiegsgeld besteht laut Quelle fort). Höhe und Dauer entscheidet das Jobcenter im Einzelfall. Nicht geprüft: aktuelle Paragrafennummer und Beträge.",
+  "kirche": "nein",
+  "quelle": "teilgeprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.starting-up.de/gruenden/selbststaendig-machen/gruenden-aus-der-arbeitslosigkeit-so-gehts.html"
+   ]
+  }
+ },
+ {
+  "id": "exist-stipendium",
+  "t": "EXIST-Gründungsstipendium",
+  "g": "Bundesministerium für Wirtschaft und Energie",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "gruender",
+   "studierende"
+  ],
+  "th": [
+   "gruendung",
+   "forschung",
+   "digital"
+  ],
+  "a": "stipendium",
+  "rz": "nein",
+  "q": 100,
+  "ea": 0,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://www.ptj.de/foerdermoeglichkeiten/exist/gruendungsstipendium",
+  "hin": "Für innovative Gründungen aus Hochschulen und Forschungseinrichtungen, bis zu 12 Monate. Stipendium je nach Abschluss 1.000 € (Studierende) bis 3.000 € (Promovierte) monatlich, Kinderzuschlag 150 €, Sachausgaben bis 10.000 € (Team 30.000 €), Coaching 5.000 €. Antrag über die Hochschule (Richtlinie April 2023).",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "urlOk": true,
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.foerderdatenbank.de/FDB/Content/DE/Foerderprogramm/Bund/BMWi/exist-gruendungsstipendium.html",
+    "https://www.ptj.de/foerdermoeglichkeiten/exist/gruendungsstipendium"
+   ]
+  }
+ },
+ {
+  "id": "kfw-067",
+  "t": "ERP-Gründerkredit – StartGeld (KfW 067)",
+  "g": "KfW",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "gruender",
+   "selbststaendig",
+   "kmu"
+  ],
+  "th": [
+   "gruendung"
+  ],
+  "a": "darlehen",
+  "rz": "ja",
+  "q": 100,
+  "ea": 0,
+  "max": 200000,
+  "frist": "laufend",
+  "url": "https://www.kfw.de/PDF/Download-Center/F%C3%B6rderprogramme-%28Inlandsf%C3%B6rderung%29/PDF-Dokumente/6000002258_M_067_StartGeld.pdf",
+  "hin": "Zinsgünstiges Darlehen für Gründung und Unternehmen unter 5 Jahren am Markt: seit 1.12.2025 bis 200.000 € (vorher 125.000 €), davon Betriebsmittel bis 80.000 €. 80 % Haftungsfreistellung für die Hausbank; Antrag über Bank oder Sparkasse (Merkblatt Stand 01.02.2026). Muss zurückgezahlt werden.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "urlOk": true,
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.kfw.de/PDF/Download-Center/F%C3%B6rderprogramme-%28Inlandsf%C3%B6rderung%29/PDF-Dokumente/6000002258_M_067_StartGeld.pdf",
+    "https://www.ihk.de/hannover/hauptnavigation/gruendung-sicherung-nachfolge/aktuell/foerderhoechstbetrag-beim-kfw-gruenderkredit-startgeld-angehoben-6827728"
+   ]
+  }
+ },
+ {
+  "id": "bafa-knowhow",
+  "t": "Förderung unternehmerischen Know-hows",
+  "g": "BAFA",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "gruender",
+   "selbststaendig",
+   "kmu"
+  ],
+  "th": [
+   "beratung",
+   "gruendung"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 80,
+  "ea": 20,
+  "max": 2800,
+  "frist": "Richtlinie gilt bis 31.12.2026",
+  "url": "https://www.bafa.de",
+  "hin": "Zuschuss zu Unternehmensberatungen für KMU und Freie Berufe. Bemessungsgrundlage 3.500 €: 50 % (max. 1.750 €), in den neuen Bundesländern 80 % (max. 2.800 €). Höchstens 2 Beratungen pro Jahr, 5 in der Laufzeit. Richtlinie läuft bis 31.12.2026 – danach Nachfolge prüfen.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.ihk-nuernberg.de/ihr-unternehmen/gruendung/coaching-beratungsfoerderung/bafa-programm",
+    "https://www.ihk.de/magdeburg/starthilfe/finanzierungoeffentlichefoerderung/richtlinie-foerderung-von-unternehmen-fuer-kmu-fortgesetzt-5686472"
+   ]
+  }
+ },
+ {
+  "id": "kfw-458",
+  "t": "Heizungsförderung für Privatpersonen (BEG, KfW 458)",
+  "g": "KfW",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "privat"
+  ],
+  "th": [
+   "energie",
+   "bauen"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 70,
+  "ea": 30,
+  "max": 19600,
+  "frist": "laufend",
+  "url": "https://www.kfw.de/PDF/Download-Center/F%C3%B6rderprogramme-(Inlandsf%C3%B6rderung)/PDF-Dokumente/6000005131_M_458.pdf",
+  "hin": "Laut KfW-Merkblatt (Stand 09/2026, gültig ab 24.09.2026): Grundförderung 30 %, Klimageschwindigkeitsbonus 16 % (sinkt ab 01.02.2027 halbjährlich um 4 Punkte), Einkommensbonus 40/30/10 % bei zvE bis 30.000/40.000/50.000 €. Deckel 70 %, bei zvE bis 30.000 € (mit Kind 40.000 €) 80 %. Förderfähige Kosten erste Wohneinheit max. 28.000 €. Antrag vor Vorhabenbeginn, Vertrag mit aufschiebender Bedingung.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "urlOk": true,
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.kfw.de/PDF/Download-Center/F%C3%B6rderprogramme-(Inlandsf%C3%B6rderung)/PDF-Dokumente/6000005131_M_458.pdf"
+   ]
+  }
+ },
+ {
+  "id": "bafa-beg-em",
+  "t": "BEG Einzelmaßnahmen an der Gebäudehülle",
+  "g": "BAFA",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "privat",
+   "kmu",
+   "verein",
+   "kirche",
+   "kommune"
+  ],
+  "th": [
+   "energie",
+   "bauen"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 20,
+  "ea": 80,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://www.bafa.de",
+  "hin": "15 % Zuschuss für Dämmung, Fenster, Anlagentechnik. iSFP-Bonus +5 Punkte seit 21.07.2026 nur noch auf den Kostenanteil über 30.000 €. Förderfähige Kosten erste Wohneinheit 30.000 €, mit iSFP 60.000 €. Energieeffizienz-Experte meist Pflicht, Antrag vor Auftragsvergabe.",
+  "kirche": "ja",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.bafa.de/DE/Energie/Effiziente_Gebaeude/Sanierung_Wohngebaeude/Gebaeudehuelle/gebaeudehuelle_node.html",
+    "https://www.iwpro.de/beg-reform-2026/"
+   ]
+  }
+ },
+ {
+  "id": "bafa-energieberatung",
+  "t": "Energieberatung für Wohngebäude",
+  "g": "BAFA",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "privat"
+  ],
+  "th": [
+   "energie",
+   "beratung"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 50,
+  "ea": 50,
+  "max": 650,
+  "frist": "laufend",
+  "url": "https://www.bafa.de",
+  "hin": "50 % des Beratungshonorars, max. 650 € (Ein- und Zweifamilienhaus) bzw. 850 € (ab 3 Wohneinheiten); WEG zusätzlich bis 250 €. Den Antrag stellt meist der Energieberater.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://tuebingen.de/tuebingen-macht-blau/33154/21801.html",
+    "https://42watt.de/magazin/energieberater-kosten"
+   ]
+  }
+ },
+ {
+  "id": "kfw-300",
+  "t": "Wohneigentum für Familien (KfW 300)",
+  "g": "KfW",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "privat"
+  ],
+  "th": [
+   "bauen"
+  ],
+  "a": "darlehen",
+  "rz": "ja",
+  "q": null,
+  "ea": null,
+  "max": 270000,
+  "frist": "laufend",
+  "url": "https://www.kfw.de",
+  "hin": "Zinsgünstiger Kredit für Familien mit mindestens einem Kind unter 18 für Neubau oder Ersterwerb eines klimafreundlichen Neubaus zur Selbstnutzung. Einkommensgrenze: zvE 90.000 € bei einem Kind plus 10.000 € je weiterem Kind (Stand 15.01.2026). Kreditbetrag je nach Kinderzahl und Standard bis 270.000 €. Muss zurückgezahlt werden.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.umweltpakt.bayern.de/werkzeuge/foerderfibel/programme/359/wohneigentum-f%C3%BCr-familien---neubau",
+    "https://sikb.de/sites/default/files/SIKB/Hausbankenmitteilungen%202023/HB_80_2023.pdf"
+   ]
+  }
+ },
+ {
+  "id": "kfw-270",
+  "t": "Erneuerbare Energien – Standard (KfW 270)",
+  "g": "KfW",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "privat",
+   "selbststaendig",
+   "kmu",
+   "verein",
+   "kirche",
+   "kommune"
+  ],
+  "th": [
+   "energie"
+  ],
+  "a": "darlehen",
+  "rz": "ja",
+  "q": 100,
+  "ea": 0,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://www.kfw.de",
+  "hin": "Kredit für PV, Speicher und andere erneuerbare Energien, bis 100 % der Investitionskosten, über die Hausbank. Kein Zuschuss. Laut Fachportal bieten nur wenige Banken den Kredit Privatpersonen an.",
+  "kirche": "ja",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.aroundhome.de/solaranlage/foerderung-finanzierung/",
+    "https://reduco.ai/blog/solar/kfw-270-photovoltaik-kredit"
+   ]
+  }
+ },
+ {
+  "id": "wohngeld",
+  "t": "Wohngeld",
+  "g": "Wohngeldstelle der Stadt oder Gemeinde",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "privat"
+  ],
+  "th": [
+   "lebensunterhalt",
+   "soziales"
+  ],
+  "a": "sozialleistung",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://www.bmwsb.bund.de",
+  "hin": "Zuschuss zu den Wohnkosten für Haushalte mit geringem Einkommen, die nicht in der Grundsicherung sind: Mietzuschuss für Mieter, Lastenzuschuss für selbstnutzende Eigentümer. Kein Darlehen. Antrag bei der örtlichen Wohngeldbehörde. Werte seit 01.01.2025 fortgeschrieben, 2026 unverändert.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.steuerschroeder.de/Wohngeld.html",
+    "https://www.steuerschroeder.de/Steuerrechner/Wohngeld.html"
+   ]
+  }
+ },
+ {
+  "id": "kinderzuschlag",
+  "t": "Kinderzuschlag",
+  "g": "Familienkasse",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "privat"
+  ],
+  "th": [
+   "lebensunterhalt",
+   "soziales"
+  ],
+  "a": "sozialleistung",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": 297,
+  "frist": "laufend",
+  "url": "https://www.arbeitsagentur.de",
+  "hin": "Bis 297 € pro Kind und Monat (2026) zusätzlich zum Kindergeld, bei der Familienkasse beantragen. Mindesteinkommen 600 € brutto (Alleinerziehende) bzw. 900 € (Paare). Wer Kinderzuschlag bezieht, hat Anspruch auf Bildung und Teilhabe.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.verbraucherzentrale.de/wissen/geld-versicherungen/kredit-schulden-insolvenz/kinderzuschlag-zum-kindergeld-wann-besteht-ein-anspruch-90968",
+    "https://www.bmbfsfj.bund.de/resource/blob/256052/2b19e389612f4244069d5b1a686e82f8/einlegeblatt-leistungen-fuer-alleinerziehende-2026-data.pdf"
+   ]
+  }
+ },
+ {
+  "id": "bafoeg",
+  "t": "BAföG für Studium und Schule",
+  "g": "BAföG-Ämter / Studierendenwerke",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "studierende",
+   "privat"
+  ],
+  "th": [
+   "bildung",
+   "lebensunterhalt"
+  ],
+  "a": "kombination",
+  "rz": "teilweise",
+  "q": null,
+  "ea": null,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://studierendenwerke.de/themen/studienfinanzierung/bafoeg",
+  "hin": "Studierende: in der Regel halb Zuschuss, halb zinsloses Darlehen; Rückzahlung höchstens 10.010 €. Höchstsatz 992 €/Monat (WS 2025/26, inkl. KV/PV-Zuschlag). Schüler-BAföG meist als Vollzuschuss.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "urlOk": true,
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://studierendenwerke.de/themen/studienfinanzierung/bafoeg",
+    "https://www.sparkasse.de/themen/studium/bafoeg.html"
+   ]
+  }
+ },
+ {
+  "id": "aufstiegs-bafoeg",
+  "t": "Aufstiegs-BAföG",
+  "g": "Bund und Länder",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "privat",
+   "selbststaendig"
+  ],
+  "th": [
+   "bildung"
+  ],
+  "a": "kombination",
+  "rz": "teilweise",
+  "q": 75,
+  "ea": 25,
+  "max": 15000,
+  "frist": "laufend",
+  "url": "https://www.aufstiegs-bafoeg.de",
+  "hin": "Lehrgangs- und Prüfungsgebühren bis 15.000 €: 50 % Zuschuss, Rest als KfW-Darlehen; bei bestandener Prüfung 50 % Erlass des Darlehens (effektiv bis 75 % geschenkt), bei Existenzgründung vollständiger Erlass. Bei Vollzeit Unterhalt als Vollzuschuss (laut Bundesministerium bis 1.019 €). Einkommensunabhängig für die Gebühren.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.bmbfsfj.bund.de/resource/blob/291234/8567331fc96c5749e4cbe9a61c5051df/aufstiegs-bafoeg-flyer-data.pdf",
+    "https://www.ihk.de/schwerin/bildung/ihk-weiterbildung/aufstiegsfortbildung-bafoeg-4859422"
+   ]
+  }
+ },
+ {
+  "id": "deutschlandstipendium",
+  "t": "Deutschlandstipendium",
+  "g": "Hochschulen, Bund und private Förderer",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "studierende"
+  ],
+  "th": [
+   "bildung"
+  ],
+  "a": "stipendium",
+  "rz": "nein",
+  "q": null,
+  "ea": 0,
+  "max": 3600,
+  "frist": "Stichtag der Hochschule",
+  "url": "https://www.deutschlandstipendium.de",
+  "hin": "300 € monatlich (3.600 € pro Jahr), einkommensunabhängig, zur Hälfte vom Bund, zur Hälfte von privaten Förderern. Bewerbung direkt bei der Hochschule, Fristen je Hochschule.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.uni-heidelberg.de/de/newsroom/deutschlandstipendium-bewerbung-ab-august-moeglich"
+   ]
+  }
+ },
+ {
+  "id": "bildungsgutschein",
+  "t": "Bildungsgutschein",
+  "g": "Agentur für Arbeit / Jobcenter",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "privat"
+  ],
+  "th": [
+   "bildung"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 100,
+  "ea": 0,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://www.arbeitsagentur.de",
+  "hin": "Übernahme der Weiterbildungskosten nach § 81 SGB III, wenn die Weiterbildung nötig ist, um Arbeitslosigkeit zu beenden oder abzuwenden, die Agentur vorher beraten hat und Maßnahme und Träger zugelassen sind. Die Agentur bescheinigt das mit dem Bildungsgutschein. Ermessensleistung.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://lxgesetze.de/sgb-iii/81",
+    "https://www.buzer.de/81_SGB_3.htm"
+   ]
+  }
+ },
+ {
+  "id": "am-mikro",
+  "t": "Aktion Mensch – Mikroförderung",
+  "g": "Aktion Mensch",
+  "e": "Lotterie",
+  "r": "DE",
+  "z": [
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "inklusion",
+   "soziales",
+   "ehrenamt"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 100,
+  "ea": 0,
+  "max": 5000,
+  "frist": "laufend",
+  "url": "https://www.aktion-mensch.de",
+  "hin": "Mikroförderung für gemeinnützige Organisationen: bis 5.000 € ohne Eigenmittel, Laufzeit bis 1 Jahr (z. B. Barrierefreiheit, Protesttag 5. Mai). Einzelne Förderaktionen gehen bis 10.000 €. Antragsberechtigt sind gemeinnützige Organisationen.",
+  "kirche": "ja",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.berlin.de/ba-neukoelln/politik-und-verwaltung/beauftragte/eu-angelegenheiten/17-ausgabe-februar-2026.pdf",
+    "https://www.weichering.de/media-web/dateien/rathaus-nuetzliches/aktuelle_informationen_fuer_ehrenamtliche_09-2025.pdf"
+   ]
+  }
+ },
+ {
+  "id": "am-projekt",
+  "t": "Aktion Mensch – Projektförderung",
+  "g": "Aktion Mensch",
+  "e": "Lotterie",
+  "r": "DE",
+  "z": [
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "inklusion",
+   "soziales"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 90,
+  "ea": 10,
+  "max": 350000,
+  "frist": "laufend",
+  "url": "https://www.aktion-mensch.de",
+  "hin": "Laut Paritätischem Gesamtverband (Datum der Angabe unklar): Projektförderung bis 350.000 € bei mindestens 10 % Eigenanteil, Laufzeit bis 5 Jahre. Innovationsförderung 40–50 % bei mindestens 20 % Eigenmitteln. Aktuelle Bedingungen bei Aktion Mensch prüfen.",
+  "kirche": "ja",
+  "quelle": "teilgeprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.der-paritaetische.de/themen/bereichsuebergreifende-themen/digitalisierung-und-digitalpolitik/foerderprogramme/"
+   ]
+  }
+ },
+ {
+  "id": "dsee-mikro",
+  "t": "DSEE-Mikroförderprogramm „Ehrenamt gewinnen. Engagement binden.“",
+  "g": "Deutsche Stiftung für Engagement und Ehrenamt",
+  "e": "Bund",
+  "r": "DE",
+  "z": [
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "ehrenamt"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 90,
+  "ea": 10,
+  "max": 1500,
+  "frist": "Antrag laufend, Projekte bis 31.12.2026",
+  "url": "https://www.deutsche-stiftung-engagement-und-ehrenamt.de/foerderung/",
+  "urlOk": true,
+  "hin": "2026: bis 1.500 € für gemeinnützige Organisationen in ländlichen oder strukturschwachen Räumen, 10 % Eigenbeteiligung (auch als Eigenleistung/Arbeitsstunden). Kirchengemeinden sind ausdrücklich antragsberechtigt. Für Gewinnung, Bindung und Wertschätzung Engagierter (Quelle: DSEE-Präsentation vom 04.02.2026).",
+  "kirche": "ja",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.achim.de/downloads/datei/ZWRhM2VmMzliOGRkOWY2Y0Q4T3J0eXNuTkkvMjhoUnBQMmpOemlySStXc3pwcHdrRW5wQUovaG53Q2hDUEpWOWVUUDNranQxWGtDYk9rSFV0SExVeG1hUnZiMlpRQXFNSzVndi9iYmhVZ2hONmtqTUtjdWY5b0NjSFJ0aVFvT3M2Slg2VjUrSFJ1RFJvWldienU1d3A5VXRQcW9nZ0NmckhGWDd1WHhZZ2hNRzZwdzJEU1BPNVYyb2NobjI3dCtpZHBHSStBMjJtT25EbTc4cg"
+   ]
+  }
+ },
+ {
+  "id": "demokratie-leben-pfd",
+  "t": "Demokratie leben! – Aktions- und Initiativfonds der Partnerschaften für Demokratie",
+  "g": "Bundesprogramm, vergeben vor Ort durch Kreis oder Stadt",
+  "e": "Kreis/Stadt",
+  "r": "lokal",
+  "z": [
+   "verein",
+   "kirche",
+   "privat"
+  ],
+  "th": [
+   "demokratie",
+   "jugend",
+   "ehrenamt"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": null,
+  "frist": "je nach Partnerschaft",
+  "url": "https://www.demokratie-leben.de",
+  "hin": "Neue Förderperiode 2026–2032, bundesweit rund 332 lokale Partnerschaften. Aktionsfonds je nach Ort z. B. bis 5.000 € (Friedrichshain-Kreuzberg) oder bis 10.000 € (Charlottenburg-Wilmersdorf) pro Projekt. Aufrufe meist Januar bis März. Beim Kreis oder der Stadt nachfragen, ob es eine Partnerschaft gibt.",
+  "kirche": "unklar",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.bayreuth.de/wp-content/uploads/2026/06/20260618_Demokratie-Leben.pdf",
+    "https://www.berlin.de/ba-friedrichshain-kreuzberg/aktuelles/pressemitteilungen/2026/pressemitteilung.1630540.php"
+   ]
+  }
+ },
+ {
+  "id": "postcode",
+  "t": "Postcode Lotterie – Projektförderung",
+  "g": "Postcode Lotterie (vormals Deutsche Postcode Lotterie)",
+  "e": "Lotterie",
+  "r": "DE",
+  "z": [
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "umwelt",
+   "soziales"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": 250000,
+  "frist": "Förderrunden",
+  "url": "https://www.postcode-lotterie.de",
+  "hin": "Soziale und grüne Projekte gemeinnütziger Organisationen können Förderungen bis 250.000 € beantragen; ein Beirat entscheidet. Mittel verteilen sich nach verkauften Losen je Bundesland (Factsheet 16.06.2026). Eigenanteil: nicht geprüft.",
+  "kirche": "unklar",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://a.storyblok.com/f/291263993282921/x/5021a8fc31/16-06-2026_pl_factsheet.pdf"
+   ]
+  }
+ },
+ {
+  "id": "fernsehlotterie",
+  "t": "Deutsche Fernsehlotterie – Stiftung Deutsches Hilfswerk",
+  "g": "Stiftung Deutsches Hilfswerk",
+  "e": "Lotterie",
+  "r": "DE",
+  "z": [
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "soziales",
+   "inklusion"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://www.fernsehlotterie.de",
+  "hin": "Nur gemeinnützige Träger (Stand 2024). Stand 2019: Baukosten bis 33 %, Ausstattung bis 50 %, max. 300.000 € je Vorhaben – aktuelle Fördergrundsätze der Stiftung Deutsches Hilfswerk prüfen.",
+  "kirche": "unklar",
+  "quelle": "teilgeprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://caritas.de/neue-caritas/heftarchiv/jahrgang2019/artikel/deutsche-fernsehlotterie-setzt-staerker-auf-direkte-hilfe",
+    "https://www.bay-landkreistag.de/media/103712/vwi-06092024-informationsveranstaltung-stiftung-dt-hilfswerk.pdf"
+   ]
+  }
+ },
+ {
+  "id": "erasmus-ka210",
+  "t": "Erasmus+ Kleinere Partnerschaften",
+  "g": "EU, Nationale Agenturen in Deutschland",
+  "e": "EU",
+  "r": "EU",
+  "z": [
+   "verein",
+   "kirche",
+   "kmu"
+  ],
+  "th": [
+   "bildung",
+   "jugend",
+   "international"
+  ],
+  "a": "pauschale",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": 60000,
+  "frist": "Schulbereich 2026: 05.03.2026; weitere Runden je Sektor",
+  "url": "https://erasmusplus.schule/fileadmin/Dateien/Dokumente/Erasmus/Informationen/KA210_Infoveranstaltung_2026.pdf",
+  "hin": "Pauschale von 30.000 € oder 60.000 € als Gesamtzuschuss, Laufzeit 6–24 Monate, Partner aus mindestens zwei Ländern. Sektoren: Schule, Berufsbildung, Erwachsenenbildung, Jugend. In Deutschland wurden 2026 auch Vereine gefördert.",
+  "kirche": "unklar",
+  "quelle": "geprueft",
+  "urlOk": true,
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.cmepius.si/wp-content/uploads/2026/02/Small-Scale-Partnerships-2026.pdf",
+    "https://erasmusplus.schule/fileadmin/Dateien/Dokumente/Erasmus/Foerderlisten/2026/KA210_2026_Liste_gefoerderter_Projekte.pdf"
+   ]
+  }
+ },
+ {
+  "id": "esk-solidaritaet",
+  "t": "Europäisches Solidaritätskorps – Solidaritätsprojekte",
+  "g": "EU, Nationale Agentur JUGEND für Europa",
+  "e": "EU",
+  "r": "EU",
+  "z": [
+   "privat"
+  ],
+  "th": [
+   "jugend",
+   "ehrenamt"
+  ],
+  "a": "pauschale",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": null,
+  "frist": "Stichtage",
+  "url": "https://www.solidaritaetskorps.de",
+  "hin": "Mindestens fünf junge Menschen (18–30 Jahre) setzen 2 bis 12 Monate ein eigenes Projekt für ihr Umfeld um; Förderung über die Nationale Agentur. Höhe der Pauschale 2026: nicht geprüft – im Programmleitfaden 2026 nachsehen.",
+  "kirche": "unklar",
+  "quelle": "teilgeprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://youth.europa.eu/sites/default/files/inline-files/european_solidarity_corps_guide_2026_DE.pdf",
+    "https://www.ehrenamt.bayern.de/imperia/md/content/stmas/lbe/pdf/europaischer_solidaritatskorps.pdf"
+   ]
+  }
+ },
+ {
+  "id": "eic-accelerator",
+  "t": "EIC Accelerator",
+  "g": "Europäischer Innovationsrat",
+  "e": "EU",
+  "r": "EU",
+  "z": [
+   "kmu",
+   "gruender"
+  ],
+  "th": [
+   "forschung",
+   "digital"
+  ],
+  "a": "kombination",
+  "rz": "teilweise",
+  "q": 70,
+  "ea": 30,
+  "max": 2500000,
+  "frist": "Vollanträge 2026 u. a. 02.09. und 04.11.2026; Kurzanträge laufend",
+  "url": "https://eic.ec.europa.eu",
+  "hin": "Für Start-ups und KMU mit bahnbrechender Innovation: Zuschuss bis 2,5 Mio. € als Pauschale, 70 % der förderfähigen Kosten (100 % für gemeinnützige), optional Eigenkapital 1–10 Mio. € über den EIC Fund. Budget 2026: 634 Mio. €.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.fundingprogrammesportal.gov.cy/en/call/eic-accelerator-2026-short-application-en-2025/",
+    "https://www.madrimasd.org/blogs/demadridaeuropa/files/2025/11/Ficha-resumen-EIC-Accelerator.pdf"
+   ]
+  }
+ },
+ {
+  "id": "regionalbudget",
+  "t": "Regionalbudget / LEADER-Kleinprojekte",
+  "g": "Land über die LEADER- oder ILE-Region",
+  "e": "Kreis/Stadt",
+  "r": "lokal",
+  "z": [
+   "verein",
+   "kirche",
+   "privat",
+   "kommune",
+   "kmu"
+  ],
+  "th": [
+   "laendlich",
+   "ehrenamt",
+   "kultur",
+   "sport"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 80,
+  "ea": 20,
+  "max": 16000,
+  "frist": "jährliche Aufrufe",
+  "url": null,
+  "hin": "GAK-Regionalbudget: Kleinprojekte bis 20.000 € brutto Gesamtkosten, bis 80 % Zuschuss (also max. 16.000 €), Vorfinanzierung nötig. Manche Regionen setzen niedrigere Grenzen (z. B. 12.500 €). Beispiel 2025: ein katholischer Kirchbau-Förderverein wurde gefördert. Nur in LEADER-/ILE-Regionen.",
+  "kirche": "ja",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.laendlicher-raum.sachsen.de/download/Bekanntmachung_9_Aufruf_RB_2027.pdf",
+    "https://joomla4.breckerfeld.de/images/Aktuelles/Projektaufruf_Kleinprojekte_LEADER_2026.pdf"
+   ]
+  }
+ },
+ {
+  "id": "denkmalschutz",
+  "t": "Deutsche Stiftung Denkmalschutz – Förderung",
+  "g": "Deutsche Stiftung Denkmalschutz",
+  "e": "Stiftung",
+  "r": "DE",
+  "z": [
+   "kirche",
+   "verein",
+   "privat",
+   "kommune"
+  ],
+  "th": [
+   "denkmal",
+   "bauen"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": null,
+  "frist": "laufend",
+  "url": "https://www.denkmalschutz.de",
+  "hin": "Zuschüsse für formal denkmalgeschützte Kulturdenkmale von Privatpersonen, gemeinnützigen Einrichtungen, Religionsgemeinschaften und Kommunen – vor allem, um den Eigenanteil tragen zu können. Alle anderen Finanzierungsquellen müssen ausgeschöpft sein. Kein Rechtsanspruch (Förderrichtlinien 2023).",
+  "kirche": "ja",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.Denkmalschutz.de/fileadmin/media/PDF/Brosch%C3%BCren/230223_DSD_Foerderrichtlinien_2023_Web.pdf"
+   ]
+  }
+ },
+ {
+  "id": "lokal-vereinsfoerderung",
+  "t": "Vereins- und Sportförderung Ihrer Stadt oder Gemeinde",
+  "g": "Stadt oder Gemeinde",
+  "e": "Kreis/Stadt",
+  "r": "lokal",
+  "z": [
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "sport",
+   "kultur",
+   "jugend",
+   "ehrenamt"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": null,
+  "frist": "meist jährlich",
+  "url": null,
+  "hin": "Fast jede Kommune hat eigene Förderrichtlinien, z. B. für Übungsleiter, Anschaffungen oder Veranstaltungen. Beim Sport- oder Kulturamt nachfragen. Einträge werden über „Förderung melden“ ergänzt.",
+  "kirche": "unklar",
+  "quelle": "platzhalter"
+ },
+ {
+  "id": "lokal-jugend",
+  "t": "Zuschüsse für Jugendarbeit (Kreisjugendring / Jugendamt)",
+  "g": "Kreis oder Stadt",
+  "e": "Kreis/Stadt",
+  "r": "lokal",
+  "z": [
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "jugend"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": null,
+  "frist": "meist jährlich",
+  "url": null,
+  "hin": "Häufig Zuschüsse für Freizeiten, Schulungen (z. B. Juleica) und Material. Kirchliche Jugendarbeit ist oft antragsberechtigt, wenn der Träger anerkannt ist.",
+  "kirche": "ja",
+  "quelle": "platzhalter"
+ },
+ {
+  "id": "lokal-buergerstiftung",
+  "t": "Bürger- und Sparkassenstiftungen vor Ort",
+  "g": "Lokale Stiftungen",
+  "e": "Stiftung",
+  "r": "lokal",
+  "z": [
+   "verein",
+   "kirche",
+   "privat"
+  ],
+  "th": [
+   "soziales",
+   "kultur",
+   "jugend",
+   "sport",
+   "umwelt"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": null,
+  "max": null,
+  "frist": "unterschiedlich",
+  "url": null,
+  "hin": "Viele Orte haben eine Bürgerstiftung oder Sparkassenstiftung mit kleinen, unbürokratischen Zuschüssen. Bei der örtlichen Sparkasse oder Volksbank nachfragen.",
+  "kirche": "unklar",
+  "quelle": "platzhalter"
+ },
+ {
+  "id": "by-meisterbonus",
+  "t": "Meisterbonus Bayern",
+  "g": "Freistaat Bayern",
+  "e": "Land",
+  "r": "BY",
+  "z": [
+   "privat",
+   "selbststaendig"
+  ],
+  "th": [
+   "bildung"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": null,
+  "ea": 0,
+  "max": 3000,
+  "frist": "kein Antrag nötig",
+  "url": "https://www.foerderdatenbank.de/FDB/Content/DE/Foerderprogramm/Land/Bayern/vergabe-meisterbonus-meisterpreis-bayern.html",
+  "hin": "3.000 € für bestandene Meister- und gleichwertige Fortbildungsprüfungen (Prüfungsergebnis nach dem 31.12.2022) vor einer bayerischen Stelle, Hauptwohnsitz oder Arbeitsort in Bayern. Kein Antrag: die prüfende Stelle schreibt an.",
+  "kirche": "nein",
+  "quelle": "geprueft",
+  "urlOk": true,
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.foerderdatenbank.de/FDB/Content/DE/Foerderprogramm/Land/Bayern/vergabe-meisterbonus-meisterpreis-bayern.html",
+    "https://www.ihk.de/bayreuth/hauptnavigation/pruefungen/fortbildungspruefungen/meisterbonus-4412258"
+   ]
+  }
+ },
+ {
+  "id": "nw-heimat-scheck",
+  "t": "Heimat-Scheck NRW",
+  "g": "Land Nordrhein-Westfalen",
+  "e": "Land",
+  "r": "NW",
+  "z": [
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "kultur",
+   "ehrenamt"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 100,
+  "ea": 0,
+  "max": 2000,
+  "frist": "in der Regel Mitte Oktober",
+  "url": "https://www.foerderdatenbank.de/FDB/Content/DE/Foerderprogramm/Land/NRW/heimat-scheck-nrw.html",
+  "hin": "Festbetrag 2.000 € je Vorhaben, das mindestens 2.000 € förderfähige Ausgaben hat und bis 31.12. abgeschlossen wird. Eine Maßnahme pro Jahr. Die breite Öffentlichkeit muss profitieren (vereinsinterne Maßnahmen nicht). Programm läuft laut Land bis 2027.",
+  "kirche": "unklar",
+  "quelle": "geprueft",
+  "urlOk": true,
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.foerderdatenbank.de/FDB/Content/DE/Foerderprogramm/Land/NRW/heimat-scheck-nrw.html",
+    "https://recht.nrw.de/mblnrw/2023-s76",
+    "https://www.bezreg-detmold.nrw.de/system/files/media/document/file/fp_dez35_heimatfoerderung.pdf"
+   ]
+  }
+ },
+ {
+  "id": "nw-umweltschecks",
+  "t": "Umweltschecks „Naturschutz Nordrhein-Westfalen“",
+  "g": "Ministerium für Umwelt, Naturschutz und Verkehr NRW",
+  "e": "Land",
+  "r": "NW",
+  "z": [
+   "privat",
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "umwelt"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 100,
+  "ea": 0,
+  "max": 2000,
+  "frist": "2026-09-30",
+  "url": "https://www.umwelt.nrw.de/themen/naturschutz/natur/foerderprogramme/umweltschecks",
+  "urlOk": true,
+  "hin": "Pauschal 2.000 € für Natur- und Artenschutzprojekte, wenn förderfähige Ausgaben mindestens in dieser Höhe nachgewiesen werden. Keine Eigenanteile. Privatpersonen, Vereine, Stiftungen. Umsetzung erst nach Bewilligung. Antragsfrist 2026: 30.09.2026.",
+  "kirche": "unklar",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://foerderdatenbank.d-s-e-e.de/foerderprogramme/umwelt-schecks"
+   ]
+  }
+ },
+ {
+  "id": "nw-denkmal-kirche",
+  "t": "Denkmalförderung NRW für Kirchen, Religionsgemeinschaften und Kommunen",
+  "g": "Ministerium für Heimat, Kommunales, Bau und Digitalisierung NRW",
+  "e": "Land",
+  "r": "NW",
+  "z": [
+   "kirche",
+   "kommune",
+   "verein"
+  ],
+  "th": [
+   "denkmal",
+   "bauen"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 30,
+  "ea": 70,
+  "max": 350000,
+  "frist": "laufend",
+  "url": "https://www.foerderdatenbank.de/FDB/Content/DE/Foerderprogramm/Land/NRW/denkmalpflege-denkmalschutz-kirche-kommune.html",
+  "urlOk": true,
+  "hin": "Zuschuss in der Regel 30 % der denkmalbedingten Ausgaben, grundsätzlich höchstens 350.000 €; Ausnahmen möglich. Für Instandsetzung, Sicherung, Fenster, Fassaden, Dächer, Dokumentation. Kein Rechtsanspruch.",
+  "kirche": "ja",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.foerderdatenbank.de/FDB/Content/DE/Foerderprogramm/Land/NRW/denkmalpflege-denkmalschutz-kirche-kommune.html"
+   ]
+  }
+ },
+ {
+  "id": "bw-denkmalfoerderung",
+  "t": "Denkmalförderung Baden-Württemberg",
+  "g": "Landesamt für Denkmalpflege im Regierungspräsidium Stuttgart",
+  "e": "Land",
+  "r": "BW",
+  "z": [
+   "privat",
+   "kirche",
+   "kommune",
+   "verein"
+  ],
+  "th": [
+   "denkmal",
+   "bauen"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 50,
+  "ea": 50,
+  "max": 500000,
+  "frist": "Antrag vor Maßnahmebeginn",
+  "url": "https://www.foerderdatenbank.de/FDB/Content/DE/Foerderprogramm/Land/Baden-Wuerttemberg/erhaltung-pflege-kulturdenkmale-denkmalfoerderung.html",
+  "urlOk": true,
+  "hin": "Privatpersonen 50 %, Gemeinden, Kirchen und sonstige Religionsgemeinschaften 33,3 % der zuwendungsfähigen Ausgaben, höchstens 500.000 € je Objekt und Jahr. Bagatellgrenze 3.000 € (Private) bzw. 30.000 € (Kirchen, Kommunen).",
+  "kirche": "ja",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.foerderdatenbank.de/FDB/Content/DE/Foerderprogramm/Land/Baden-Wuerttemberg/erhaltung-pflege-kulturdenkmale-denkmalfoerderung.html"
+   ]
+  }
+ },
+ {
+  "id": "koeln-staedtepartnerschaft",
+  "t": "Köln: Förderung von Städtepartnerschaftsprojekten",
+  "g": "Stadt Köln",
+  "e": "Kreis/Stadt",
+  "r": "NW",
+  "ort": [
+   "Köln"
+  ],
+  "z": [
+   "verein",
+   "kirche"
+  ],
+  "th": [
+   "international",
+   "kultur",
+   "jugend"
+  ],
+  "a": "zuschuss",
+  "rz": "nein",
+  "q": 80,
+  "ea": 20,
+  "max": 3000,
+  "frist": "Ausschreibung 2026",
+  "url": "https://www.stadt-koeln.de/artikel/05566/index.html",
+  "urlOk": true,
+  "hin": "Bis 80 % der Projektkosten, höchstens 3.000 € (gemeinsame Anträge bis 6.000 €). Antragsberechtigt: gemeinnützige ehrenamtliche Vereine und Initiativen, Bildungseinrichtungen sowie Kirchengemeinden mit Sitz in Köln. Beispiel für eine kommunale Förderung.",
+  "kirche": "ja",
+  "quelle": "geprueft",
+  "pruef": {
+   "datum": "2026-09-29",
+   "belege": [
+    "https://www.stadt-koeln.de/artikel/05566/index.html"
+   ]
+  }
+ }
+]

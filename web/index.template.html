@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Für den eigenen Server: content="/api" eintragen, dann sind Nutzerkonten und Sync aktiv -->
+<meta name="api-base" content="">
+<!--PWA-->
+<title>Fördernavi – Förderungen finden, beantragen, verwalten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F8FA;--surface:#FFFFFF;--ink:#16324F;--muted:#4F5C6A;--line:#D5DDE5;
+  --grant:#1D6A49;--grant-soft:#E3F2EA;--own:#8A5A05;--own-soft:#F8EEDC;--loan:#4B4196;--loan-soft:#ECE9F8;
+  --unknown:#9AA6B2;--focus:#1454B8;--danger:#A3221B;
+  --r-sm:6px;--r-lg:14px;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0E1822;--surface:#142230;--ink:#E4ECF3;--muted:#9AABBA;--line:#2A3B4C;
+  --grant:#4DB688;--grant-soft:#18392B;--own:#E1A640;--own-soft:#3A2E14;--loan:#A097E6;--loan-soft:#2A2645;--unknown:#5E6C7A;--focus:#6EA8FF;--danger:#F2877F;}}
+:root[data-theme="dark"]{--paper:#0E1822;--surface:#142230;--ink:#E4ECF3;--muted:#9AABBA;--line:#2A3B4C;
+  --grant:#4DB688;--grant-soft:#18392B;--own:#E1A640;--own-soft:#3A2E14;--loan:#A097E6;--loan-soft:#2A2645;--unknown:#5E6C7A;--focus:#6EA8FF;--danger:#F2877F;}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 var(--body)}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0 0 .4em}
+h1{font-size:clamp(1.9rem,5vw,2.8rem);font-weight:800;letter-spacing:-.01em}
+h2{font-size:1.45rem;font-weight:800}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0 0 .8em;max-width:68ch}
+a{color:var(--focus)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:6px 14px;min-height:58px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.brand{font-family:var(--display);font-weight:800;font-size:1.25rem;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.brand svg{flex:none}
+nav.tabs{display:flex;gap:4px;margin-left:auto;overflow-x:auto;max-width:100%}
+@media (max-width:760px){nav.tabs{margin-left:0;width:100%}}
+nav.tabs button{border:0;background:none;padding:8px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;color:var(--muted);font-weight:700}
+nav.tabs button[aria-current="page"]{background:var(--ink);color:var(--surface)}
+nav.tabs .count{display:inline-block;min-width:1.4em;margin-left:4px;font-size:.8em;opacity:.8}
+main{padding:28px 0 64px}
+section.view{display:none}section.view.on{display:block}
+.intro{margin-bottom:22px}
+.intro p{color:var(--muted);font-size:1.05rem}
+.steps{display:flex;gap:6px;margin:0 0 18px;padding:0;list-style:none;flex-wrap:wrap}
+.steps li button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--muted)}
+.steps li button[aria-current="step"]{border-color:var(--ink);color:var(--ink);font-weight:700}
+.steps li button.done{color:var(--grant);border-color:var(--grant)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:var(--r-sm);padding:9px 14px;cursor:pointer;text-align:left}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.chip small{display:block;font-size:.8rem;opacity:.75}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;flex:1 1 220px;margin:8px 0}
+.field label{font-weight:700;font-size:.93rem}
+.field .help{font-size:.85rem;color:var(--muted)}
+input[type=text],input[type=number],input[type=email],input[type=password],input[type=date],select,textarea{border:1.5px solid var(--line);background:var(--paper);border-radius:var(--r-sm);padding:9px 11px;width:100%}
+textarea{min-height:90px;resize:vertical}
+.check{display:flex;gap:10px;align-items:flex-start;margin:8px 0;cursor:pointer}
+.check input{width:20px;height:20px;margin-top:2px;flex:none}
+.btn{border:0;border-radius:var(--r-sm);padding:10px 16px;font-weight:700;cursor:pointer;background:var(--ink);color:var(--surface)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.small{padding:6px 11px;font-size:.9rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.nav-btns{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.results-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:26px 0 10px;flex-wrap:wrap}
+.results-head .sum{color:var(--muted)}
+.search{margin:0 0 14px}
+.list{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 18px 14px}
+.card .meta{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.tag{font-size:.8rem;padding:2px 8px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--muted)}
+.tag.grant{background:var(--grant-soft);border-color:transparent;color:var(--grant);font-weight:700}
+.tag.loan{background:var(--loan-soft);border-color:transparent;color:var(--loan);font-weight:700}
+.tag.warn{background:var(--own-soft);border-color:transparent;color:var(--own)}
+.card h3{margin-bottom:2px}
+.card .giver{color:var(--muted);margin:0 0 10px;font-size:.95rem}
+/* Finanzierungsbalken: das zentrale Element */
+.fin{margin:12px 0}
+.bar{display:flex;height:16px;border-radius:4px;overflow:hidden;background:repeating-linear-gradient(135deg,var(--line) 0 6px,transparent 6px 12px);border:1px solid var(--line)}
+.bar .g{background:var(--grant)}.bar .o{background:#C98A1A}.bar .l{background:var(--loan)}
+.fin .legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin-top:6px}
+.fin .legend b{font-variant-numeric:tabular-nums}
+.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:baseline}
+.card .hint{font-size:.95rem;margin:8px 0}
+.card .src{font-size:.82rem;color:var(--muted);margin:6px 0 10px}
+.card .actions{display:flex;flex-wrap:wrap;gap:8px}
+.empty{padding:26px;border:1.5px dashed var(--line);border-radius:var(--r-lg);color:var(--muted)}
+.more-sources{margin-top:26px}
+.more-sources ul{padding-left:1.2em}
+.kanban{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.col h3{display:flex;justify-content:space-between}
+.col .items{display:flex;flex-direction:column;gap:10px}
+.app{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+.app .due{font-size:.88rem;color:var(--muted)}
+.app .due.soon{color:var(--danger);font-weight:700}
+details.editor{margin-top:8px}
+details.editor summary{cursor:pointer;font-weight:700;font-size:.92rem}
+.log{font-size:.9rem;border-left:3px solid var(--line);padding-left:10px;margin:6px 0}
+.out{white-space:pre-wrap;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;margin:8px 0;font-size:.97rem}
+.note{font-size:.9rem;color:var(--muted)}
+.notice{background:var(--own-soft);color:var(--ink);border-radius:var(--r-sm);padding:10px 14px;font-size:.93rem;margin:10px 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.donate button{margin:4px 8px 4px 0}
+footer{border-top:1px solid var(--line);padding:18px 0 30px;color:var(--muted);font-size:.9rem}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.tablewrap{overflow-x:auto}
+fieldset.srcfilter{border:1px solid var(--line);border-radius:var(--r-lg);padding:8px 14px 4px;margin:0 0 12px}
+fieldset.srcfilter legend{font-weight:700;font-size:.93rem;padding:0 4px}
+.meld{border-top:1px solid var(--line);padding:12px 0}
+.tag.ok{background:var(--grant-soft);color:var(--grant);border-color:transparent}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="5" y="15" width="10" height="5" rx="1" fill="#2B7A57"/><rect x="15" y="15" width="6" height="5" rx="1" fill="#B97A10"/><path d="M6 10h14M13 5l7 5-7 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Fördernavi</div>
+  <nav class="tabs" aria-label="Hauptmenü">
+    <button data-view="finden" aria-current="page">Finden</button>
+    <button data-view="merkliste">Merkliste<span class="count" id="cMerk"></span></button>
+    <button data-view="antraege">Anträge<span class="count" id="cApp"></span></button>
+    <button data-view="texte">Texte</button>
+    <button data-view="konto">Konto &amp; KI</button>
+    <button data-view="redaktion" id="navRed" hidden>Redaktion</button>
+    <button data-view="impressum">Impressum</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+<!-- FINDEN -->
+<section class="view on" id="v-finden">
+  <div class="intro">
+    <h1>Welche Förderung passt zu Ihrem Vorhaben?</h1>
+    <p>Vier kurze Fragen, dann sehen Sie passende Programme mit Förderquote, Eigenanteil und Rückzahlungspflicht auf einen Blick.</p>
+  </div>
+  <ol class="steps" id="steps"></ol>
+  <div class="panel" id="stepPanel"></div>
+
+  <div class="results-head">
+    <h2 id="resTitle">Passende Programme</h2>
+    <span class="sum" id="resSum"></span>
+  </div>
+  <fieldset class="srcfilter"><legend>Datenquellen</legend><div class="chips" id="srcChips"></div><label class="check"><input type="checkbox" id="hideExpired" checked><span>Abgelaufene Fristen ausblenden</span></label></fieldset>
+  <div class="search field"><label for="q">In den Ergebnissen suchen</label><input type="text" id="q" placeholder="z. B. Wärmepumpe, Jugendfreizeit, Beratung"></div>
+  <div class="list" id="results"></div>
+
+  <div class="more-sources panel">
+    <h3>Nicht fündig geworden?</h3>
+    <p>Diese Datenbank ist im Aufbau. Direkt in den großen Quellen weitersuchen:</p>
+    <ul>
+      <li><a href="https://www.foerderdatenbank.de/" target="_blank" rel="noopener">Förderdatenbank des Bundes</a> – Bund, Länder, EU</li>
+      <li><a href="https://foerderdatenbank.d-s-e-e.de/" target="_blank" rel="noopener">Förderdatenbank der DSEE</a> – Engagement, Ehrenamt, Stiftungen, Preise</li>
+      <li><a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/support/apis" target="_blank" rel="noopener">EU Funding &amp; Tenders Portal</a></li>
+    </ul>
+    <details class="editor"><summary>Förderung melden, die hier fehlt</summary>
+      <p class="note">Besonders gesucht: Förderungen von Kreisen, Städten, Gemeinden und örtlichen Stiftungen. Kommunen können ein Partnerkonto bekommen – Kontakt über das Impressum.</p>
+      <div class="grid2">
+        <div class="field"><label for="mTitel">Name des Programms *</label><input type="text" id="mTitel" required></div>
+        <div class="field"><label for="mGeber">Fördergeber</label><input type="text" id="mGeber"></div>
+        <div class="field"><label for="mEbene">Ebene</label><select id="mEbene"><option>Kreis/Stadt</option><option>Land</option><option>Bund</option><option>EU</option><option>Stiftung</option><option>Lotterie</option></select></div>
+        <div class="field"><label for="mLand">Bundesland</label><select id="mLand"><option value="">–</option></select></div>
+        <div class="field"><label for="mOrt">Kreis oder Stadt</label><input type="text" id="mOrt"></div>
+        <div class="field"><label for="mArt">Art</label><select id="mArt"><option value="zuschuss">Zuschuss</option><option value="darlehen">Darlehen</option><option value="pauschale">Pauschale</option><option value="kombination">Zuschuss + Darlehen</option></select></div>
+        <div class="field"><label for="mQuote">Förderquote in % (falls bekannt)</label><input type="number" id="mQuote" min="0" max="100"></div>
+        <div class="field"><label for="mEA">Eigenanteil in % (falls bekannt)</label><input type="number" id="mEA" min="0" max="100"></div>
+        <div class="field"><label for="mMax">Höchstbetrag in €</label><input type="number" id="mMax" min="0"></div>
+        <div class="field"><label for="mFrist">Frist</label><input type="text" id="mFrist" placeholder="z. B. 31.03.2027 oder laufend"></div>
+        <div class="field"><label for="mUrl">Link zur offiziellen Seite *</label><input type="text" id="mUrl" placeholder="https://"></div>
+      </div>
+      <div class="field"><label for="mText">Kurzbeschreibung</label><textarea id="mText"></textarea></div>
+      <button class="btn" id="mSend">Förderung melden</button>
+      <p class="note" id="mNote" role="status">Meldungen werden vor der Veröffentlichung von der Redaktion geprüft.</p>
+    </details>
+
+  </div>
+</section>
+
+<!-- MERKLISTE -->
+<section class="view" id="v-merkliste">
+  <h1>Merkliste</h1>
+  <p class="note" id="storeNote1"></p>
+  <div class="list" id="merkList"></div>
+</section>
+
+<!-- ANTRÄGE -->
+<section class="view" id="v-antraege">
+  <h1>Anträge verwalten</h1>
+  <p>Jeder Antrag hat Status, Fristen, Checkliste und ein Kontaktprotokoll. Fristen lassen sich in den Kalender übernehmen.</p>
+  <div class="row" style="margin-bottom:16px">
+    <button class="btn ghost small" id="appNew">Antrag ohne Programm anlegen</button>
+    <button class="btn ghost small" id="exportAll">Alle Daten exportieren</button>
+    <label class="btn ghost small" for="importFile" style="display:inline-block">Daten importieren</label><input type="file" id="importFile" accept="application/json" class="sr">
+  </div>
+  <div class="kanban" id="kanban"></div>
+</section>
+
+<!-- TEXTE -->
+<section class="view" id="v-texte">
+  <h1>Antragstexte erstellen</h1>
+  <p>Füllen Sie die Felder aus. Das Werkzeug erzeugt eine Projektbeschreibung, ein Anschreiben und eine Kontaktanfrage an die Förderstelle. Alles funktioniert ohne KI; die KI-Überarbeitung ist optional.</p>
+  <div class="panel">
+    <div class="grid2">
+      <div class="field"><label for="tProg">Förderprogramm</label><select id="tProg"></select></div>
+      <div class="field"><label for="tOrg">Antragsteller (Name, Verein, Gemeinde)</label><input type="text" id="tOrg"></div>
+      <div class="field"><label for="tPerson">Ansprechperson</label><input type="text" id="tPerson"></div>
+      <div class="field"><label for="tTitel">Projekttitel</label><input type="text" id="tTitel"></div>
+    </div>
+    <div class="field"><label for="tLage">Ausgangslage – welches Problem oder welcher Bedarf besteht?</label><textarea id="tLage"></textarea></div>
+    <div class="field"><label for="tZiel">Ziel – was soll am Ende anders sein?</label><textarea id="tZiel"></textarea></div>
+    <div class="grid2">
+      <div class="field"><label for="tGruppe">Zielgruppe und Anzahl erreichter Personen</label><input type="text" id="tGruppe"></div>
+      <div class="field"><label for="tZeit">Zeitraum</label><input type="text" id="tZeit" placeholder="z. B. 01.03.–30.11.2027"></div>
+    </div>
+    <div class="field"><label for="tMass">Maßnahmen – was genau wird getan?</label><textarea id="tMass"></textarea></div>
+    <div class="grid2">
+      <div class="field"><label for="tKosten">Gesamtkosten in €</label><input type="number" id="tKosten" min="0"></div>
+      <div class="field"><label for="tEigen">Eigenanteil in €</label><input type="number" id="tEigen" min="0"><span class="help">Eigenmittel, Spenden, Eigenleistung – je nach Programm zulässig.</span></div>
+    </div>
+    <button class="btn" id="tGen">Texte erzeugen</button>
+  </div>
+  <div id="tOut"></div>
+</section>
+
+<!-- KONTO & KI -->
+<section class="view" id="v-konto">
+  <h1>Konto und KI</h1>
+  <div class="grid2">
+    <div class="panel" id="kontoPanel"></div>
+    <div class="panel">
+      <h2>KI-Unterstützung (optional)</h2>
+      <p>Die Plattform funktioniert vollständig ohne KI. Wer möchte, kann Texte zusätzlich von einer KI überarbeiten lassen.</p>
+      <div class="field"><label for="kiProv">Anbieter</label>
+        <select id="kiProv">
+          <option value="aus">Aus</option>
+          <option value="claudeai">Claude (in claude.ai, ohne Schlüssel)</option>
+          <option value="anthropic">Claude über eigenen API-Schlüssel</option>
+          <option value="openai">ChatGPT über eigenen API-Schlüssel</option>
+        </select></div>
+      <div id="kiKeyBox" hidden>
+        <div class="field"><label for="kiKey">API-Schlüssel</label><input type="password" id="kiKey" autocomplete="off"><span class="help">Wird nur für diese Browsersitzung gespeichert und direkt an den Anbieter gesendet, nie an unseren Server.</span></div>
+        <div class="field"><label for="kiModel">Modellname</label><input type="text" id="kiModel"><span class="help">Aktuelle Modellnamen stehen in der Dokumentation des Anbieters.</span></div>
+      </div>
+      <p class="note" id="kiState"></p>
+      <p class="notice">Keine personenbezogenen Daten Dritter eingeben. Texte, die an eine KI gehen, verarbeitet der jeweilige Anbieter.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REDAKTION -->
+<section class="view" id="v-redaktion">
+  <h1>Redaktion</h1>
+  <div class="grid2">
+    <div class="panel"><h2>Übersicht</h2><div id="redStat"></div><button class="btn" id="redImport">Import jetzt starten</button><p class="note" id="redImportNote" role="status"></p></div>
+    <div class="panel"><h2>Datenquellen</h2><p class="note">Ausgeschaltete Quellen werden beim nächsten Import nicht abgerufen. DSEE erst nach Freigabe durch die DSEE einschalten.</p><div id="redQuellen"></div></div>
+  </div>
+  <div class="panel" style="margin-top:16px"><h2>Website hinzufügen (Kreis, Stadt, Stiftung)</h2>
+    <div class="grid2">
+      <div class="field"><label for="wName">Kurzname (a–z, 0–9, -)</label><input type="text" id="wName" placeholder="stadt-musterstadt"></div>
+      <div class="field"><label for="wStart">Startseite der Förderübersicht</label><input type="text" id="wStart" placeholder="https://"></div>
+      <div class="field"><label for="wMuster">Linkmuster der Detailseiten (Regex)</label><input type="text" id="wMuster" placeholder="/foerderung/.+"></div>
+      <div class="field"><label for="wOrt">Ort</label><input type="text" id="wOrt"></div>
+      <div class="field"><label for="wGeber">Fördergeber</label><input type="text" id="wGeber"></div>
+      <div class="field"><label for="wLand">Bundesland (Name)</label><input type="text" id="wLand" placeholder="Nordrhein-Westfalen"></div>
+    </div><button class="btn" id="wAdd">Website anlegen</button><p class="note" id="wNote" role="status">Das Linkmuster findet man auf dem Server mit: python -m importer.run --probe-url &lt;Startseite&gt;</p></div>
+  <div class="panel" style="margin-top:16px"><h2>Meldungen prüfen</h2><div id="redMeld"></div></div>
+  <div class="panel" style="margin-top:16px"><h2>Eintrag korrigieren oder als geprüft markieren</h2>
+    <div class="field"><label for="kSuche">Eintrag suchen</label><input type="text" id="kSuche" placeholder="Titel eingeben"></div><div id="kTreffer"></div><div id="kForm"></div></div>
+  <div class="panel" style="margin-top:16px"><h2>Rollen vergeben</h2><p class="note">„Kommune“ ist ein Partnerkonto einer Verwaltung; deren Meldungen werden markiert und vorrangig geprüft.</p>
+    <div class="grid2"><div class="field"><label for="rMail">E-Mail des Kontos</label><input type="email" id="rMail"></div>
+    <div class="field"><label for="rRolle">Rolle</label><select id="rRolle"><option value="nutzer">Nutzer</option><option value="kommune">Kommune (Partner)</option><option value="redaktion">Redaktion</option></select></div>
+    <div class="field"><label for="rOrt">Ort (bei Kommune)</label><input type="text" id="rOrt"></div></div>
+    <button class="btn" id="rSet">Rolle speichern</button><p class="note" id="rNote" role="status"></p></div>
+</section>
+
+<!-- IMPRESSUM -->
+<section class="view" id="v-impressum">
+  <h1>Impressum</h1>
+  <div class="grid2">
+    <div class="panel">
+      <h2>Anbieter</h2>
+      <p>[Name / Organisation]<br>[Straße Hausnummer]<br>[PLZ Ort]</p>
+      <p>E-Mail: [kontakt@example.org]<br>Telefon: [optional]</p>
+      <p>Verantwortlich für den Inhalt: [Name, Anschrift]</p>
+      <p class="note">Platzhalter – vor Veröffentlichung nach § 5 DDG und § 18 MStV vollständig ausfüllen.</p>
+    </div>
+    <div class="panel donate">
+      <h2>Unterstützen</h2>
+      <p>Fördernavi ist kostenlos und werbefrei. Spenden helfen, die Daten aktuell zu halten.</p>
+      <button class="btn" disabled data-pay="paypal">PayPal – in Vorbereitung</button>
+      <button class="btn ghost" disabled data-pay="weitere">Weitere Anbieter – in Vorbereitung</button>
+      <p style="margin-top:12px">Überweisung:<br>Kontoinhaber: [Name]<br>IBAN: [DE00 0000 0000 0000 0000 00]<br>Verwendungszweck: Spende Fördernavi</p>
+      <p class="note">Spendenquittungen sind nur möglich, wenn der Betreiber als gemeinnützig anerkannt ist.</p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:16px">
+    <h2>Datenquellen und Lizenzen</h2>
+    <p>Daten aus der Förderdatenbank des Bundes stehen unter CC BY 4.0. Quelle: Förderdatenbank des Bundes, Bundesministerium für Wirtschaft und Energie, <a href="https://www.foerderdatenbank.de/" target="_blank" rel="noopener">foerderdatenbank.de</a>.</p>
+    <p>Kennzeichnung jedes Eintrags: <b>geprüft</b> = gegen offizielle Quelle abgeglichen; <b>Import</b> = automatisch aus offizieller Schnittstelle; <b>KI-Wissen, ungeprüft</b> = Startdaten aus dem Wissen eines Sprachmodells, können veraltet oder falsch sein; <b>Platzhalter</b> = Hinweis auf eine Förderart, die es örtlich oft gibt.</p>
+    <h2>Haftung</h2>
+    <p>Alle Angaben ohne Gewähr. Maßgeblich sind allein die Förderrichtlinie und der Bescheid des Fördergebers. Fördernavi ist keine Rechts- oder Steuerberatung.</p>
+    <h2>Datenschutz</h2>
+    <p>[Platzhalter für die Datenschutzerklärung.] Ohne Konto bleiben Merkliste und Anträge nur in diesem Browser gespeichert.</p>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Fördernavi · <span id="stand"></span> · <a href="#" data-goto="impressum">Impressum und Spenden</a></div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const SEED = /*SEED_DATA*/[];
+const META = /*META*/{};
+const API = (document.querySelector('meta[name="api-base"]')||{}).content||"";
+
+const LAENDER={BW:"Baden-Württemberg",BY:"Bayern",BE:"Berlin",BB:"Brandenburg",HB:"Bremen",HH:"Hamburg",HE:"Hessen",MV:"Mecklenburg-Vorpommern",NI:"Niedersachsen",NW:"Nordrhein-Westfalen",RP:"Rheinland-Pfalz",SL:"Saarland",SN:"Sachsen",ST:"Sachsen-Anhalt",SH:"Schleswig-Holstein",TH:"Thüringen"};
+const WER=[["privat","Privatperson"],["gruender","Gründer:in"],["selbststaendig","Selbstständig"],["kmu","Kleines/mittleres Unternehmen"],["verein","Verein / gemeinnützige Organisation"],["kirche","Kirche / Freikirche"],["kommune","Kommune"],["studierende","Schüler:in / Studierende"]];
+const THEMEN=[["gruendung","Gründung"],["energie","Energie & Heizung"],["bauen","Bauen & Sanieren"],["bildung","Bildung & Weiterbildung"],["soziales","Soziales"],["inklusion","Inklusion"],["ehrenamt","Ehrenamt"],["jugend","Jugendarbeit"],["kultur","Kultur & Heimat"],["sport","Sport"],["umwelt","Umwelt & Natur"],["demokratie","Demokratie"],["digital","Digitalisierung"],["forschung","Forschung & Innovation"],["beratung","Beratung"],["denkmal","Denkmal"],["laendlich","Ländlicher Raum"],["international","International"],["lebensunterhalt","Lebensunterhalt"]];
+const ART={zuschuss:"Zuschuss",pauschale:"Pauschale",stipendium:"Stipendium",sozialleistung:"Sozialleistung",darlehen:"Darlehen",kombination:"Zuschuss + Darlehen",buergschaft:"Bürgschaft",beteiligung:"Beteiligung"};
+const QUELLE={ki:"KI-Wissen, ungeprüft",geprueft:"geprüft",teilgeprueft:"teilweise geprüft",import:"Import aus offizieller Schnittstelle",platzhalter:"Platzhalter",meldung:"Nutzermeldung, ungeprüft",scrape:"automatisch von Website gelesen, ungeprüft"};
+const STATUS=[["idee","Idee"],["vorbereitung","In Vorbereitung"],["eingereicht","Eingereicht"],["bewilligt","Bewilligt"],["nachweis","Verwendungsnachweis"],["abgeschlossen","Abgeschlossen"],["abgelehnt","Abgelehnt"]];
+const CHECK=["Förderrichtlinie vollständig gelesen","Antragsberechtigung geprüft","Nicht vor Bewilligung mit dem Projekt beginnen (vorzeitiger Maßnahmebeginn)","Kosten- und Finanzierungsplan erstellt","Eigenanteil gesichert","Nachweis der Gemeinnützigkeit (falls Verein/Kirche)","Satzung / Registerauszug","Angebote oder Kostenvoranschläge","Projektbeschreibung","Kontakt zur Förderstelle aufgenommen","Antrag eingereicht (Datum notieren)","Bewilligungsbescheid abgelegt","Frist für Verwendungsnachweis notiert"];
+
+let DATA=SEED.slice();
+const SRC=[["basis","Geprüfte Grunddaten"],["fdb","Förderdatenbank des Bundes"],["eu_sedia","EU Funding & Tenders"],["dsee","DSEE"],["web","Websites (Kreise, Städte, Stiftungen)"],["meldung","Geprüfte Meldungen"]];
+const srcOf=p=>p.id.startsWith("meldung-")?"meldung":!p.src?"basis":["fdb","eu_sedia","dsee"].includes(p.src)?p.src:"web";
+const srcOn=new Set(SRC.map(x=>x[0]));
+const HEUTE=new Date().toISOString().slice(0,10);
+const isoFrist=f=>/^\d{4}-\d{2}-\d{2}$/.test(f||"");
+const fmtFrist=f=>isoFrist(f)?new Date(f+"T00:00:00").toLocaleDateString("de-DE"):f;
+const norm=t=>(t||"").toLowerCase().replace(/[^a-zäöüß0-9]/g,"");
+const S={step:0,wer:null,land:"",ort:"",themen:new Set(),art:"alle",ohneRueck:false,ea:"egal",unbekannt:true,kosten:"",nurKirche:false,q:""};
+
+/* ---------- Speicher ---------- */
+const KEY="fordernavi:v1";
+let store={merk:[],apps:[],meldungen:[]};
+let storageOk=true;
+function load(){try{const r=localStorage.getItem(KEY);if(r)store=Object.assign(store,JSON.parse(r));}catch(e){storageOk=false;}}
+let syncTimer=null;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){storageOk=false;}
+  if(API&&token()){clearTimeout(syncTimer);syncTimer=setTimeout(pushState,800);}
+  counts();}
+function token(){try{return localStorage.getItem(KEY+":token")||"";}catch(e){return "";}}
+function setToken(t){try{t?localStorage.setItem(KEY+":token",t):localStorage.removeItem(KEY+":token");}catch(e){}}
+async function api(path,opt={}){const h={"Content-Type":"application/json"};if(token())h.Authorization="Bearer "+token();
+  const r=await fetch(API+path,Object.assign({headers:h},opt));const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.detail||("Fehler "+r.status));return j;}
+async function pushState(){try{await api("/state",{method:"PUT",body:JSON.stringify({merk:store.merk,apps:store.apps})});}catch(e){toast("Sync fehlgeschlagen: "+e.message);}}
+async function pullState(){try{const j=await api("/state");if(j&&j.apps){store.merk=j.merk||[];store.apps=j.apps||[];save();renderAll();}}catch(e){}}
+
+/* ---------- Hilfen ---------- */
+const $=s=>document.querySelector(s);
+function el(tag,attrs={},...kids){const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==="class")e.className=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else if(v===true)e.setAttribute(k,"");else if(v!==false&&v!=null)e.setAttribute(k,v);}for(const k of kids.flat()){if(k==null||k===false)continue;e.append(k.nodeType?k:document.createTextNode(String(k)));}return e;}
+const eur=n=>n==null?"–":new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(n);
+function toast(t){const x=$("#toast");x.textContent=t;x.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>x.classList.remove("on"),2600);}
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+const byId=id=>DATA.find(p=>p.id===id);
+
+/* ---------- Downloads (claude.ai-Capability oder normaler Browser) ---------- */
+let dl=null;
+async function download(filename,data,type){
+  if(dl){try{await dl.save({filename,data});return;}catch(e){toast("Download abgebrochen");return;}}
+  const url=URL.createObjectURL(new Blob([data],{type}));const a=el("a",{href:url,download:filename});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+
+/* ---------- Assistent ---------- */
+const STEPS=["Wer","Wo","Was","Bedingungen"];
+function renderSteps(){const ol=$("#steps");ol.replaceChildren(...STEPS.map((n,i)=>el("li",{},el("button",{type:"button","aria-current":S.step===i?"step":false,class:stepDone(i)?"done":"",onclick:()=>{S.step=i;renderStep();}},`${i+1}. ${n}`))));}
+function stepDone(i){return (i===0&&S.wer)||(i===1&&S.land)||(i===2&&S.themen.size)||(i===3&&(S.ohneRueck||S.ea!=="egal"||S.art!=="alle"));}
+function chip(label,pressed,on,sub){return el("button",{type:"button",class:"chip","aria-pressed":pressed?"true":"false",onclick:on},label,sub?el("small",{},sub):null);}
+function renderStep(){
+  renderSteps();const p=$("#stepPanel");p.replaceChildren();
+  if(S.step===0){p.append(el("h2",{},"Für wen ist die Förderung?"),el("div",{class:"chips"},WER.map(([k,l])=>chip(l,S.wer===k,()=>{S.wer=S.wer===k?null:k;renderStep();update();}))));
+    if(S.wer==="kirche")p.append(el("p",{class:"notice"},"Einschätzung: Öffentliche Programme schließen religiöse Verkündigung meist aus. Soziale, diakonische, kulturelle, bauliche und Jugendprojekte sind dagegen oft förderfähig. Programme mit bekanntem Ausschluss werden ausgeblendet."));}
+  if(S.step===1){const sel=el("select",{id:"land",onchange:e=>{S.land=e.target.value;update();renderSteps();}},el("option",{value:""},"Bundesland wählen"),Object.entries(LAENDER).map(([k,v])=>el("option",{value:k,selected:S.land===k},v)));
+    p.append(el("h2",{},"Wo findet das Vorhaben statt?"),el("div",{class:"row"},el("div",{class:"field"},el("label",{for:"land"},"Bundesland"),sel),el("div",{class:"field"},el("label",{for:"ort"},"Kreis oder Stadt (optional)"),el("input",{type:"text",id:"ort",value:S.ort,oninput:e=>{S.ort=e.target.value;update();}}),el("span",{class:"help"},"Für örtliche Programme. Die kommunale Ebene ist noch lückenhaft."))));}
+  if(S.step===2){p.append(el("h2",{},"Was soll gefördert werden?"),el("p",{class:"note"},"Mehrfachauswahl möglich. Ohne Auswahl werden alle Themen gezeigt."),el("div",{class:"chips"},THEMEN.map(([k,l])=>chip(l,S.themen.has(k),()=>{S.themen.has(k)?S.themen.delete(k):S.themen.add(k);renderStep();update();}))));}
+  if(S.step===3){
+    p.append(el("h2",{},"Welche Bedingungen?"),
+      el("h3",{},"Art der Förderung"),
+      el("div",{class:"chips"},[["alle","Alle"],["geschenkt","Nur ohne Rückzahlung","Zuschuss, Pauschale, Stipendium"],["darlehen","Nur Darlehen"],["kombination","Zuschuss + Darlehen"]].map(([k,l,s])=>chip(l,S.art===k,()=>{S.art=k;S.ohneRueck=(k==="geschenkt");renderStep();update();},s))),
+      el("h3",{style:"margin-top:16px"},"Eigenanteil – wie viel können Sie selbst tragen?"),
+      el("div",{class:"chips"},[["egal","Egal"],["0","Kein Eigenanteil","100 % gefördert"],["10","bis 10 %"],["20","bis 20 %"],["30","bis 30 %"],["50","bis 50 %"],["80","bis 80 %"]].map(([k,l,s])=>chip(l,S.ea===k,()=>{S.ea=k;renderStep();update();},s))),
+      el("label",{class:"check"},el("input",{type:"checkbox",checked:S.unbekannt,onchange:e=>{S.unbekannt=e.target.checked;update();}}),el("span",{},"Programme mit unbekanntem Eigenanteil trotzdem zeigen (als „prüfen“ markiert)")),
+      el("div",{class:"row"},el("div",{class:"field"},el("label",{for:"kosten"},"Projektkosten in € (optional)"),el("input",{type:"number",id:"kosten",min:"0",value:S.kosten,oninput:e=>{S.kosten=e.target.value;update();}}),el("span",{class:"help"},"Dann rechnet jede Karte Förderbetrag und Eigenanteil in Euro aus."))));
+  }
+  p.append(el("div",{class:"nav-btns"},el("button",{class:"btn ghost",disabled:S.step===0,onclick:()=>{S.step--;renderStep();}},"Zurück"),
+    S.step<3?el("button",{class:"btn",onclick:()=>{S.step++;renderStep();}},"Weiter"):el("button",{class:"btn",onclick:()=>$("#resTitle").scrollIntoView({behavior:"smooth"})},"Ergebnisse ansehen")));
+}
+
+/* ---------- Filter ---------- */
+function match(p){
+  if(!srcOn.has(srcOf(p)))return false;
+  if($("#hideExpired")&&$("#hideExpired").checked&&isoFrist(p.frist)&&p.frist<HEUTE)return false;
+  if(p.ort&&p.ort.length&&S.ort&&!p.ort.some(o=>norm(S.ort).includes(norm(o))||norm(o).includes(norm(S.ort))))return false;
+  if(S.wer&&!p.z.includes(S.wer))return false;
+  if(S.wer==="kirche"&&p.kirche==="nein")return false;
+  if(!["DE","EU","lokal"].includes(p.r)&&S.land&&p.r!==S.land)return false;
+  if(S.themen.size&&!p.th.some(t=>S.themen.has(t)))return false;
+  if(S.ohneRueck&&p.rz!=="nein")return false;
+  if(S.art==="darlehen"&&p.a!=="darlehen")return false;
+  if(S.art==="kombination"&&p.a!=="kombination")return false;
+  if(S.ea!=="egal"){const lim=+S.ea;if(p.ea==null){if(!S.unbekannt)return false;}else if(p.ea>lim)return false;}
+  if(S.q){const t=(p.t+" "+p.g+" "+(p.hin||"")).toLowerCase();if(!S.q.toLowerCase().split(/\s+/).every(w=>t.includes(w)))return false;}
+  return true;}
+function rank(p){let s=0;if(p.rz==="nein")s+=30;if(p.ea===0)s+=20;else if(p.ea!=null)s+=10-p.ea/10;if(p.q!=null)s+=3;if(p.r===S.land)s+=8;if(p.ort&&S.ort)s+=12;if(isoFrist(p.frist)&&p.frist>=HEUTE)s+=2;if(p.r==="lokal")s-=4;if(p.quelle==="geprueft"||p.quelle==="import")s+=5;return -s;}
+let LIMIT=30;
+function update(more){if(!more)LIMIT=30;const res=DATA.filter(match).sort((a,b)=>rank(a)-rank(b));
+  $("#resSum").textContent=`${res.length} von ${DATA.length} Einträgen`;
+  const box=$("#results");box.replaceChildren();
+  if(!res.length){box.append(el("div",{class:"empty"},el("p",{},"Keine Programme erfüllen alle Bedingungen."),el("p",{},"Versuchen Sie einen höheren Eigenanteil, blenden Sie Programme mit unbekanntem Eigenanteil ein oder wählen Sie weniger Themen.")));return;}
+  res.slice(0,LIMIT).forEach(p=>box.append(card(p)));
+  if(res.length>LIMIT)box.append(el("button",{class:"btn ghost",onclick:()=>{LIMIT+=30;update(true);}},`Weitere ${Math.min(30,res.length-LIMIT)} von noch ${res.length-LIMIT} anzeigen`));}
+
+/* ---------- Karte mit Finanzierungsbalken ---------- */
+function finanz(p){
+  const k=+S.kosten||0;const loan=["darlehen","buergschaft","beteiligung"].includes(p.a);
+  let q=p.q,ea=p.ea;if(q==null&&ea!=null)q=100-ea;if(ea==null&&q!=null&&!loan)ea=100-q;
+  let gBetrag=null,eBetrag=null,capped=false;
+  if(k&&q!=null){gBetrag=k*q/100;if(p.max!=null&&gBetrag>p.max){gBetrag=p.max;capped=true;}eBetrag=k-gBetrag;}
+  const qPct=q==null?0:(gBetrag!=null&&k?gBetrag/k*100:q);const ePct=q==null?0:100-qPct;
+  const bar=el("div",{class:"bar",role:"img","aria-label":q==null?"Förderquote unbekannt":`${Math.round(qPct)} % ${loan?"Darlehen":"Förderung"}, ${Math.round(ePct)} % Eigenanteil`},
+    q!=null?el("div",{class:loan?"l":"g",style:`width:${qPct}%`}):null,q!=null&&ePct>0?el("div",{class:"o",style:`width:${ePct}%`}):null);
+  const leg=el("div",{class:"legend"});
+  if(q==null)leg.append(el("span",{},el("span",{class:"dot",style:"background:var(--unknown)"}),"Quote und Eigenanteil unbekannt – Richtlinie prüfen"));
+  else{leg.append(el("span",{},el("span",{class:"dot",style:`background:var(--${loan?"loan":"grant"})`}),loan?"Darlehen bis ":"Förderung bis ",el("b",{},Math.round(qPct)+" %"),gBetrag!=null?` = ${eur(gBetrag)}`:""),
+    el("span",{},el("span",{class:"dot",style:"background:var(--own)"}),"Eigenanteil ",el("b",{},Math.round(ePct)+" %"),eBetrag!=null?` = ${eur(eBetrag)}`:""));}
+  if(p.max!=null)leg.append(el("span",{},"Höchstbetrag ",el("b",{},eur(p.max))));
+  if(capped)leg.append(el("span",{style:"color:var(--own)"},"Höchstbetrag begrenzt die Förderung"));
+  return el("div",{class:"fin"},bar,leg);}
+function card(p,opts={}){
+  const inMerk=store.merk.includes(p.id);
+  const rzTag=p.rz==="nein"?el("span",{class:"tag grant"},"keine Rückzahlung"):p.rz==="ja"?el("span",{class:"tag loan"},"Rückzahlung"):el("span",{class:"tag warn"},"teilweise Rückzahlung");
+  const eaTag=p.ea===0?el("span",{class:"tag grant"},"ohne Eigenanteil"):p.ea==null?el("span",{class:"tag warn"},"Eigenanteil prüfen"):null;
+  const reg=p.r==="DE"?"bundesweit":p.r==="EU"?"EU-weit":p.r==="lokal"?(S.ort?`örtlich – in ${S.ort} prüfen`:"örtlich"):LAENDER[p.r]||p.r;
+  return el("article",{class:"card"},
+    el("div",{class:"meta"},el("span",{class:"tag"},p.e),el("span",{class:"tag"},ART[p.a]||p.a),rzTag,eaTag,el("span",{class:"tag"},p.ort&&p.ort.length?"nur "+p.ort.join(", "):reg)),
+    el("h3",{},p.t),el("p",{class:"giver"},p.g+(p.frist?` · Frist: ${fmtFrist(p.frist)}`:"")+(isoFrist(p.frist)&&p.frist<HEUTE?" (abgelaufen)":"")),
+    finanz(p),
+    p.hin?el("p",{class:"hint"},p.hin):null,
+    el("p",{class:"src"},"Datenstand: ",p.quelle==="geprueft"||p.quelle==="teilgeprueft"?el("span",{class:"tag ok"},QUELLE[p.quelle]):QUELLE[p.quelle]||p.quelle,
+      p.pruef?` am ${fmtFrist(p.pruef.datum)}${p.pruef.durch?" durch "+p.pruef.durch:""}`:"",
+      p.pruef&&p.pruef.belege&&p.pruef.belege.length?[" · Belege: ",...p.pruef.belege.flatMap((b,i)=>[i?", ":"",el("a",{href:b,target:"_blank",rel:"noopener","aria-label":"Beleg "+(i+1)+" zu "+p.t},String(i+1))])]:"",p.stand?` (${p.stand})`:"",p.auto?" · Quote/Eigenanteil automatisch aus dem Text gelesen":"",p.lizenz?` · Quelle: ${p.lizenz}`:"",p.url&&!p.urlOk&&p.quelle!=="import"?" · Link zur Startseite des Fördergebers, nicht aufgerufen":""),
+    el("div",{class:"actions"},
+      el("button",{class:"btn small"+(inMerk?" ghost":""),onclick:()=>{toggleMerk(p.id);}},inMerk?"Von Merkliste entfernen":"Merken"),
+      el("button",{class:"btn small ghost",onclick:()=>{newApp(p.id);}},"Antrag anlegen"),
+      el("button",{class:"btn small ghost",onclick:()=>{go("texte");$("#tProg").value=p.id;}},"Text vorbereiten"),
+      p.url?el("a",{class:"btn small ghost",href:p.url,target:"_blank",rel:"noopener"},p.src==="fdb"?"In der Förderdatenbank":"Offizielle Seite"):null,
+      p.offiziell?el("a",{class:"btn small ghost",href:p.offiziell,target:"_blank",rel:"noopener"},"Fördergeber"):null));}
+function toggleMerk(id){const i=store.merk.indexOf(id);i>=0?store.merk.splice(i,1):store.merk.push(id);save();toast(i>=0?"Von der Merkliste entfernt":"Gemerkt");update();renderMerk();}
+
+/* ---------- Merkliste ---------- */
+function renderMerk(){const b=$("#merkList");b.replaceChildren();const items=store.merk.map(byId).filter(Boolean);
+  if(!items.length)b.append(el("div",{class:"empty"},"Noch nichts gemerkt. Unter „Finden“ bei einem Programm auf „Merken“ tippen."));
+  items.forEach(p=>b.append(card(p)));
+  $("#storeNote1").textContent=API&&token()?"Mit Ihrem Konto synchronisiert.":storageOk?"Gespeichert in diesem Browser. Mit einem Konto auch auf anderen Geräten.":"Speichern im Browser ist hier nicht möglich – Daten gehen beim Schließen verloren. Bitte exportieren.";}
+
+/* ---------- Anträge ---------- */
+function newApp(pid){const p=pid?byId(pid):null;store.apps.push({id:uid(),pid:pid||null,titel:p?p.t:"Neuer Antrag",status:"idee",frist:"",nachweis:"",betrag:"",notiz:"",checks:{},log:[],created:new Date().toISOString()});save();go("antraege");toast("Antrag angelegt");}
+function daysTo(d){if(!d)return null;return Math.round((new Date(d+"T00:00:00")-new Date(new Date().toDateString()))/864e5);}
+function renderApps(){const k=$("#kanban");k.replaceChildren();
+  STATUS.forEach(([sk,sl])=>{const items=store.apps.filter(a=>a.status===sk);
+    if(!items.length&&["nachweis","abgeschlossen","abgelehnt"].includes(sk))return;
+    k.append(el("div",{class:"col"},el("h3",{},sl,el("span",{class:"note"},String(items.length))),el("div",{class:"items"},items.length?items.map(appCard):el("p",{class:"note"},"–"))));});
+  if(!store.apps.length)k.replaceChildren(el("div",{class:"empty"},"Noch keine Anträge. Legen Sie bei einem Programm „Antrag anlegen“ an."));}
+function appCard(a){const p=a.pid?byId(a.pid):null;const d=daysTo(a.frist);const done=CHECK.filter(c=>a.checks[c]).length;
+  const upd=(f,v)=>{a[f]=v;save();};
+  return el("div",{class:"app"},
+    el("strong",{},a.titel),p?el("div",{class:"note"},p.g):null,
+    a.frist?el("div",{class:"due"+(d!=null&&d<=14&&d>=0?" soon":"")},`Antragsfrist: ${new Date(a.frist).toLocaleDateString("de-DE")}`+(d!=null?(d>=0?` (in ${d} Tagen)`:" (abgelaufen)"):"")):null,
+    el("div",{class:"note"},`Checkliste ${done}/${CHECK.length}`),
+    el("details",{class:"editor"},el("summary",{},"Bearbeiten"),
+      el("div",{class:"field"},el("label",{},"Titel"),el("input",{type:"text",value:a.titel,onchange:e=>{upd("titel",e.target.value);renderApps();}})),
+      el("div",{class:"field"},el("label",{},"Status"),el("select",{onchange:e=>{upd("status",e.target.value);renderApps();}},STATUS.map(([k,l])=>el("option",{value:k,selected:a.status===k},l)))),
+      el("div",{class:"field"},el("label",{},"Antragsfrist"),el("input",{type:"date",value:a.frist,onchange:e=>{upd("frist",e.target.value);renderApps();}})),
+      el("div",{class:"field"},el("label",{},"Frist Verwendungsnachweis"),el("input",{type:"date",value:a.nachweis,onchange:e=>upd("nachweis",e.target.value)})),
+      el("div",{class:"field"},el("label",{},"Beantragter Betrag in €"),el("input",{type:"number",value:a.betrag,onchange:e=>upd("betrag",e.target.value)})),
+      el("div",{class:"field"},el("label",{},"Notizen"),el("textarea",{onchange:e=>upd("notiz",e.target.value)},a.notiz)),
+      el("h3",{},"Checkliste"),CHECK.map(c=>el("label",{class:"check"},el("input",{type:"checkbox",checked:!!a.checks[c],onchange:e=>{a.checks[c]=e.target.checked;save();}}),el("span",{},c))),
+      el("h3",{},"Kontaktprotokoll"),a.log.map(l=>el("div",{class:"log"},el("b",{},new Date(l.d).toLocaleDateString("de-DE")+" · "+l.art),el("div",{},l.text))),
+      logForm(a),
+      el("div",{class:"actions",style:"display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"},
+        el("button",{class:"btn small ghost",onclick:()=>ics(a)},"Fristen in Kalender"),
+        el("button",{class:"btn small ghost",onclick:()=>{go("texte");if(a.pid)$("#tProg").value=a.pid;}},"Texte erstellen"),
+        el("button",{class:"btn small ghost",style:"color:var(--danger)",onclick:()=>{if(confirm("Antrag löschen?")){store.apps=store.apps.filter(x=>x!==a);save();renderApps();}}},"Löschen"))));}
+function logForm(a){const art=el("select",{},["E-Mail","Telefon","Termin","Brief","Sonstiges"].map(x=>el("option",{},x)));const t=el("input",{type:"text",placeholder:"Was wurde besprochen?"});
+  return el("div",{class:"row"},el("div",{class:"field",style:"flex:0 1 130px"},art),el("div",{class:"field"},t),el("button",{class:"btn small",style:"margin:8px 0",onclick:()=>{if(!t.value.trim())return;a.log.push({d:new Date().toISOString(),art:art.value,text:t.value.trim()});save();renderApps();}},"Eintragen"));}
+function ics(a){const ev=[];const f=(d,t)=>{const x=d.replace(/-/g,"");ev.push(["BEGIN:VEVENT","UID:"+a.id+t.length+"@fordernavi","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").slice(0,15)+"Z","DTSTART;VALUE=DATE:"+x,"SUMMARY:"+t+": "+a.titel.replace(/[,;]/g," "),"BEGIN:VALARM","TRIGGER:-P7D","ACTION:DISPLAY","DESCRIPTION:Erinnerung","END:VALARM","END:VEVENT"].join("\r\n"));};
+  if(a.frist)f(a.frist,"Antragsfrist");if(a.nachweis)f(a.nachweis,"Verwendungsnachweis");
+  if(!ev.length){toast("Erst eine Frist eintragen");return;}
+  download("frist-"+a.id+".ics",["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Foerdernavi//DE",...ev,"END:VCALENDAR"].join("\r\n"),"text/calendar");}
+
+/* ---------- Texte ---------- */
+function progOptions(){const s=$("#tProg");const cur=s.value;s.replaceChildren(el("option",{value:""},"– frei, ohne Programm –"));
+  const ids=[...new Set([...store.merk,...store.apps.map(a=>a.pid).filter(Boolean)])];
+  const grp1=el("optgroup",{label:"Merkliste und Anträge"},ids.map(byId).filter(Boolean).map(p=>el("option",{value:p.id},p.t)));
+  const grp2=el("optgroup",{label:"Alle Programme"},DATA.map(p=>el("option",{value:p.id},p.t)));
+  if(ids.length)s.append(grp1);s.append(grp2);s.value=cur;}
+function val(id){return ($(id).value||"").trim();}
+function gen(){const p=byId(val("#tProg"));const k=+val("#tKosten")||0,e=+val("#tEigen")||0;const beantragt=k-e;
+  const L=v=>v||"[bitte ergänzen]";const prog=p?`${p.t} (${p.g})`:"[Förderprogramm]";
+  const beschreibung=`Projektbeschreibung: ${L(val("#tTitel"))}
+
+1. Antragsteller
+${L(val("#tOrg"))}, Ansprechperson: ${L(val("#tPerson"))}
+
+2. Ausgangslage und Bedarf
+${L(val("#tLage"))}
+
+3. Ziele
+${L(val("#tZiel"))}
+
+4. Zielgruppe
+${L(val("#tGruppe"))}
+
+5. Maßnahmen und Zeitplan
+${L(val("#tMass"))}
+Zeitraum: ${L(val("#tZeit"))}
+
+6. Kosten und Finanzierung
+Gesamtkosten: ${k?eur(k):"[bitte ergänzen]"}
+Eigenanteil: ${e?eur(e):"[bitte ergänzen]"}${k&&e?` (${Math.round(e/k*100)} %)`:""}
+Beantragte Förderung: ${k?eur(beantragt):"[bitte ergänzen]"}${p&&p.q!=null&&k&&beantragt/k*100>p.q?`\nHinweis: Die beantragte Quote liegt über der bekannten Höchstquote des Programms (${p.q} %). Bitte prüfen.`:""}${p&&p.max!=null&&beantragt>p.max?`\nHinweis: Der Betrag liegt über dem bekannten Höchstbetrag (${eur(p.max)}).`:""}
+
+7. Nachhaltigkeit
+[Wie geht es nach dem Förderzeitraum weiter?]`;
+  const anschreiben=`${L(val("#tOrg"))}
+[Anschrift]
+
+An
+${p?p.g:"[Fördergeber]"}
+[Anschrift der Förderstelle]
+
+[Ort], ${new Date().toLocaleDateString("de-DE")}
+
+Antrag auf Förderung im Programm ${prog}
+Projekt: ${L(val("#tTitel"))}
+
+Sehr geehrte Damen und Herren,
+
+hiermit beantragen wir eine Förderung in Höhe von ${k?eur(beantragt):"[Betrag]"} für das Projekt „${L(val("#tTitel"))}“ im Zeitraum ${L(val("#tZeit"))}.
+
+${L(val("#tZiel"))}
+
+Die Gesamtkosten betragen ${k?eur(k):"[Betrag]"}; den Eigenanteil von ${e?eur(e):"[Betrag]"} tragen wir selbst. Mit dem Projekt wurde noch nicht begonnen.
+
+Die Projektbeschreibung, der Kosten- und Finanzierungsplan sowie die erforderlichen Nachweise liegen bei. Für Rückfragen steht ${L(val("#tPerson"))} gern zur Verfügung.
+
+Mit freundlichen Grüßen
+
+${L(val("#tPerson"))}
+${L(val("#tOrg"))}`;
+  const kontakt=`Betreff: Anfrage zur Förderfähigkeit – ${L(val("#tTitel"))}
+
+Guten Tag,
+
+wir (${L(val("#tOrg"))}) planen das Projekt „${L(val("#tTitel"))}“ und möchten eine Förderung im Programm ${prog} beantragen.
+
+Kurz zum Vorhaben: ${L(val("#tZiel"))}
+Geplanter Zeitraum: ${L(val("#tZeit"))}, Gesamtkosten ca. ${k?eur(k):"[Betrag]"}.
+
+Unsere Fragen:
+1. Sind wir als ${S.wer?WER.find(w=>w[0]===S.wer)[1]:"[Rechtsform]"} antragsberechtigt?
+2. Welche Kosten sind förderfähig, und wie hoch muss der Eigenanteil sein?
+3. Gibt es eine Frist oder einen Stichtag, und dürfen wir vor der Bewilligung beginnen?
+4. Wäre ein kurzes Beratungsgespräch möglich?
+
+Vielen Dank und freundliche Grüße
+${L(val("#tPerson"))}`;
+  const out=$("#tOut");out.replaceChildren();
+  [["Projektbeschreibung",beschreibung],["Anschreiben",anschreiben],["Kontaktanfrage an die Förderstelle",kontakt]].forEach(([h,t])=>out.append(textBlock(h,t)));}
+function textBlock(h,t){const pre=el("div",{class:"out",contenteditable:"true","aria-label":h},t);const status=el("p",{class:"note"});
+  const kiBtn=el("button",{class:"btn small ghost",onclick:()=>kiImprove(h,pre,status,kiBtn)},"Mit KI überarbeiten");kiBtn.hidden=kiProvider()==="aus";
+  return el("div",{class:"panel",style:"margin-top:14px"},el("h2",{},h),el("p",{class:"note"},"Direkt im Feld bearbeitbar."),pre,
+    el("div",{class:"row"},el("button",{class:"btn small",onclick:()=>{navigator.clipboard.writeText(pre.innerText).then(()=>toast("Kopiert"),()=>toast("Kopieren nicht möglich – bitte markieren und kopieren"));}},"Kopieren"),
+      el("button",{class:"btn small ghost",onclick:()=>download(h.replace(/\s+/g,"-").toLowerCase()+".txt",pre.innerText,"text/plain")},"Als Textdatei"),kiBtn),status);}
+
+/* ---------- KI (optional) ---------- */
+let sample=null;
+function kiProvider(){return $("#kiProv").value;}
+function kiSettings(){try{return JSON.parse(sessionStorage.getItem(KEY+":ki")||"{}");}catch(e){return {};}}
+function kiSave(){const o={prov:kiProvider(),key:$("#kiKey").value,model:$("#kiModel").value};try{sessionStorage.setItem(KEY+":ki",JSON.stringify(o));}catch(e){}try{localStorage.setItem(KEY+":kiprov",o.prov);}catch(e){}kiUi();}
+function kiUi(){const pv=kiProvider();$("#kiKeyBox").hidden=!["anthropic","openai"].includes(pv);
+  if(pv==="anthropic"&&!$("#kiModel").value)$("#kiModel").value="claude-sonnet-4-6";
+  if(pv==="openai"&&!$("#kiModel").value)$("#kiModel").value="gpt-4o-mini";
+  const st=$("#kiState");st.textContent=pv==="aus"?"KI ist ausgeschaltet.":pv==="claudeai"?(sample?"Bereit. Beim ersten Aufruf fragt claude.ai nach Ihrer Zustimmung; die Nutzung zählt zu Ihrem Claude-Kontingent.":"Nur verfügbar, wenn die Seite in claude.ai geöffnet ist."):"Aufrufe gehen direkt vom Browser zum Anbieter. Innerhalb von claude.ai sind solche Verbindungen gesperrt – dort „Claude (in claude.ai)“ wählen.";
+  document.querySelectorAll("#tOut .panel .row button:last-child").forEach(b=>b.hidden=pv==="aus");}
+async function kiAsk(prompt,onText){const pv=kiProvider();
+  if(pv==="claudeai"){if(!sample)throw new Error("Claude ist hier nicht verfügbar.");const r=await sample(prompt,{onText:({text})=>onText(text),cache:false});return r.text;}
+  const key=$("#kiKey").value.trim();if(!key)throw new Error("Bitte API-Schlüssel eintragen (Konto & KI).");const model=$("#kiModel").value.trim();
+  if(pv==="anthropic"){const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model,max_tokens:2000,messages:[{role:"user",content:prompt}]})});
+    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||"Fehler "+r.status);return j.content.map(c=>c.text||"").join("");}
+  if(pv==="openai"){const r=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+key},body:JSON.stringify({model,messages:[{role:"user",content:prompt}]})});
+    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||"Fehler "+r.status);return j.choices[0].message.content;}
+  throw new Error("KI ist ausgeschaltet.");}
+async function kiImprove(h,pre,status,btn){const p=byId(val("#tProg"));btn.disabled=true;status.textContent="Wird überarbeitet …";
+  const prompt=`Du hilfst bei einem Förderantrag in Deutschland. Überarbeite den folgenden Text („${h}“) sprachlich: klar, sachlich, überzeugend, ohne Floskeln. Erfinde keine Fakten, Zahlen oder Zusagen. Lass Platzhalter in eckigen Klammern stehen. Antworte nur mit dem überarbeiteten Text.${p?`\nFörderprogramm: ${p.t} (${p.g}). Hinweise: ${p.hin||""}`:""}\n\nTEXT:\n${pre.innerText}`;
+  const orig=pre.innerText;
+  try{const t=await kiAsk(prompt,txt=>{pre.innerText=txt;});pre.innerText=t;status.textContent="Überarbeitet. Bitte Inhalt prüfen – die KI kann Fehler machen.";}
+  catch(e){pre.innerText=orig;status.textContent=e.code==="not_granted"?"Zugriff auf Claude wurde nicht erlaubt.":e.code==="rate_limited"?"Zu viele Anfragen – bitte später erneut.":"KI nicht erreichbar: "+(e.message||e.code);}
+  finally{btn.disabled=false;}}
+
+/* ---------- Konto ---------- */
+function renderKonto(){const p=$("#kontoPanel");p.replaceChildren(el("h2",{},"Konto"));
+  if(!API){p.append(el("p",{},"Diese Vorschau speichert Merkliste und Anträge im Browser. Nutzerkonten mit Synchronisierung über alle Geräte gibt es, sobald die Plattform auf dem eigenen Server läuft (siehe Projektpaket)."),
+    el("div",{class:"row"},el("button",{class:"btn ghost small",onclick:exportAll},"Daten exportieren")));return;}
+  if(token()){p.append(el("p",{},"Angemeldet"+(ME?" als "+ME.email+(ME.rolle!=="nutzer"?" ("+(ME.rolle==="kommune"?"Partnerkommune "+ME.ort:"Redaktion")+")":""):"")+". Merkliste und Anträge werden synchronisiert."),el("div",{class:"row"},
+    el("button",{class:"btn ghost small",onclick:async()=>{try{await api("/logout",{method:"POST"});}catch(e){}setToken("");ME=null;$("#navRed").hidden=true;renderKonto();renderMerk();}},"Abmelden"),
+    el("button",{class:"btn ghost small",style:"color:var(--danger)",onclick:async()=>{if(!confirm("Konto und alle gespeicherten Daten endgültig löschen?"))return;try{await api("/account",{method:"DELETE"});setToken("");toast("Konto gelöscht");renderKonto();}catch(e){toast(e.message);}}},"Konto löschen")));return;}
+  const mail=el("input",{type:"email",id:"kMail",autocomplete:"email"}),pw=el("input",{type:"password",id:"kPw",autocomplete:"current-password"}),msg=el("p",{class:"note"});
+  const go2=async path=>{try{const j=await api(path,{method:"POST",body:JSON.stringify({email:mail.value.trim(),password:pw.value})});setToken(j.token);
+      if(path==="/register")await pushState();else await pullState();await loadMe();renderKonto();toast("Angemeldet");}catch(e){msg.textContent=e.message;}};
+  p.append(el("p",{},"Kostenlos. Ein Konto synchronisiert Merkliste und Anträge über alle Geräte."),
+    el("div",{class:"field"},el("label",{for:"kMail"},"E-Mail"),mail),el("div",{class:"field"},el("label",{for:"kPw"},"Passwort (mind. 10 Zeichen)"),pw),
+    el("div",{class:"row"},el("button",{class:"btn",onclick:()=>go2("/login")},"Anmelden"),el("button",{class:"btn ghost",onclick:()=>go2("/register")},"Konto erstellen")),msg,forgotForm());}
+function exportAll(){download("fordernavi-daten.json",JSON.stringify({merk:store.merk,apps:store.apps,exportiert:new Date().toISOString()},null,2),"application/json");}
+
+/* ---------- Quellenfilter ---------- */
+function renderSrc(){const box=$("#srcChips");const counts={};DATA.forEach(p=>{const k=srcOf(p);counts[k]=(counts[k]||0)+1;});
+  box.replaceChildren(...SRC.filter(([k])=>counts[k]).map(([k,l])=>chip(l+" ("+counts[k]+")",srcOn.has(k),()=>{srcOn.has(k)?srcOn.delete(k):srcOn.add(k);renderSrc();update();})));}
+
+/* ---------- Konto: Rolle ---------- */
+let ME=null;
+async function loadMe(){ME=null;if(API&&token()){try{ME=await api("/me");}catch(e){if(/Sitzung|angemeldet/.test(e.message))setToken("");}}$("#navRed").hidden=!(ME&&ME.rolle==="redaktion");}
+
+/* ---------- Passwort-Reset ---------- */
+function resetPanel(t){const p=$("#kontoPanel");const pw=el("input",{type:"password",id:"nPw",autocomplete:"new-password"}),msg=el("p",{class:"note",role:"status"});
+  p.replaceChildren(el("h2",{},"Neues Passwort festlegen"),el("div",{class:"field"},el("label",{for:"nPw"},"Neues Passwort (mind. 10 Zeichen)"),pw),
+    el("button",{class:"btn",onclick:async()=>{try{const j=await api("/password/reset",{method:"POST",body:JSON.stringify({token:t,password:pw.value})});setToken(j.token);history.replaceState(null,"",location.pathname);await loadMe();await pullState();renderKonto();toast("Passwort geändert");}catch(e){msg.textContent=e.message;}}},"Passwort speichern"),msg);}
+function forgotForm(){const mail=el("input",{type:"email",id:"fMail",autocomplete:"email"}),msg=el("p",{class:"note",role:"status"});
+  return el("details",{class:"editor"},el("summary",{},"Passwort vergessen?"),el("div",{class:"field"},el("label",{for:"fMail"},"E-Mail des Kontos"),mail),
+    el("button",{class:"btn ghost small",onclick:async()=>{try{const j=await api("/password/forgot",{method:"POST",body:JSON.stringify({email:mail.value.trim()})});msg.textContent=j.hinweis;}catch(e){msg.textContent=e.message;}}},"Link zum Zurücksetzen senden"),msg);}
+
+/* ---------- Redaktion ---------- */
+async function renderRed(){if(!(ME&&ME.rolle==="redaktion"))return;
+  try{const o=await api("/admin/uebersicht");
+    $("#redStat").replaceChildren(el("p",{},`${o.eintraege} Einträge veröffentlicht · ${o.nutzer} Konten · ${o.meldungen_offen} offene Meldungen`),
+      o.import?el("div",{},el("p",{class:"note"},`Letzter Import: ${new Date(o.import.ende).toLocaleString("de-DE")}, ${o.import.gesamt} Einträge`),
+        el("ul",{},o.import.quellen.map(q=>el("li",{},q.quelle+": "+(q.ok?q.anzahl+" Einträge":"Fehler – "+q.fehler+(q.alte_behalten?` (${q.alte_behalten} alte Einträge behalten)`:"")))))):el("p",{class:"note"},"Noch kein Import gelaufen."));
+    $("#redImportNote").textContent=o.import_laeuft?"Import läuft …":"";
+    $("#redQuellen").replaceChildren(...o.quellen.map(q=>el("label",{class:"check"},el("input",{type:"checkbox",checked:q.enabled,onchange:async e=>{try{await api("/admin/quelle",{method:"POST",body:JSON.stringify({key:q.key,enabled:e.target.checked})});toast(q.name+(e.target.checked?" eingeschaltet":" ausgeschaltet"));}catch(x){toast(x.message);e.target.checked=!e.target.checked;}}}),el("span",{},q.name+(q.website?" – "+q.website:"")))));
+  }catch(e){$("#redStat").textContent=e.message;}
+  try{const ms=await api("/admin/meldungen");const box=$("#redMeld");box.replaceChildren();
+    if(!ms.length)box.append(el("p",{class:"note"},"Keine Meldungen."));
+    ms.forEach(m=>box.append(meldEditor(m)));}catch(e){$("#redMeld").textContent=e.message;}}
+function meldEditor(m){
+  const f={t:el("input",{type:"text",value:m.titel}),g:el("input",{type:"text",value:m.geber||""}),ort:el("input",{type:"text",value:m.ort||""}),
+    r:el("select",{},el("option",{value:"lokal"},"örtlich / unbekannt"),el("option",{value:"DE"},"bundesweit"),el("option",{value:"EU"},"EU"),Object.entries(LAENDER).map(([k,v])=>el("option",{value:k,selected:m.land===k},v))),
+    q:el("input",{type:"number",value:m.quote??""}),ea:el("input",{type:"number",value:m.eigenanteil??""}),max:el("input",{type:"number",value:m.max??""}),
+    frist:el("input",{type:"text",value:m.frist||""}),url:el("input",{type:"text",value:m.url||""}),hin:el("textarea",{},m.text||""),
+    z:el("input",{type:"text",value:(m.zielgruppen&&m.zielgruppen.join(","))||"verein"}),th:el("input",{type:"text",value:""}),notiz:el("input",{type:"text",value:m.notiz||""})};
+  const lab=(t,n)=>el("div",{class:"field"},el("label",{},t),n);
+  const num=v=>v===""?null:+v;
+  const send=async status=>{try{await api("/admin/meldungen/"+m.id,{method:"POST",body:JSON.stringify({status,notiz:f.notiz.value,eintrag:status==="freigegeben"?{t:f.t.value,g:f.g.value,e:m.ebene||"Kreis/Stadt",r:f.r.value,ort:f.ort.value?f.ort.value.split(",").map(x=>x.trim()):[],z:f.z.value.split(",").map(x=>x.trim()).filter(Boolean),th:f.th.value.split(",").map(x=>x.trim()).filter(Boolean),a:m.art||"zuschuss",rz:(m.art==="darlehen")?"ja":"nein",q:num(f.q.value),ea:num(f.ea.value),max:num(f.max.value),frist:f.frist.value||"laufend",url:f.url.value,urlOk:true,hin:f.hin.value,kirche:"unklar"}:null})});toast(status==="freigegeben"?"Freigegeben":"Abgelehnt");renderRed();}catch(e){toast(e.message);}};
+  return el("div",{class:"meld"},el("strong",{},m.titel),el("span",{class:"tag",style:"margin-left:8px"},m.status),m.partnerkommune?el("span",{class:"tag ok",style:"margin-left:6px"},"Partnerkommune "+m.partnerkommune):null,
+    el("div",{class:"note"},new Date(m.created*1000).toLocaleString("de-DE")+(m.url?" · ":""),m.url?el("a",{href:m.url,target:"_blank",rel:"noopener"},"Quelle öffnen und prüfen"):""),
+    m.status==="offen"?el("details",{class:"editor"},el("summary",{},"Prüfen und freigeben"),
+      el("div",{class:"grid2"},lab("Titel",f.t),lab("Fördergeber",f.g),lab("Region",f.r),lab("Orte (Komma)",f.ort),lab("Zielgruppen (privat, gruender, selbststaendig, kmu, verein, kirche, kommune, studierende)",f.z),lab("Themen (z. B. sport, kultur, jugend)",f.th),lab("Förderquote %",f.q),lab("Eigenanteil %",f.ea),lab("Höchstbetrag €",f.max),lab("Frist (JJJJ-MM-TT oder Text)",f.frist),lab("Link",f.url),lab("Notiz",f.notiz)),
+      lab("Beschreibung",f.hin),el("p",{class:"note"},"Nur freigeben, wenn die Angaben an der offiziellen Quelle geprüft sind. Der Link wird als Beleg gespeichert."),
+      el("div",{class:"row"},el("button",{class:"btn small",onclick:()=>send("freigegeben")},"Geprüft – freigeben"),el("button",{class:"btn small ghost",onclick:()=>send("abgelehnt")},"Ablehnen"))):null);}
+function korrForm(p){const f={q:el("input",{type:"number",value:p.q??""}),ea:el("input",{type:"number",value:p.ea??""}),max:el("input",{type:"number",value:p.max??""}),frist:el("input",{type:"text",value:p.frist||""}),url:el("input",{type:"text",value:p.url||""}),hin:el("textarea",{},p.hin||""),beleg:el("input",{type:"text",placeholder:"https://… (aufgerufene Quelle)"}),kirche:el("select",{},["unklar","ja","nein"].map(k=>el("option",{selected:p.kirche===k},k))),versteckt:el("input",{type:"checkbox",checked:!!p.versteckt})};
+  const lab=(t,n)=>el("div",{class:"field"},el("label",{},t),n);const num=v=>v===""?null:+v;
+  const save=async gepr=>{const felder={q:num(f.q.value),ea:num(f.ea.value),max:num(f.max.value),frist:f.frist.value,url:f.url.value,hin:f.hin.value,kirche:f.kirche.value,versteckt:f.versteckt.checked};
+    if(gepr){if(!f.beleg.value.trim()){toast("Für „geprüft“ bitte den Beleg-Link angeben");return;}felder.quelle="geprueft";felder.pruef={datum:HEUTE,belege:[f.beleg.value.trim()],durch:"Redaktion"};}
+    try{await api("/admin/eintrag/"+encodeURIComponent(p.id),{method:"PUT",body:JSON.stringify({felder})});toast("Gespeichert");const r=await fetch(API+"/programme");DATA=await r.json();renderSrc();update();}catch(e){toast(e.message);}};
+  $("#kForm").replaceChildren(el("h3",{},p.t),el("p",{class:"note"},"Quelle: "+(QUELLE[p.quelle]||p.quelle)+" · ID "+p.id),
+    el("div",{class:"grid2"},lab("Förderquote %",f.q),lab("Eigenanteil %",f.ea),lab("Höchstbetrag €",f.max),lab("Frist",f.frist),lab("Link",f.url),lab("Für Kirchen möglich",f.kirche),lab("Beleg-Link (für geprüft)",f.beleg)),
+    lab("Beschreibung",f.hin),el("label",{class:"check"},f.versteckt,el("span",{},"Eintrag ausblenden (z. B. Programm beendet)")),
+    el("div",{class:"row"},el("button",{class:"btn small",onclick:()=>save(true)},"Speichern und als geprüft markieren"),el("button",{class:"btn small ghost",onclick:()=>save(false)},"Nur speichern")));}
+
+/* ---------- Navigation ---------- */
+function go(v){document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.view===v?"page":"false"));
+  if(v==="merkliste")renderMerk();if(v==="antraege")renderApps();if(v==="texte")progOptions();if(v==="konto")renderKonto();if(v==="redaktion")renderRed();window.scrollTo(0,0);}
+function counts(){$("#cMerk").textContent=store.merk.length||"";$("#cApp").textContent=store.apps.length||"";}
+function renderAll(){counts();update();renderMerk();renderApps();}
+
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.view)));
+document.querySelectorAll("[data-goto]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();go(a.dataset.goto);}));
+$("#q").addEventListener("input",e=>{S.q=e.target.value.trim();update();});
+$("#appNew").addEventListener("click",()=>newApp(null));
+$("#exportAll").addEventListener("click",exportAll);
+$("#importFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.apps))throw 0;store.merk=j.merk||[];store.apps=j.apps;save();renderAll();toast("Daten importiert");}catch(x){toast("Datei nicht lesbar");}e.target.value="";});
+$("#tGen").addEventListener("click",gen);
+$("#kiProv").addEventListener("change",kiSave);$("#kiKey").addEventListener("change",kiSave);$("#kiModel").addEventListener("change",kiSave);
+$("#mSend").addEventListener("click",async()=>{const n=id=>{const v=val(id);return v===""?null:+v;};
+  const m={titel:val("#mTitel"),geber:val("#mGeber"),ebene:val("#mEbene"),land:val("#mLand"),ort:val("#mOrt"),art:val("#mArt"),quote:n("#mQuote"),eigenanteil:n("#mEA"),max:n("#mMax"),frist:val("#mFrist"),url:val("#mUrl"),text:val("#mText"),zielgruppen:S.wer?[S.wer]:[]};
+  if(!m.titel||!/^https?:\/\//.test(m.url)){$("#mNote").textContent="Bitte Namen und einen Link (https://…) zur offiziellen Seite angeben.";return;}
+  if(API){try{await api("/meldungen",{method:"POST",body:JSON.stringify(m)});$("#mNote").textContent="Danke! Die Redaktion prüft die Meldung.";}catch(e){$("#mNote").textContent=e.message;return;}}
+  else if(META.kontakt){const body=Object.entries(m).filter(([k,v])=>v!==null&&v!==""&&!(Array.isArray(v)&&!v.length)).map(([k,v])=>k+": "+v).join("\n");
+    location.href="mailto:"+META.kontakt+"?subject="+encodeURIComponent("Fördernavi-Meldung: "+m.titel)+"&body="+encodeURIComponent(body);$("#mNote").textContent="Ihr E-Mail-Programm öffnet sich mit der Meldung. Bitte absenden.";}
+  else{store.meldungen.push(m);save();$("#mNote").textContent="Gespeichert. In dieser Version bleiben Meldungen im Browser; auf dem eigenen Server gehen sie an die Redaktion.";}
+  ["#mTitel","#mGeber","#mOrt","#mUrl","#mText","#mQuote","#mEA","#mMax","#mFrist"].forEach(x=>$(x).value="");});
+
+$("#redImport").addEventListener("click",async()=>{try{await api("/admin/import",{method:"POST"});$("#redImportNote").textContent="Import gestartet. Das kann einige Minuten dauern.";setTimeout(renderRed,5000);}catch(e){$("#redImportNote").textContent=e.message;}});
+$("#wAdd").addEventListener("click",async()=>{try{const j=await api("/admin/website",{method:"POST",body:JSON.stringify({name:val("#wName"),start_url:val("#wStart"),link_muster:val("#wMuster"),ort:val("#wOrt"),geber:val("#wGeber"),gebiet:val("#wLand")})});$("#wNote").textContent=j.hinweis;renderRed();}catch(e){$("#wNote").textContent=e.message;}});
+$("#rSet").addEventListener("click",async()=>{try{await api("/admin/rolle",{method:"POST",body:JSON.stringify({email:val("#rMail"),rolle:val("#rRolle"),ort:val("#rOrt")})});$("#rNote").textContent="Gespeichert.";}catch(e){$("#rNote").textContent=e.message;}});
+$("#kSuche").addEventListener("input",e=>{const q=e.target.value.trim().toLowerCase();const box=$("#kTreffer");box.replaceChildren();if(q.length<3)return;
+  DATA.filter(p=>p.t.toLowerCase().includes(q)).slice(0,8).forEach(p=>box.append(el("button",{class:"btn small ghost",style:"margin:4px 6px 4px 0",onclick:()=>korrForm(p)},p.t)));});
+$("#hideExpired").addEventListener("change",update);
+$("#mLand").append(...Object.entries(LAENDER).map(([k,v])=>el("option",{value:k},v)));
+
+/* ---------- Datenstand ---------- */
+(function(){const q=META.import;let t="Grunddaten geprüft am 29.09.2026";
+  if(q&&q.ende){t=`Datenstand ${new Date(q.ende).toLocaleDateString("de-DE")}: `+q.quellen.map(x=>x.quelle+(x.ok?" "+x.anzahl:" nicht erreichbar")).join(", ");}
+  $("#stand").textContent=t;})();
+
+/* ---------- Start ---------- */
+load();
+(function(){const k=kiSettings();let prov=k.prov;try{prov=prov||localStorage.getItem(KEY+":kiprov");}catch(e){}if(prov)$("#kiProv").value=prov;if(k.key)$("#kiKey").value=k.key;if(k.model)$("#kiModel").value=k.model;})();
+renderStep();renderSrc();renderAll();kiUi();
+if(API){fetch(API+"/programme").then(r=>r.ok?r.json():null).then(j=>{if(Array.isArray(j)&&j.length){DATA=j;renderSrc();update();}}).catch(()=>{});
+  loadMe().then(()=>{if(token())pullState();});
+  const rt=new URLSearchParams(location.search).get("reset");if(rt){go("konto");resetPanel(rt);}}
+if(window.claude&&window.claude.use){
+  claude.use("sample").then(s=>{sample=s;kiUi();}).catch(()=>{});
+  claude.use("downloads").then(d=>{dl=d;}).catch(()=>{});
+}
+</script>
+</body>
+</html>

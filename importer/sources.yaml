@@ -1,0 +1,12 @@
+# Quellen für den Import. 'enabled' lässt sich auch im Redaktionsbereich umschalten.
+# DSEE erst nach Freigabe durch die DSEE einschalten. Weitere Websites am besten über den Redaktionsbereich anlegen.
+fdb:
+  enabled: true
+eu_sedia:
+  enabled: true
+  max_pages: 20
+dsee:
+  enabled: false
+  delay: 4
+  max_pages: 60
+scrape: []
