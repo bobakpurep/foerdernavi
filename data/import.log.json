@@ -1,5 +1,5 @@
 {
- "start": "2026-09-29T22:47:27",
+ "start": "2026-09-30T02:40:01",
  "quellen": [
   {
    "quelle": "Förderdatenbank des Bundes",
@@ -8,15 +8,16 @@
   },
   {
    "quelle": "EU Funding & Tenders",
-   "ok": true,
-   "anzahl": 406
+   "ok": false,
+   "fehler": "500 Server Error: Internal Server Error for url: https://api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA&text=%2A%2A%2A&pageSize=50&pageNumber=1",
+   "alte_behalten": 402
   },
   {
    "quelle": "DSEE-Förderdatenbank",
    "ok": true,
-   "anzahl": 1324
+   "anzahl": 1325
   }
  ],
- "ende": "2026-09-30T00:30:05",
- "gesamt": 3634
+ "ende": "2026-09-30T02:46:22",
+ "gesamt": 3635
 }
