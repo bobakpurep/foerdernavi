@@ -1,5 +1,5 @@
 {
- "start": "2026-10-04T04:17:25",
+ "start": "2026-10-05T02:42:06",
  "quellen": [
   {
    "quelle": "Förderdatenbank des Bundes",
@@ -9,7 +9,7 @@
   {
    "quelle": "EU Funding & Tenders",
    "ok": true,
-   "anzahl": 401
+   "anzahl": 398
   },
   {
    "quelle": "DSEE-Förderdatenbank",
@@ -17,6 +17,6 @@
    "anzahl": 1329
   }
  ],
- "ende": "2026-10-04T04:23:40",
- "gesamt": 3636
+ "ende": "2026-10-05T02:48:21",
+ "gesamt": 3632
 }
