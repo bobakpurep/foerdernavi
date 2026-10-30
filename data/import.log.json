@@ -1,23 +1,22 @@
 {
- "start": "2026-10-29T08:43:15",
+ "start": "2026-10-30T08:50:09",
  "quellen": [
   {
    "quelle": "Förderdatenbank des Bundes",
    "ok": true,
-   "anzahl": 1867
+   "anzahl": 1868
   },
   {
    "quelle": "EU Funding & Tenders",
    "ok": true,
-   "anzahl": 394
+   "anzahl": 391
   },
   {
    "quelle": "DSEE-Förderdatenbank",
-   "ok": false,
-   "fehler": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
-   "alte_behalten": 1333
+   "ok": true,
+   "anzahl": 1348
   }
  ],
- "ende": "2026-10-29T08:50:09",
- "gesamt": 3624
+ "ende": "2026-10-30T08:57:33",
+ "gesamt": 3623
 }
