@@ -1,5 +1,5 @@
 {
- "start": "2026-11-08T09:18:00",
+ "start": "2026-11-09T10:00:06",
  "quellen": [
   {
    "quelle": "Förderdatenbank des Bundes",
@@ -14,9 +14,9 @@
   {
    "quelle": "DSEE-Förderdatenbank",
    "ok": true,
-   "anzahl": 1356
+   "anzahl": 1355
   }
  ],
- "ende": "2026-11-08T09:24:29",
- "gesamt": 3626
+ "ende": "2026-11-09T10:06:42",
+ "gesamt": 3625
 }
