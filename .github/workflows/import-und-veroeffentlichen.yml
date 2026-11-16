@@ -1,0 +1,84 @@
+# Holt jede Nacht die Förderdaten, speichert sie im Repository und veröffentlicht die Handy-Version auf GitHub Pages.
+# Einmalig nötig: Settings -> Pages -> Source: "GitHub Actions".
+name: Daten importieren und veröffentlichen
+
+on:
+  schedule:
+    - cron: "30 2 * * *"      # täglich 02:30 UTC (= 04:30 deutscher Sommerzeit)
+  workflow_dispatch:           # Knopf "Run workflow" im Reiter Actions
+  push:
+    branches: [main]
+    paths-ignore: ["data/programme.json", "data/import.log.json", "data/linkcheck.json", "data/kommunen.json", "data/kommunen_state.json"]
+
+permissions:
+  contents: write              # Importergebnis ins Repository schreiben
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180          # erster DSEE-Lauf lädt ~1.300 Seiten mit Pause (ca. 90 Min.)
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Pakete installieren
+        run: pip install -r requirements.txt
+
+      - name: Förderdaten importieren
+        # Fällt eine Quelle aus, bleiben ihre Einträge vom letzten erfolgreichen Lauf erhalten.
+        continue-on-error: true
+        env:
+          FN_KONTAKT: https://github.com/${{ github.repository }}
+          FN_KOMPAKT: "1"
+          FN_AIDES_TERRITOIRES_TOKEN: ${{ secrets.FN_AIDES_TERRITOIRES_TOKEN }}
+          FN_PVOG_CLIENT_ID: ${{ secrets.FN_PVOG_CLIENT_ID }}
+        run: python -m importer.run
+
+      - name: Importergebnis speichern
+        # Holt vorher neuere Änderungen (z. B. Ihre Bearbeitungen oder einen parallelen Lauf) und versucht es bis zu 3-mal.
+        # Scheitert es trotzdem, wird die Seite dennoch veröffentlicht.
+        continue-on-error: true
+        run: |
+          git config user.name "fordernavi-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/programme.json data/import.log.json data/linkcheck.json data/kommunen.json data/kommunen_state.json 2>/dev/null || true
+          if git diff --cached --quiet; then echo "Keine Änderungen."; exit 0; fi
+          git commit -m "Datenimport $(date -u +%Y-%m-%d)"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs origin main && git push origin HEAD:main && exit 0
+            echo "Versuch $i fehlgeschlagen, neuer Versuch in 10 s"; git rebase --abort 2>/dev/null || true; sleep 10
+          done
+          exit 1
+
+      - uses: actions/configure-pages@v6
+        id: pages
+
+      - name: Handy-Version bauen
+        run: python build.py --site --kontakt "${{ vars.MELDE_EMAIL }}" --base-url "${{ steps.pages.outputs.base_url }}"
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
