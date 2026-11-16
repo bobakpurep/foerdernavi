@@ -1,0 +1,43 @@
+# Quellen für den Import. 'enabled' lässt sich auch im Redaktionsbereich umschalten.
+# DSEE erst nach Freigabe durch die DSEE einschalten. Weitere Websites am besten über den Redaktionsbereich anlegen.
+fdb:
+  enabled: true
+eu_sedia:
+  enabled: true
+  max_pages: 20
+dsee:
+  enabled: true
+  delay: 4
+  max_pages: 60
+  auffrischen_tage: 14
+  max_details_pro_lauf: 1500
+pvog:
+  enabled: true        # Verwaltungsleistungen von Bund, Land und Kommune (Kindergeld, Wohngeld, Vereinsförderung ...)
+  delay: 1
+  orte:                # weitere Orte ergänzen: name + plz (oder direkt ars, 12-stellig)
+  - name: Riedstadt
+    plz: "64560"
+  begriffe: [Kindergeld, Elterngeld, Wohngeld, Kinderzuschlag, Unterhaltsvorschuss, Bildung und Teilhabe, Pflegegeld,
+    Zuschuss, Förderung, Beihilfe, Prämie, Stipendium, Wohnraumförderung, Vereinsförderung, Jugendförderung,
+    Sportförderung, Kulturförderung, Denkmal, Existenzgründung, Ehrenamt]
+kommunen:
+  enabled: true        # deutschlandweit: Websites aller Gemeinden, Städte und Kreise nach Förderseiten durchsuchen
+  pro_lauf: 300        # Kommunen je Nacht (ganz Deutschland ≈ 36 Nächte)
+  max_seiten_pro_ort: 6
+  max_minuten: 60
+  delay: 1.5
+  verzeichnis: wikidata   # Ersatzweg OpenStreetMap wird automatisch genutzt
+frankreich:
+  enabled: true        # braucht Secret FN_AIDES_TERRITOIRES_TOKEN (kostenlos bei Aides-territoires); ohne Schlüssel wird übersprungen
+  max_pages: 60
+spanien:
+  enabled: true        # BDNS: alle staatlichen, regionalen und kommunalen Aufrufe Spaniens
+  max_pages: 20
+oparl:
+  enabled: false       # Ratsinformationssysteme: Städte/Kreise mit OParl-Schnittstelle eintragen, dann einschalten
+  jahre: 3
+  quellen:
+  - ort: Bad Vilbel    # Beispiel (Schnittstelle existiert); eigene Orte ergänzen
+    land: HE
+    body: https://rim.ekom21.de/bad-vilbel/webservice/oparl/v1.1/body/1
+scrape: []

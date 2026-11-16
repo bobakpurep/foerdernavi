@@ -1,0 +1,5 @@
+/* Selbst gehostete Schriften (SIL Open Font License, siehe OFL-*.txt) – keine Verbindung zu Google */
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:400;font-display:swap;src:url(AtkinsonHyperlegible-Regular.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:700;font-display:swap;src:url(AtkinsonHyperlegible-Bold.woff2) format("woff2")}
+@font-face{font-family:"Bricolage Grotesque";font-style:normal;font-weight:600;font-display:swap;src:url(BricolageGrotesque-600.woff2) format("woff2")}
+@font-face{font-family:"Bricolage Grotesque";font-style:normal;font-weight:800;font-display:swap;src:url(BricolageGrotesque-800.woff2) format("woff2")}

@@ -1,0 +1,19 @@
+# /etc/systemd/system/fordernavi.service
+[Unit]
+Description=Fördernavi
+After=network.target
+
+[Service]
+User=fordernavi
+WorkingDirectory=/srv/fordernavi
+Environment=FN_BASE_URL=https://ihre-domain.de
+Environment=FN_ADMIN_EMAILS=redaktion@ihre-domain.de
+Environment=FN_SMTP_HOST=smtp.ihr-anbieter.de
+Environment=FN_SMTP_USER=noreply@ihre-domain.de
+EnvironmentFile=-/srv/fordernavi/.env
+# --proxy-headers: echte Besucher-IP hinter Caddy (wichtig für die Sperre gegen Passwort-Raten)
+ExecStart=/srv/fordernavi/.venv/bin/uvicorn server.app:app --host 127.0.0.1 --port 8000 --workers 2 --proxy-headers --forwarded-allow-ips 127.0.0.1
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

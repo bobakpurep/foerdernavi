@@ -1,0 +1,1274 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Für den eigenen Server: content="/api" eintragen, dann sind Nutzerkonten und Sync aktiv -->
+<meta name="api-base" content="">
+<!--PWA-->
+<title>Fördernavi – Förderungen finden, beantragen, verwalten</title>
+<meta name="description" content="Kostenloser Förderfinder für Deutschland und die EU: Zuschüsse, Kredite, Steuervorteile und Sozialleistungen für Privatpersonen, Familien, Vereine, Kirchen, NGOs und Unternehmen – mit Förder-Check, Antragshilfe und Fristen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F8FA;--surface:#FFFFFF;--ink:#16324F;--muted:#4F5C6A;--line:#D5DDE5;
+  --grant:#1D6A49;--grant-soft:#E3F2EA;--own:#8A5A05;--own-soft:#F8EEDC;--loan:#4B4196;--loan-soft:#ECE9F8;
+  --unknown:#9AA6B2;--focus:#1454B8;--danger:#A3221B;
+  --r-sm:6px;--r-lg:14px;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0E1822;--surface:#142230;--ink:#E4ECF3;--muted:#9AABBA;--line:#2A3B4C;
+  --grant:#4DB688;--grant-soft:#18392B;--own:#E1A640;--own-soft:#3A2E14;--loan:#A097E6;--loan-soft:#2A2645;--unknown:#5E6C7A;--focus:#6EA8FF;--danger:#F2877F;}}
+:root[data-theme="dark"]{--paper:#0E1822;--surface:#142230;--ink:#E4ECF3;--muted:#9AABBA;--line:#2A3B4C;
+  --grant:#4DB688;--grant-soft:#18392B;--own:#E1A640;--own-soft:#3A2E14;--loan:#A097E6;--loan-soft:#2A2645;--unknown:#5E6C7A;--focus:#6EA8FF;--danger:#F2877F;}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 var(--body)}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0 0 .4em}
+h1{font-size:clamp(1.9rem,5vw,2.8rem);font-weight:800;letter-spacing:-.01em}
+h2{font-size:1.45rem;font-weight:800}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0 0 .8em;max-width:68ch}
+a{color:var(--focus)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:6px 14px;min-height:58px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.brand{font-family:var(--display);font-weight:800;font-size:1.25rem;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.brand svg{flex:none}
+nav.tabs{display:flex;gap:4px;margin-left:auto;overflow-x:auto;max-width:100%}
+@media (max-width:760px){nav.tabs{margin-left:0;width:100%}}
+nav.tabs button{border:0;background:none;padding:8px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;color:var(--muted);font-weight:700}
+nav.tabs button[aria-current="page"]{background:var(--ink);color:var(--surface)}
+nav.tabs .count{display:inline-block;min-width:1.4em;margin-left:4px;font-size:.8em;opacity:.8}
+main{padding:28px 0 64px}
+section.view{display:none}section.view.on{display:block}
+.intro{margin-bottom:22px}
+.intro p{color:var(--muted);font-size:1.05rem}
+.steps{display:flex;gap:6px;margin:0 0 18px;padding:0;list-style:none;flex-wrap:wrap}
+.steps li button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--muted)}
+.steps li button[aria-current="step"]{border-color:var(--ink);color:var(--ink);font-weight:700}
+.steps li button.done{color:var(--grant);border-color:var(--grant)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:var(--r-sm);padding:9px 14px;cursor:pointer;text-align:left}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.chip small{display:block;font-size:.8rem;opacity:.75}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;flex:1 1 220px;margin:8px 0}
+.field label{font-weight:700;font-size:.93rem}
+.field .help{font-size:.85rem;color:var(--muted)}
+input[type=text],input[type=number],input[type=email],input[type=password],input[type=date],select,textarea{border:1.5px solid var(--line);background:var(--paper);border-radius:var(--r-sm);padding:9px 11px;width:100%}
+textarea{min-height:90px;resize:vertical}
+.check{display:flex;gap:10px;align-items:flex-start;margin:8px 0;cursor:pointer}
+.check input{width:20px;height:20px;margin-top:2px;flex:none}
+.btn{border:0;border-radius:var(--r-sm);padding:10px 16px;font-weight:700;cursor:pointer;background:var(--ink);color:var(--surface)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.small{padding:6px 11px;font-size:.9rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.nav-btns{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.results-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:26px 0 10px;flex-wrap:wrap}
+.results-head .sum{color:var(--muted)}
+.search{margin:0 0 14px}
+.list{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 18px 14px}
+.card .meta{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.tag{font-size:.8rem;padding:2px 8px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--muted)}
+.tag.grant{background:var(--grant-soft);border-color:transparent;color:var(--grant);font-weight:700}
+.tag.loan{background:var(--loan-soft);border-color:transparent;color:var(--loan);font-weight:700}
+.tag.warn{background:var(--own-soft);border-color:transparent;color:var(--own)}
+.card h3{margin-bottom:2px}
+.card .giver{color:var(--muted);margin:0 0 10px;font-size:.95rem}
+/* Finanzierungsbalken: das zentrale Element */
+.fin{margin:12px 0}
+.bar{display:flex;height:16px;border-radius:4px;overflow:hidden;background:repeating-linear-gradient(135deg,var(--line) 0 6px,transparent 6px 12px);border:1px solid var(--line)}
+.bar .g{background:var(--grant)}.bar .o{background:#C98A1A}.bar .l{background:var(--loan)}
+.fin .legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem;margin-top:6px}
+.fin .legend b{font-variant-numeric:tabular-nums}
+.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:baseline}
+.card .hint{font-size:.95rem;margin:8px 0}
+.card .src{font-size:.82rem;color:var(--muted);margin:6px 0 10px}
+.card .actions{display:flex;flex-wrap:wrap;gap:8px}
+.empty{padding:26px;border:1.5px dashed var(--line);border-radius:var(--r-lg);color:var(--muted)}
+.more-sources{margin-top:26px}
+.more-sources ul{padding-left:1.2em}
+.kanban{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.col h3{display:flex;justify-content:space-between}
+.col .items{display:flex;flex-direction:column;gap:10px}
+.app{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+.app .due{font-size:.88rem;color:var(--muted)}
+.app .due.soon{color:var(--danger);font-weight:700}
+details.editor{margin-top:8px}
+details.editor summary{cursor:pointer;font-weight:700;font-size:.92rem}
+.log{font-size:.9rem;border-left:3px solid var(--line);padding-left:10px;margin:6px 0}
+.out{white-space:pre-wrap;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;margin:8px 0;font-size:.97rem}
+.note{font-size:.9rem;color:var(--muted)}
+.notice{background:var(--own-soft);color:var(--ink);border-radius:var(--r-sm);padding:10px 14px;font-size:.93rem;margin:10px 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.donate button{margin:4px 8px 4px 0}
+footer{border-top:1px solid var(--line);padding:18px 0 30px;color:var(--muted);font-size:.9rem}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.tablewrap{overflow-x:auto}
+.anzahl{font-weight:700;color:var(--grant);margin:4px 0 12px}
+h2.klein{font-size:1.05rem;margin:14px 0 6px}
+.cd-list{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px}
+.cd{flex:0 0 190px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:3px;cursor:pointer;color:var(--ink)}
+.cd-tage{font-family:var(--display);font-size:1.6rem;font-weight:800;color:var(--danger);line-height:1}
+.cd-tage small{font-size:.8rem;font-weight:700}
+.cd-titel{font-weight:700;font-size:.9rem;line-height:1.25;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cd-geber{font-size:.8rem;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.saved{display:inline-flex;align-items:center;gap:2px}
+details.pass{margin:0 0 6px;font-size:.9rem}
+details.pass summary{cursor:pointer;color:var(--muted)}
+.pass-pct{font-weight:800;color:var(--grant)}
+details.pass ul{margin:4px 0 0;padding-left:1.2em}
+.themenlinks a{margin:0 2px}
+@media print{header.top,.steps,#stepPanel,.srcfilter,.search,.actions,footer,.toolbar,#startBox,.more-sources,.intro .chips,.intro p,.toast,nav{display:none!important}
+ body{background:#fff;color:#000}.card{break-inside:avoid;border:1px solid #999;box-shadow:none}.wrap{max-width:none}details.pass{display:none}}
+fieldset.srcfilter{border:1px solid var(--line);border-radius:var(--r-lg);padding:8px 14px 4px;margin:0 0 12px}
+fieldset.srcfilter legend{font-weight:700;font-size:.93rem;padding:0 4px}
+.meld{border-top:1px solid var(--line);padding:12px 0}
+.tag.ok{background:var(--grant-soft);color:var(--grant);border-color:transparent}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="24" height="24" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="5" y="15" width="10" height="5" rx="1" fill="#2B7A57"/><rect x="15" y="15" width="6" height="5" rx="1" fill="#B97A10"/><path d="M6 10h14M13 5l7 5-7 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Fördernavi</div>
+  <nav class="tabs" aria-label="Hauptmenü">
+    <button data-i18n="Finden" data-view="finden" aria-current="page">Finden</button>
+    <button data-i18n="Merkliste" data-view="merkliste">Merkliste<span class="count" id="cMerk"></span></button>
+    <button data-i18n="Anträge" data-view="antraege">Anträge<span class="count" id="cApp"></span></button>
+    <button data-i18n="Texte" data-view="texte">Texte</button>
+    <button data-i18n="Konto & KI" data-view="konto">Konto &amp; KI</button>
+    <button data-view="redaktion" id="navRed" hidden data-i18n="Redaktion">Redaktion</button>
+    <button data-i18n="Impressum" data-view="impressum">Impressum</button>
+  </nav>
+  <button class="btn ghost small" id="langBtn" type="button" aria-label="Sprache umschalten / switch language">EN</button>
+</div></header>
+
+<main class="wrap">
+<!-- FINDEN -->
+<section class="view on" id="v-finden">
+  <div class="intro">
+    <h1 data-i18n="Welche Förderung passt zu Ihrem Vorhaben?">Welche Förderung passt zu Ihrem Vorhaben?</h1>
+    <p data-i18n="Vier kurze Fragen, dann sehen Sie passende Programme mit Förderquote, Eigenanteil und Rückzahlungspflicht auf einen Blick.">Vier kurze Fragen, dann sehen Sie passende Programme mit Förderquote, Eigenanteil und Rückzahlungspflicht auf einen Blick.</p>
+    <p class="anzahl" id="anzahl" aria-live="polite"></p>
+    <div id="startBox"></div>
+    <div class="chips" role="group" aria-label="Suchweg wählen">
+      <button type="button" class="chip" id="modeFragen" aria-pressed="false"><span data-i18n="Mit Fragen zum Ergebnis">Mit Fragen zum Ergebnis</span><small>Förder-Check: Kinder, Wohnen, Pflege, Vorhaben …</small></button>
+      <button type="button" class="chip" id="modeFiltern" aria-pressed="true"><span data-i18n="Selbst filtern">Selbst filtern</span><small>Zielgruppe, Ort, Thema, Eigenanteil</small></button>
+    </div>
+  </div>
+  <ol class="steps" id="steps"></ol>
+  <div class="panel" id="stepPanel"></div>
+
+  <div class="results-head">
+    <h2 id="resTitle" data-i18n="Passende Programme">Passende Programme</h2>
+    <span class="sum" id="resSum"></span>
+  </div>
+  <div class="toolbar" id="toolbar">
+    <button type="button" class="btn small ghost" id="tbSpeichern">Suche speichern</button>
+    <button type="button" class="btn small ghost" id="tbTeilen">Suche teilen</button>
+    <button type="button" class="btn small ghost" id="tbCsv">Als Tabelle (CSV)</button>
+    <button type="button" class="btn small ghost" id="tbDruck">Drucken / PDF</button>
+    <button type="button" class="btn small ghost" id="tbListe" hidden></button>
+  </div>
+  <fieldset class="srcfilter"><legend>Datenquellen</legend><div class="chips" id="srcChips"></div><label class="check"><input type="checkbox" id="hideExpired" checked><span>Abgelaufene Fristen ausblenden</span></label></fieldset>
+  <div class="search field"><label for="q">In den Ergebnissen suchen</label><input type="text" id="q" placeholder="z. B. Wärmepumpe, Jugendfreizeit, Beratung"></div>
+  <div class="list" id="results"></div>
+
+  <div class="more-sources panel">
+    <h3>Nicht fündig geworden?</h3>
+    <p>Diese Datenbank ist im Aufbau. Direkt in den großen Quellen weitersuchen:</p>
+    <ul id="nationalLinks"></ul>
+    <ul>
+      <li><a href="https://www.foerderdatenbank.de/" target="_blank" rel="noopener">Förderdatenbank des Bundes</a> – Bund, Länder, EU</li>
+      <li><a href="https://foerderdatenbank.d-s-e-e.de/" target="_blank" rel="noopener">Förderdatenbank der DSEE</a> – Engagement, Ehrenamt, Stiftungen, Preise</li>
+      <li><a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/support/apis" target="_blank" rel="noopener">EU Funding &amp; Tenders Portal</a></li>
+      <li><a href="https://www.aktion-mensch.de/foerderung/antrag/foerderfinder" target="_blank" rel="noopener">Förderfinder der Aktion Mensch</a> – Inklusion und soziale Projekte</li>
+      <li><a href="https://stiftungssuche.de/" target="_blank" rel="noopener">Stiftungssuche</a> – Stiftungen nach Zweck und Region</li>
+    </ul>
+    <h3>Kostenlose Beratung</h3>
+    <ul>
+      <li><a href="https://engagement-global.de/files/2_Media/Publikationen/Angebotsblatt/Angebotsblatt_BENGO.pdf" target="_blank" rel="noopener">bengo (Engagement Global)</a> – Beratung für Entwicklungsprojekte von Vereinen, kostenloses Infotelefon 0800 188 7 188</li>
+      <li><a href="https://www.deutsche-stiftung-engagement-und-ehrenamt.de/foerderung/" target="_blank" rel="noopener">Deutsche Stiftung für Engagement und Ehrenamt</a> – Förderung und Beratung für Vereine</li>
+      <li>Industrie- und Handelskammer bzw. Handwerkskammer vor Ort – Fördermittelberatung für Gründer und Unternehmen</li>
+    </ul>
+    <details class="editor"><summary>Förderung melden, die hier fehlt</summary>
+      <p class="note">Besonders gesucht: Förderungen von Kreisen, Städten, Gemeinden und örtlichen Stiftungen. Kommunen können ein Partnerkonto bekommen – Kontakt über das Impressum.</p>
+      <div class="grid2">
+        <div class="field"><label for="mTitel">Name des Programms *</label><input type="text" id="mTitel" required></div>
+        <div class="field"><label for="mGeber">Fördergeber</label><input type="text" id="mGeber"></div>
+        <div class="field"><label for="mEbene">Ebene</label><select id="mEbene"><option>Kreis/Stadt</option><option>Land</option><option>Bund</option><option>EU</option><option>Stiftung</option><option>Lotterie</option></select></div>
+        <div class="field"><label for="mLand">Bundesland</label><select id="mLand"><option value="">–</option></select></div>
+        <div class="field"><label for="mOrt">Kreis oder Stadt</label><input type="text" id="mOrt"></div>
+        <div class="field"><label for="mArt">Art</label><select id="mArt"><option value="zuschuss">Zuschuss</option><option value="darlehen">Darlehen</option><option value="pauschale">Pauschale</option><option value="kombination">Zuschuss + Darlehen</option></select></div>
+        <div class="field"><label for="mQuote">Förderquote in % (falls bekannt)</label><input type="number" id="mQuote" min="0" max="100"></div>
+        <div class="field"><label for="mEA">Eigenanteil in % (falls bekannt)</label><input type="number" id="mEA" min="0" max="100"></div>
+        <div class="field"><label for="mMax">Höchstbetrag in €</label><input type="number" id="mMax" min="0"></div>
+        <div class="field"><label for="mFrist">Frist</label><input type="text" id="mFrist" placeholder="z. B. 31.03.2027 oder laufend"></div>
+        <div class="field"><label for="mUrl">Link zur offiziellen Seite *</label><input type="text" id="mUrl" placeholder="https://"></div>
+      </div>
+      <div class="field"><label for="mText">Kurzbeschreibung</label><textarea id="mText"></textarea></div>
+      <button class="btn" id="mSend">Förderung melden</button>
+      <p class="note" id="mNote" role="status">Meldungen werden vor der Veröffentlichung von der Redaktion geprüft.</p>
+    </details>
+
+  </div>
+</section>
+
+<!-- MERKLISTE -->
+<section class="view" id="v-merkliste">
+  <h1>Merkliste</h1>
+  <p class="note" id="storeNote1"></p>
+  <div class="toolbar"><button class="btn ghost small" id="merkIcs">Fristen aller gemerkten Programme und Anträge in den Kalender (.ics)</button>
+  <button class="btn ghost small" id="merkCsv">Als Tabelle (CSV)</button><button class="btn ghost small" id="merkDruck">Drucken / PDF</button></div>
+  <div class="list" id="merkList"></div>
+</section>
+
+<!-- ANTRÄGE -->
+<section class="view" id="v-antraege">
+  <h1>Anträge verwalten</h1>
+  <p>Jeder Antrag hat Status, Fristen, Checkliste und ein Kontaktprotokoll. Fristen lassen sich in den Kalender übernehmen.</p>
+  <div class="row" style="margin-bottom:16px">
+    <button class="btn ghost small" id="appNew">Antrag ohne Programm anlegen</button>
+    <button class="btn ghost small" id="exportAll">Alle Daten exportieren</button>
+    <label class="btn ghost small" for="importFile" style="display:inline-block">Daten importieren</label><input type="file" id="importFile" accept="application/json" class="sr">
+  </div>
+  <div class="kanban" id="kanban"></div>
+</section>
+
+<!-- TEXTE -->
+<section class="view" id="v-texte">
+  <h1>Antragstexte erstellen</h1>
+  <p class="notice"><b>Bitte Texte selbständig individuell anpassen.</b> Die Vorlagen sind nur ein Ausgangspunkt – Angaben, Zahlen und Formulierungen müssen zu Ihrem Vorhaben und zur Förderrichtlinie passen.</p>
+  <p class="note">Die Antragstexte werden auf Deutsch erzeugt, weil deutsche Förderstellen Anträge auf Deutsch verlangen.</p>
+  <p>Füllen Sie die Felder aus. Das Werkzeug erzeugt eine Projektbeschreibung, ein Anschreiben und eine Kontaktanfrage an die Förderstelle. Alles funktioniert ohne KI; die KI-Überarbeitung ist optional.</p>
+  <div class="panel">
+    <div class="grid2">
+      <div class="field"><label for="tMuster">Mustervorlage (optional)</label><select id="tMuster"></select><span class="help">Füllt leere Felder mit einem Beispiel, das Sie anpassen.</span></div>
+      <div class="field"><label for="tProg">Förderprogramm</label><select id="tProg"></select></div>
+      <div class="field"><label for="tOrg">Antragsteller (Name, Verein, Gemeinde)</label><input type="text" id="tOrg"></div>
+      <div class="field"><label for="tPerson">Ansprechperson</label><input type="text" id="tPerson"></div>
+      <div class="field"><label for="tTitel">Projekttitel</label><input type="text" id="tTitel"></div>
+    </div>
+    <div class="field"><label for="tLage">Ausgangslage – welches Problem oder welcher Bedarf besteht?</label><textarea id="tLage"></textarea></div>
+    <div class="field"><label for="tZiel">Ziel – was soll am Ende anders sein?</label><textarea id="tZiel"></textarea></div>
+    <div class="grid2">
+      <div class="field"><label for="tGruppe">Zielgruppe und Anzahl erreichter Personen</label><input type="text" id="tGruppe"></div>
+      <div class="field"><label for="tZeit">Zeitraum</label><input type="text" id="tZeit" placeholder="z. B. 01.03.–30.11.2027"></div>
+    </div>
+    <div class="field"><label for="tMass">Maßnahmen – was genau wird getan?</label><textarea id="tMass"></textarea></div>
+    <div class="grid2">
+      <div class="field"><label for="tKosten">Gesamtkosten in €</label><input type="number" id="tKosten" min="0"></div>
+      <div class="field"><label for="tEigen">Eigenanteil in €</label><input type="number" id="tEigen" min="0"><span class="help">Eigenmittel, Spenden, Eigenleistung – je nach Programm zulässig.</span></div>
+    </div>
+    <label class="check"><input type="checkbox" id="tKirche"><span>Antragsteller ist eine Kirche, Freikirche oder ein kirchlicher Verein – Abgrenzung religiöser Angebote in den Text aufnehmen</span></label>
+    <button class="btn" id="tGen">Texte erzeugen</button>
+  </div>
+  <div class="panel" style="margin-top:16px"><h2>Kosten- und Finanzierungsplan</h2><p class="note">Rechnet Gesamtkosten, Eigenanteil und Förderquote aus und warnt bei Überschreitung bekannter Grenzen.</p><div id="fpBox"></div></div>
+  <div id="tOut"></div>
+</section>
+
+<!-- KONTO & KI -->
+<section class="view" id="v-konto">
+  <h1>Konto und KI</h1>
+  <div class="grid2">
+    <div class="panel" id="kontoPanel"></div>
+    <div class="panel">
+      <h2>KI-Unterstützung (optional)</h2>
+      <p>Die Plattform funktioniert vollständig ohne KI. Wer möchte, kann Texte zusätzlich von einer KI überarbeiten lassen.</p>
+      <div class="field"><label for="kiProv">Anbieter</label>
+        <select id="kiProv">
+          <option value="aus">Aus</option>
+          <option value="claudeai">Claude (in claude.ai, ohne Schlüssel)</option>
+          <option value="anthropic">Claude über eigenen API-Schlüssel</option>
+          <option value="openai">ChatGPT über eigenen API-Schlüssel</option>
+        </select></div>
+      <div id="kiKeyBox" hidden>
+        <div class="field"><label for="kiKey">API-Schlüssel</label><input type="password" id="kiKey" autocomplete="off"><span class="help">Wird nur für diese Browsersitzung gespeichert und direkt an den Anbieter gesendet, nie an unseren Server.</span></div>
+        <div class="field"><label for="kiModel">Modellname</label><input type="text" id="kiModel"><span class="help">Aktuelle Modellnamen stehen in der Dokumentation des Anbieters.</span></div>
+      </div>
+      <p class="note" id="kiState"></p>
+      <p class="notice">Keine personenbezogenen Daten Dritter eingeben. Texte, die an eine KI gehen, verarbeitet der jeweilige Anbieter.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REDAKTION -->
+<section class="view" id="v-redaktion">
+  <h1>Redaktion</h1>
+  <div class="grid2">
+    <div class="panel"><h2>Übersicht</h2><div id="redStat"></div><button class="btn" id="redImport">Import jetzt starten</button><p class="note" id="redImportNote" role="status"></p></div>
+    <div class="panel"><h2>Datenquellen</h2><p class="note">Ausgeschaltete Quellen werden beim nächsten Import nicht abgerufen. DSEE erst nach Freigabe durch die DSEE einschalten.</p><div id="redQuellen"></div></div>
+  </div>
+  <div class="panel" style="margin-top:16px"><h2>Website hinzufügen (Kreis, Stadt, Stiftung)</h2>
+    <div class="grid2">
+      <div class="field"><label for="wName">Kurzname (a–z, 0–9, -)</label><input type="text" id="wName" placeholder="stadt-musterstadt"></div>
+      <div class="field"><label for="wStart">Startseite der Förderübersicht</label><input type="text" id="wStart" placeholder="https://"></div>
+      <div class="field"><label for="wMuster">Linkmuster der Detailseiten (Regex)</label><input type="text" id="wMuster" placeholder="/foerderung/.+"></div>
+      <div class="field"><label for="wOrt">Ort</label><input type="text" id="wOrt"></div>
+      <div class="field"><label for="wGeber">Fördergeber</label><input type="text" id="wGeber"></div>
+      <div class="field"><label for="wLand">Bundesland (Name)</label><input type="text" id="wLand" placeholder="Nordrhein-Westfalen"></div>
+    </div><button class="btn" id="wAdd">Website anlegen</button><p class="note" id="wNote" role="status">Das Linkmuster findet man auf dem Server mit: python -m importer.run --probe-url &lt;Startseite&gt;</p></div>
+  <div class="panel" style="margin-top:16px"><h2>Meldungen prüfen</h2><div id="redMeld"></div></div>
+  <div class="panel" style="margin-top:16px"><h2>Eintrag korrigieren oder als geprüft markieren</h2>
+    <div class="field"><label for="kSuche">Eintrag suchen</label><input type="text" id="kSuche" placeholder="Titel eingeben"></div><div id="kTreffer"></div><div id="kForm"></div></div>
+  <div class="panel" style="margin-top:16px"><h2>Rollen vergeben</h2><p class="note">„Kommune“ ist ein Partnerkonto einer Verwaltung; deren Meldungen werden markiert und vorrangig geprüft.</p>
+    <div class="grid2"><div class="field"><label for="rMail">E-Mail des Kontos</label><input type="email" id="rMail"></div>
+    <div class="field"><label for="rRolle">Rolle</label><select id="rRolle"><option value="nutzer">Nutzer</option><option value="kommune">Kommune (Partner)</option><option value="redaktion">Redaktion</option></select></div>
+    <div class="field"><label for="rOrt">Ort (bei Kommune)</label><input type="text" id="rOrt"></div></div>
+    <button class="btn" id="rSet">Rolle speichern</button><p class="note" id="rNote" role="status"></p></div>
+</section>
+
+<!-- IMPRESSUM -->
+<section class="view" id="v-impressum">
+  <h1>Impressum</h1>
+  <div class="grid2">
+    <div class="panel">
+      <h2>Anbieter</h2>
+      <p>[Name / Organisation]<br>[Straße Hausnummer]<br>[PLZ Ort]</p>
+      <p>E-Mail: [kontakt@example.org]<br>Telefon: [optional]</p>
+      <p>Verantwortlich für den Inhalt: [Name, Anschrift]</p>
+      <p class="note">Platzhalter – vor Veröffentlichung nach § 5 DDG und § 18 MStV vollständig ausfüllen.</p>
+    </div>
+    <div class="panel donate">
+      <h2>Unterstützen</h2>
+      <p>Fördernavi ist kostenlos und werbefrei. Spenden helfen, die Daten aktuell zu halten.</p>
+      <button class="btn" disabled data-pay="paypal">PayPal – in Vorbereitung</button>
+      <button class="btn ghost" disabled data-pay="weitere">Weitere Anbieter – in Vorbereitung</button>
+      <p style="margin-top:12px">Überweisung:<br>Kontoinhaber: [Name]<br>IBAN: [DE00 0000 0000 0000 0000 00]<br>Verwendungszweck: Spende Fördernavi</p>
+      <p class="note">Spendenquittungen sind nur möglich, wenn der Betreiber als gemeinnützig anerkannt ist.</p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:16px">
+    <h2>Datenquellen und Lizenzen</h2>
+    <p>Daten aus der Förderdatenbank des Bundes stehen unter CC BY 4.0. Quelle: Förderdatenbank des Bundes, Bundesministerium für Wirtschaft und Energie, <a href="https://www.foerderdatenbank.de/" target="_blank" rel="noopener">foerderdatenbank.de</a>.</p>
+    <p>Kennzeichnung jedes Eintrags: <b>geprüft</b> = gegen offizielle Quelle abgeglichen; <b>Import</b> = automatisch aus offizieller Schnittstelle; <b>KI-Wissen, ungeprüft</b> = Startdaten aus dem Wissen eines Sprachmodells, können veraltet oder falsch sein; <b>Platzhalter</b> = Hinweis auf eine Förderart, die es örtlich oft gibt.</p>
+    <h2>Haftung</h2>
+    <p>Alle Angaben ohne Gewähr. Maßgeblich sind allein die Förderrichtlinie und der Bescheid des Fördergebers. Fördernavi ist keine Rechts- oder Steuerberatung.</p>
+    <h2>Datenschutz</h2>
+    <p>[Platzhalter für die Datenschutzerklärung.] Ohne Konto bleiben Merkliste und Anträge nur in diesem Browser gespeichert.</p>
+  </div>
+</section>
+</main>
+<footer><div class="wrap"><p class="themenlinks">Themen: <!--THEMENLINKS--></p>Fördernavi · <span id="stand"></span> · <a href="#" data-goto="impressum">Impressum und Spenden</a></div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const SEED = /*SEED_DATA*/[];
+const META = /*META*/{};
+const API = (document.querySelector('meta[name="api-base"]')||{}).content||"";
+
+const LAENDER={BW:"Baden-Württemberg",BY:"Bayern",BE:"Berlin",BB:"Brandenburg",HB:"Bremen",HH:"Hamburg",HE:"Hessen",MV:"Mecklenburg-Vorpommern",NI:"Niedersachsen",NW:"Nordrhein-Westfalen",RP:"Rheinland-Pfalz",SL:"Saarland",SN:"Sachsen",ST:"Sachsen-Anhalt",SH:"Schleswig-Holstein",TH:"Thüringen"};
+const STAATEN={DE:"Deutschland",AT:"Österreich",BE:"Belgien",BG:"Bulgarien",HR:"Kroatien",CY:"Zypern",CZ:"Tschechien",DK:"Dänemark",EE:"Estland",FI:"Finnland",FR:"Frankreich",GR:"Griechenland",HU:"Ungarn",IE:"Irland",IT:"Italien",LV:"Lettland",LT:"Litauen",LU:"Luxemburg",MT:"Malta",NL:"Niederlande",PL:"Polen",PT:"Portugal",RO:"Rumänien",SK:"Slowakei",SI:"Slowenien",ES:"Spanien",SE:"Schweden"};
+// Geprüfte nationale Einstiegspunkte (Stand 30.09.2026); für andere Staaten nur EU-Programme + Meldungen
+const NATIONAL={DE:[["Förderdatenbank des Bundes","https://www.foerderdatenbank.de/"],["Servicesuche Bund (Verwaltungsleistungen)","https://servicesuche.bund.de"],["Förderdatenbank der DSEE","https://foerderdatenbank.d-s-e-e.de/"]],
+ FR:[["API Aides-territoires (ca. 3.000 Hilfen)","https://www.api.gouv.fr/les-api/api-aides-territoires"]],
+ ES:[["Base de Datos Nacional de Subvenciones (BDNS)","https://www.pap.hacienda.gob.es/bdnstrans/estaticos/ayuda/AYUDA%20-%20Sistema%20Nacional%20de%20Publicidad%20de%20Subvenciones%20y%20Ayudas%20P%C3%BAblicas%20v2023.pdf"]],
+ AT:[["Transparenzportal (Förderungen von Bund und Ländern)","https://www.bmf.gv.at/egovernment/portale/transparenzportal.html"]]};
+// Zusammengefasste Zielgruppen: [Schlüssel, Bezeichnung, Erläuterung, enthaltene Datenkategorien]
+const WER=[["privat","Privatperson / Familie","auch Alleinerziehende, Schüler, Studenten, Pflege",["privat","familie","studierende"]],
+ ["unternehmen","Unternehmen / Selbstständige / Gründer","Gründung, Freiberufler, kleine und mittlere Unternehmen",["gruender","selbststaendig","kmu"]],
+ ["verein","Verein / gemeinnützige Organisation / NGO","auch Stiftungen und gemeinnützige GmbH",["verein"]],
+ ["kirche","Kirche / Freikirche","als Gemeinde oder eingetragener Verein",["kirche","verein"]],
+ ["kommune","Kommune","Stadt, Gemeinde, Kreis",["kommune"]]];
+const WER_Z=Object.fromEntries(WER.map(w=>[w[0],w[3]]));
+const THEMEN=[["familie","Familie & Kinder"],["wohnen","Wohnen & Eigentum"],["gesundheit","Gesundheit & Pflege"],["steuern","Steuern sparen"],["finanzierung","Finanzierung, Kredite, Bürgschaften"],["gruendung","Gründung"],["energie","Energie & Heizung"],["bauen","Bauen & Sanieren"],["bildung","Bildung & Weiterbildung"],["soziales","Soziales"],["inklusion","Inklusion"],["ehrenamt","Ehrenamt"],["jugend","Jugendarbeit"],["kultur","Kultur & Heimat"],["sport","Sport"],["umwelt","Umwelt & Natur"],["demokratie","Demokratie"],["digital","Digitalisierung"],["forschung","Forschung & Innovation"],["beratung","Beratung"],["denkmal","Denkmal"],["laendlich","Ländlicher Raum"],["international","International"],["lebensunterhalt","Lebensunterhalt"]];
+const ART={zuschuss:"Zuschuss",pauschale:"Pauschale",stipendium:"Stipendium",sozialleistung:"Sozialleistung",darlehen:"Darlehen",kombination:"Zuschuss + Darlehen",buergschaft:"Bürgschaft",beteiligung:"Beteiligung",preis:"Preis / Wettbewerb",steuer:"Steuervorteil"};
+const QUELLE={ki:"KI-Wissen, ungeprüft",geprueft:"geprüft",teilgeprueft:"teilweise geprüft",import:"Import aus offizieller Schnittstelle",platzhalter:"Platzhalter",meldung:"Nutzermeldung, ungeprüft",scrape:"automatisch von Website gelesen, ungeprüft"};
+const STATUS=[["idee","Idee"],["vorbereitung","In Vorbereitung"],["eingereicht","Eingereicht"],["bewilligt","Bewilligt"],["nachweis","Verwendungsnachweis"],["abgeschlossen","Abgeschlossen"],["abgelehnt","Abgelehnt"]];
+const CHECK=["Förderrichtlinie vollständig gelesen","Antragsberechtigung geprüft","Nicht vor Bewilligung mit dem Projekt beginnen (vorzeitiger Maßnahmebeginn)","Kosten- und Finanzierungsplan erstellt","Eigenanteil gesichert","Nachweis der Gemeinnützigkeit (falls Verein/Kirche)","Satzung / Registerauszug","Angebote oder Kostenvoranschläge","Projektbeschreibung","Kontakt zur Förderstelle aufgenommen","Antrag eingereicht (Datum notieren)","Bewilligungsbescheid abgelegt","Frist für Verwendungsnachweis notiert"];
+
+// Fehlende Listenfelder ergänzen, damit Filter nie an unvollständigen Einträgen abbrechen
+const fix=arr=>arr.map(p=>Object.assign(p,{z:Array.isArray(p.z)?p.z:[],th:Array.isArray(p.th)?p.th:[],c:p.c||(p.r==="EU"?"EU":"DE")}));
+let DATA=fix(SEED.slice());
+const SRC=[["basis","Geprüfte Grunddaten"],["fdb","Förderdatenbank des Bundes"],["eu_sedia","EU Funding & Tenders"],["dsee","DSEE"],["pvog","Verwaltungsleistungen (Bund, Land, Kommune)"],["kommunen","Städte und Kreise (automatisch gefunden)"],["oparl","Ratsinformationssysteme der Kommunen"],["frankreich","Frankreich: Aides-territoires"],["spanien","Spanien: BDNS"],["web","Websites (Kreise, Städte, Stiftungen)"],["meldung","Geprüfte Meldungen"]];
+const srcOf=p=>p.id.startsWith("meldung-")?"meldung":!p.src?"basis":["fdb","eu_sedia","dsee","pvog","kommunen","oparl","frankreich","spanien"].includes(p.src)?p.src:"web";
+const srcOn=new Set(SRC.map(x=>x[0]));
+const HEUTE=new Date().toISOString().slice(0,10);
+const isoFrist=f=>/^\d{4}-\d{2}-\d{2}$/.test(f||"");
+const fmtFrist=f=>isoFrist(f)?new Date(f+"T00:00:00").toLocaleDateString("de-DE"):f;
+const norm=t=>(t||"").toLowerCase().replace(/[^a-zäöüß0-9]/g,"");
+const S={step:0,wer:null,liste:null,projekte:new Set(),staat:"DE",land:"",ort:"",themen:new Set(),art:"alle",ohneRueck:false,ea:"egal",unbekannt:true,kosten:"",nurKirche:false,q:""};
+
+/* ---------- Speicher ---------- */
+const KEY="fordernavi:v1";
+let store={merk:[],apps:[],meldungen:[]};
+let storageOk=true;
+function load(){try{const r=localStorage.getItem(KEY);if(r)store=Object.assign(store,JSON.parse(r));}catch(e){storageOk=false;}}
+let syncTimer=null;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){storageOk=false;}
+  if(API&&token()){clearTimeout(syncTimer);syncTimer=setTimeout(pushState,800);}
+  counts();}
+function token(){try{return localStorage.getItem(KEY+":token")||"";}catch(e){return "";}}
+function setToken(t){try{t?localStorage.setItem(KEY+":token",t):localStorage.removeItem(KEY+":token");}catch(e){}}
+async function api(path,opt={}){const h={"Content-Type":"application/json"};if(token())h.Authorization="Bearer "+token();
+  const r=await fetch(API+path,Object.assign({headers:h},opt));const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.detail||("Fehler "+r.status));return j;}
+async function pushState(){try{await api("/state",{method:"PUT",body:JSON.stringify({merk:store.merk,apps:store.apps})});}catch(e){toast("Sync fehlgeschlagen: "+e.message);}}
+async function pullState(){try{const j=await api("/state");if(j&&j.apps){store.merk=j.merk||[];store.apps=j.apps||[];save();renderAll();}}catch(e){}}
+
+/* ---------- Hilfen ---------- */
+const $=s=>document.querySelector(s);
+function el(tag,attrs={},...kids){const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==="class")e.className=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else if(v===true)e.setAttribute(k,"");else if(v!==false&&v!=null)e.setAttribute(k,v);}for(const k of kids.flat()){if(k==null||k===false)continue;e.append(k.nodeType?k:document.createTextNode(String(k)));}return e;}
+const eur=n=>n==null?"–":new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(n);
+function toast(t){const x=$("#toast");x.textContent=T(t);x.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>x.classList.remove("on"),2600);}
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+const byId=id=>DATA.find(p=>p.id===id);
+
+/* ---------- Downloads (claude.ai-Capability oder normaler Browser) ---------- */
+let dl=null;
+async function download(filename,data,type){
+  if(dl){try{await dl.save({filename,data});return;}catch(e){toast("Download abgebrochen");return;}}
+  const url=URL.createObjectURL(new Blob([data],{type}));const a=el("a",{href:url,download:filename});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+
+/* ---------- Assistent ---------- */
+const STEPS=["Wer","Wo","Was","Bedingungen"];
+function renderSteps(){const ol=$("#steps");ol.replaceChildren(...STEPS.map((n,i)=>el("li",{},el("button",{type:"button","aria-current":S.step===i?"step":false,class:stepDone(i)?"done":"",onclick:()=>{S.step=i;renderStep();}},`${i+1}. ${T(n)}`))));}
+function stepDone(i){return (i===0&&S.wer)||(i===1&&S.land)||(i===2&&S.themen.size)||(i===3&&(S.ohneRueck||S.ea!=="egal"||S.art!=="alle"));}
+function chip(label,pressed,on,sub){return el("button",{type:"button",class:"chip","aria-pressed":pressed?"true":"false",onclick:on},label,sub?el("small",{},sub):null);}
+function renderStep(){
+  renderSteps();const p=$("#stepPanel");p.replaceChildren();
+  if(S.step===0){p.append(el("h2",{},"Für wen ist die Förderung?"),el("div",{class:"chips"},WER.map(([k,l,sub])=>chip(l,S.wer===k,()=>{S.wer=S.wer===k?null:k;renderStep();update();},sub))));
+    if(S.wer==="kirche")p.append(el("p",{class:"notice"},"Gezeigt werden Programme für Kirchen und – weil eine Freikirche meist ein eingetragener gemeinnütziger Verein ist – alle Programme für Vereine. Einschätzung: Religiöse Verkündigung wird in der Regel nicht gefördert; soziale, kulturelle, Bildungs- und Jugendprojekte oft schon. Programme mit bekanntem Ausschluss von Kirchen werden ausgeblendet."));}
+  if(S.step===1){const st=el("select",{id:"staat",onchange:e=>{S.staat=e.target.value;S.land="";renderStep();update();renderNational();}},Object.entries(STAATEN).map(([k,v])=>el("option",{value:k,selected:S.staat===k},v)));
+    const sel=el("select",{id:"land",onchange:e=>{S.land=e.target.value;update();renderSteps();}},el("option",{value:""},"Bundesland wählen"),Object.entries(LAENDER).map(([k,v])=>el("option",{value:k,selected:S.land===k},v)));
+    p.append(el("h2",{},"Wo findet das Vorhaben statt?"),el("div",{class:"row"},el("div",{class:"field"},el("label",{for:"staat"},"Staat"),st),
+      S.staat==="DE"?el("div",{class:"field"},el("label",{for:"land"},"Bundesland"),sel):null,
+      el("div",{class:"field"},el("label",{for:"ort"},S.staat==="DE"?"Stadt, Gemeinde oder PLZ (optional)":"Region oder Ort (optional)"),el("input",{type:"text",id:"ort",value:S.ort,oninput:e=>{S.ort=e.target.value;update();}}),el("span",{class:"help"},"Grenzt örtliche Programme ein; EU- und landesweite Programme bleiben sichtbar."))));
+    if(S.staat==="DE")p.append(el("div",{class:"row"},el("button",{class:"btn ghost small",onclick:()=>pvogLive()},"Verwaltungsleistungen für diesen Ort live abrufen"),el("span",{class:"note",id:"pvogNote",role:"status"})));
+    if(S.staat!=="DE")p.append(el("p",{class:"notice"},"Für "+STAATEN[S.staat]+" zeigt Fördernavi EU-Programme"+(NATIONAL[S.staat]?" und Programme aus der nationalen Datenbank":"")+". Nationale, regionale und kommunale Förderungen dieses Staates sind "+(NATIONAL[S.staat]?"nur teilweise":"noch nicht")+" erfasst."));}
+  if(S.step===2){p.append(el("h2",{},"Was soll gefördert werden?"),el("p",{class:"note"},"Mehrfachauswahl möglich. Ohne Auswahl werden alle Themen gezeigt."),el("div",{class:"chips"},THEMEN.map(([k,l])=>chip(l,S.themen.has(k),()=>{S.themen.has(k)?S.themen.delete(k):S.themen.add(k);renderStep();update();}))),
+    el("details",{class:"editor",open:S.projekte.size>0||["verein","kirche"].includes(S.wer)},el("summary",{},"Nach Projektart filtern (optional, besonders für Vereine, Kirchen und NGOs)"+(S.projekte.size?` – ${S.projekte.size} gewählt`:"")),
+      el("p",{class:"note"},"Zeigt Programme, die zu mindestens einem gewählten Projekt passen. Die kleinen Zeilen nennen typische Bausteine."),
+      el("div",{class:"chips"},PROJEKTE.map(([k,l,,,sub])=>chip(l,S.projekte.has(k),()=>{S.projekte.has(k)?S.projekte.delete(k):S.projekte.add(k);renderStep();update();},sub.length<70?sub:null))),
+      S.projekte.has("bibelkurs")?el("p",{class:"notice"},PROJ.bibelkurs[4]):null,
+      S.projekte.size?el("button",{class:"btn small ghost",onclick:()=>{S.projekte.clear();renderStep();update();}},"Projektauswahl zurücksetzen"):null));}
+  if(S.step===3){
+    p.append(el("h2",{},"Welche Bedingungen?"),
+      el("h3",{},"Art der Förderung"),
+      el("div",{class:"chips"},[["alle","Alle"],["geschenkt","Nur ohne Rückzahlung","Zuschuss, Pauschale, Stipendium"],["darlehen","Nur Darlehen"],["kombination","Zuschuss + Darlehen"]].map(([k,l,s])=>chip(l,S.art===k,()=>{S.art=k;S.ohneRueck=(k==="geschenkt");renderStep();update();},s))),
+      el("h3",{style:"margin-top:16px"},"Eigenanteil – wie viel können Sie selbst tragen?"),
+      el("div",{class:"chips"},[["egal","Egal"],["0","Kein Eigenanteil","100 % gefördert"],["10","bis 10 %"],["20","bis 20 %"],["30","bis 30 %"],["50","bis 50 %"],["80","bis 80 %"]].map(([k,l,s])=>chip(l,S.ea===k,()=>{S.ea=k;renderStep();update();},s))),
+      el("label",{class:"check"},el("input",{type:"checkbox",checked:S.unbekannt,onchange:e=>{S.unbekannt=e.target.checked;update();}}),el("span",{},"Programme mit unbekanntem Eigenanteil trotzdem zeigen (als „prüfen“ markiert)")),
+      el("div",{class:"row"},el("div",{class:"field"},el("label",{for:"kosten"},"Projektkosten in € (optional)"),el("input",{type:"number",id:"kosten",min:"0",value:S.kosten,oninput:e=>{S.kosten=e.target.value;update();}}),el("span",{class:"help"},"Dann rechnet jede Karte Förderbetrag und Eigenanteil in Euro aus."))));
+  }
+  p.append(el("div",{class:"nav-btns"},el("button",{class:"btn ghost",disabled:S.step===0,onclick:()=>{S.step--;renderStep();}},T("Zurück")),
+    S.step<3?el("button",{class:"btn",onclick:()=>{S.step++;renderStep();}},T("Weiter")):el("button",{class:"btn",onclick:()=>$("#resTitle").scrollIntoView({behavior:"smooth"})},T("Ergebnisse ansehen"))));
+}
+
+/* ---------- Filter ---------- */
+function match(p){
+  if(!srcOn.has(srcOf(p)))return false;
+  if(S.liste&&!SCHNELL_F[S.liste](p))return false;
+  if(p.c!=="EU"&&p.c!==S.staat)return false;
+  if($("#hideExpired")&&$("#hideExpired").checked&&isoFrist(p.frist)&&p.frist<HEUTE)return false;
+  if(p.ort&&p.ort.length&&S.ort&&!p.ort.some(o=>norm(S.ort).includes(norm(o))||norm(o).includes(norm(S.ort))))return false;
+  // Eine Kirche/Freikirche als eingetragener gemeinnütziger Verein ist auch für Vereinsprogramme antragsberechtigt
+  const zz=p.z||[];
+  if(S.wer&&!zz.some(z=>WER_Z[S.wer].includes(z)))return false;
+  if(S.wer==="kirche"&&p.kirche==="nein")return false;
+  if(S.staat==="DE"&&!["DE","EU","lokal"].includes(p.r)&&S.land&&p.r!==S.land)return false;
+  if(S.themen.size&&!(p.th||[]).some(t=>S.themen.has(t)))return false;
+  if(S.projekte.size&&!projScore(p,[...S.projekte]))return false;
+  if(S.ohneRueck&&p.rz!=="nein")return false;
+  if(S.art==="darlehen"&&p.a!=="darlehen")return false;
+  if(S.art==="kombination"&&p.a!=="kombination")return false;
+  if(S.ea!=="egal"){const lim=+S.ea;if(p.ea==null){if(!S.unbekannt)return false;}else if(p.ea>lim)return false;}
+  if(S.q){const t=(p.t+" "+p.g+" "+(p.hin||"")).toLowerCase();if(!S.q.toLowerCase().split(/\s+/).every(w=>t.includes(w)))return false;}
+  return true;}
+function rank(p){let s=0;if(S.projekte&&S.projekte.size)s+=projScore(p,[...S.projekte])*15;if(p.rz==="nein")s+=30;if(p.ea===0)s+=20;else if(p.ea!=null)s+=10-p.ea/10;if(p.q!=null)s+=3;if(p.r===S.land)s+=8;if(p.ort&&S.ort)s+=12;if(isoFrist(p.frist)&&p.frist>=HEUTE)s+=2;if(p.r==="lokal")s-=4;if(p.quelle==="geprueft"||p.quelle==="import")s+=5;return -s;}
+let LIMIT=30,LETZTE=[];
+function update(more){if(S.mode==="fragen"){if(!more)LIMIT=30;renderCheckResults();return;}if(!more)LIMIT=30;const res=DATA.filter(match).sort((a,b)=>rank(a)-rank(b));
+  $("#resSum").textContent=`${res.length} von ${DATA.length} Einträgen`;LETZTE=res;
+  if(typeof renderStart==="function"&&!update.inStart){update.inStart=true;try{renderStart();}finally{update.inStart=false;}}
+  const tl=$("#tbListe");if(tl){const s=SCHNELL.find(x=>x[0]===S.liste);tl.hidden=!s;if(s)tl.textContent="✕ "+s[1];}
+  const box=$("#results");box.replaceChildren();
+  if(!res.length){box.append(el("div",{class:"empty"},el("p",{},"Keine Programme erfüllen alle Bedingungen."),el("p",{},"Versuchen Sie einen höheren Eigenanteil, blenden Sie Programme mit unbekanntem Eigenanteil ein oder wählen Sie weniger Themen.")));return;}
+  res.slice(0,LIMIT).forEach(p=>box.append(card(p)));
+  if(res.length>LIMIT)box.append(el("button",{class:"btn ghost",onclick:()=>{LIMIT+=30;update(true);}},`Weitere ${Math.min(30,res.length-LIMIT)} von noch ${res.length-LIMIT} anzeigen`));}
+
+/* ---------- Karte mit Finanzierungsbalken ---------- */
+function finanz(p){
+  const k=+S.kosten||0;const loan=["darlehen","buergschaft","beteiligung"].includes(p.a);
+  let q=p.q,ea=p.ea;if(q==null&&ea!=null)q=100-ea;if(ea==null&&q!=null&&!loan)ea=100-q;
+  let gBetrag=null,eBetrag=null,capped=false;
+  if(k&&q!=null){gBetrag=k*q/100;if(p.max!=null&&gBetrag>p.max){gBetrag=p.max;capped=true;}eBetrag=k-gBetrag;}
+  const qPct=q==null?0:(gBetrag!=null&&k?gBetrag/k*100:q);const ePct=q==null?0:100-qPct;
+  const bar=el("div",{class:"bar",role:"img","aria-label":q==null?"Förderquote unbekannt":`${Math.round(qPct)} % ${loan?"Darlehen":"Förderung"}, ${Math.round(ePct)} % Eigenanteil`},
+    q!=null?el("div",{class:loan?"l":"g",style:`width:${qPct}%`}):null,q!=null&&ePct>0?el("div",{class:"o",style:`width:${ePct}%`}):null);
+  const leg=el("div",{class:"legend"});
+  if(q==null)leg.append(el("span",{},el("span",{class:"dot",style:"background:var(--unknown)"}),"Quote und Eigenanteil unbekannt – Richtlinie prüfen"));
+  else{leg.append(el("span",{},el("span",{class:"dot",style:`background:var(--${loan?"loan":"grant"})`}),loan?"Darlehen bis ":"Förderung bis ",el("b",{},Math.round(qPct)+" %"),gBetrag!=null?` = ${eur(gBetrag)}`:""),
+    el("span",{},el("span",{class:"dot",style:"background:var(--own)"}),"Eigenanteil ",el("b",{},Math.round(ePct)+" %"),eBetrag!=null?` = ${eur(eBetrag)}`:""));}
+  if(p.max!=null)leg.append(el("span",{},"Höchstbetrag ",el("b",{},eur(p.max))));
+  if(capped)leg.append(el("span",{style:"color:var(--own)"},"Höchstbetrag begrenzt die Förderung"));
+  return el("div",{class:"fin"},bar,leg);}
+function card(p,opts={}){
+  const inMerk=store.merk.includes(p.id);
+  const rzTag=p.rz==="nein"?el("span",{class:"tag grant"},"keine Rückzahlung"):p.rz==="ja"?el("span",{class:"tag loan"},"Rückzahlung"):el("span",{class:"tag warn"},"teilweise Rückzahlung");
+  const eaTag=p.ea===0?el("span",{class:"tag grant"},"ohne Eigenanteil"):p.ea==null?el("span",{class:"tag warn"},"Eigenanteil prüfen"):null;
+  const reg=p.c&&p.c!=="DE"&&p.c!=="EU"?(STAATEN[p.c]||p.c):p.r==="DE"?"bundesweit":p.r==="EU"?"EU-weit":p.r==="lokal"?(S.ort?`örtlich – in ${S.ort} prüfen`:"örtlich"):LAENDER[p.r]||p.r;
+  return el("article",{class:"card"},
+    el("div",{class:"meta"},el("span",{class:"tag"},p.e),el("span",{class:"tag"},ART[p.a]||p.a),rzTag,eaTag,el("span",{class:"tag"},p.ort&&p.ort.length?"nur "+p.ort.join(", "):reg)),
+    (()=>{const ps=S.mode!=="fragen"?passung(p):null;return ps?el("details",{class:"pass"},el("summary",{},el("span",{class:"pass-pct"},ps.pct+" %")," Passung – ",el("span",{},"Warum?")),el("ul",{},ps.g.map(x=>el("li",{},x)))):null;})(),
+    el("h3",{},p.t),el("p",{class:"giver"},el("span",{"data-notr":""},p.g),p.frist?[" · ",el("span",{},"Frist:")," ",el("span",{},fmtFrist(p.frist))]:null,isoFrist(p.frist)&&p.frist<HEUTE?el("span",{}," (abgelaufen)"):null),
+    finanz(p),
+    p.hin?el("p",{class:"hint"},p.hin):null,
+    p.kombi?el("p",{class:"hint",style:"border-left:3px solid var(--own);padding-left:8px"},el("b",{},"Kombinieren: "),p.kombi):null,
+    S.projekte&&S.projekte.size&&S.mode!=="fragen"?el("p",{class:"src"},"Passt zu Projekt: "+projListe(projNamen(p,[...S.projekte]))):null,
+    el("p",{class:"src"},"Datenstand: ",p.quelle==="geprueft"||p.quelle==="teilgeprueft"?el("span",{class:"tag ok"},QUELLE[p.quelle]):QUELLE[p.quelle]||p.quelle,
+      p.pruef?` am ${fmtFrist(p.pruef.datum)}${p.pruef.durch?" durch "+p.pruef.durch:""}`:"",
+      p.pruef&&p.pruef.belege&&p.pruef.belege.length?[" · Belege: ",...p.pruef.belege.flatMap((b,i)=>[i?", ":"",el("a",{href:b,target:"_blank",rel:"noopener","aria-label":"Beleg "+(i+1)+" zu "+p.t},String(i+1))])]:"",p.stand?` (${p.stand})`:"",p.auto?" · Quote/Eigenanteil automatisch aus dem Text gelesen":"",p.lizenz?` · Quelle: ${p.lizenz}`:"",p.url&&!p.urlOk&&p.quelle!=="import"?" · Link zur Startseite des Fördergebers, nicht aufgerufen":""),
+    el("div",{class:"actions"},
+      el("button",{class:"btn small"+(inMerk?" ghost":""),onclick:()=>{toggleMerk(p.id);}},inMerk?"Von Merkliste entfernen":"Merken"),
+      el("button",{class:"btn small ghost",onclick:()=>{newApp(p.id);}},"Antrag anlegen"),
+      el("button",{class:"btn small ghost",onclick:()=>{go("texte");$("#tProg").value=p.id;}},"Text vorbereiten"),
+      p.url?el("a",{class:"btn small ghost",href:p.url,target:"_blank",rel:"noopener"},p.src==="fdb"?"In der Förderdatenbank":"Offizielle Seite"):null,
+      p.offiziell?el("a",{class:"btn small ghost",href:p.offiziell,target:"_blank",rel:"noopener"},"Fördergeber"):null));}
+function toggleMerk(id){const i=store.merk.indexOf(id);i>=0?store.merk.splice(i,1):store.merk.push(id);save();toast(i>=0?"Von der Merkliste entfernt":"Gemerkt");update();renderMerk();}
+
+/* ---------- Merkliste ---------- */
+function renderMerk(){const b=$("#merkList");b.replaceChildren();const items=store.merk.map(byId).filter(Boolean);
+  if(!items.length)b.append(el("div",{class:"empty"},"Noch nichts gemerkt. Unter „Finden“ bei einem Programm auf „Merken“ tippen."));
+  items.forEach(p=>b.append(card(p)));
+  $("#storeNote1").textContent=API&&token()?"Mit Ihrem Konto synchronisiert.":storageOk?"Gespeichert in diesem Browser. Mit einem Konto auch auf anderen Geräten.":"Speichern im Browser ist hier nicht möglich – Daten gehen beim Schließen verloren. Bitte exportieren.";}
+
+/* ---------- Anträge ---------- */
+function newApp(pid){const p=pid?byId(pid):null;store.apps.push({id:uid(),pid:pid||null,titel:p?p.t:"Neuer Antrag",status:"idee",frist:"",nachweis:"",betrag:"",notiz:"",checks:{},log:[],created:new Date().toISOString()});save();go("antraege");toast("Antrag angelegt");}
+function daysTo(d){if(!d)return null;return Math.round((new Date(d+"T00:00:00")-new Date(new Date().toDateString()))/864e5);}
+function renderApps(){const k=$("#kanban");k.replaceChildren();
+  STATUS.forEach(([sk,sl])=>{const items=store.apps.filter(a=>a.status===sk);
+    if(!items.length&&["nachweis","abgeschlossen","abgelehnt"].includes(sk))return;
+    k.append(el("div",{class:"col"},el("h3",{},sl,el("span",{class:"note"},String(items.length))),el("div",{class:"items"},items.length?items.map(appCard):el("p",{class:"note"},"–"))));});
+  if(!store.apps.length)k.replaceChildren(el("div",{class:"empty"},"Noch keine Anträge. Legen Sie bei einem Programm „Antrag anlegen“ an."));}
+function appCard(a){const p=a.pid?byId(a.pid):null;const d=daysTo(a.frist);const done=CHECK.filter(c=>a.checks[c]).length;
+  const upd=(f,v)=>{a[f]=v;save();};
+  return el("div",{class:"app"},
+    el("strong",{},a.titel),p?el("div",{class:"note"},p.g):null,
+    a.frist?el("div",{class:"due"+(d!=null&&d<=14&&d>=0?" soon":"")},`Antragsfrist: ${new Date(a.frist).toLocaleDateString("de-DE")}`+(d!=null?(d>=0?` (in ${d} Tagen)`:" (abgelaufen)"):"")):null,
+    el("div",{class:"note"},`Checkliste ${done}/${CHECK.length}`),
+    el("details",{class:"editor"},el("summary",{},"Bearbeiten"),
+      el("div",{class:"field"},el("label",{},"Titel"),el("input",{type:"text",value:a.titel,onchange:e=>{upd("titel",e.target.value);renderApps();}})),
+      el("div",{class:"field"},el("label",{},"Status"),el("select",{onchange:e=>{upd("status",e.target.value);renderApps();}},STATUS.map(([k,l])=>el("option",{value:k,selected:a.status===k},l)))),
+      el("div",{class:"field"},el("label",{},"Antragsfrist"),el("input",{type:"date",value:a.frist,onchange:e=>{upd("frist",e.target.value);renderApps();}})),
+      el("div",{class:"field"},el("label",{},"Frist Verwendungsnachweis"),el("input",{type:"date",value:a.nachweis,onchange:e=>upd("nachweis",e.target.value)})),
+      el("div",{class:"field"},el("label",{},"Beantragter Betrag in €"),el("input",{type:"number",value:a.betrag,onchange:e=>upd("betrag",e.target.value)})),
+      el("div",{class:"field"},el("label",{},"Notizen"),el("textarea",{onchange:e=>upd("notiz",e.target.value)},a.notiz)),
+      el("h3",{},"Checkliste"),CHECK.map(c=>el("label",{class:"check"},el("input",{type:"checkbox",checked:!!a.checks[c],onchange:e=>{a.checks[c]=e.target.checked;save();}}),el("span",{},c))),
+      el("h3",{},"Kontaktprotokoll"),a.log.map(l=>el("div",{class:"log"},el("b",{},new Date(l.d).toLocaleDateString("de-DE")+" · "+l.art),el("div",{},l.text))),
+      logForm(a),
+      el("div",{class:"actions",style:"display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"},
+        el("button",{class:"btn small ghost",onclick:()=>ics(a)},"Fristen in Kalender"),
+        el("button",{class:"btn small ghost",onclick:()=>nachweis(a)},"Verwendungsnachweis vorbereiten"),
+        el("button",{class:"btn small ghost",onclick:()=>{go("texte");if(a.pid)$("#tProg").value=a.pid;}},"Texte erstellen"),
+        el("button",{class:"btn small ghost",style:"color:var(--danger)",onclick:()=>{if(confirm(T("Antrag löschen?"))){store.apps=store.apps.filter(x=>x!==a);save();renderApps();}}},"Löschen"))));}
+function logForm(a){const art=el("select",{},["E-Mail","Telefon","Termin","Brief","Sonstiges"].map(x=>el("option",{},x)));const t=el("input",{type:"text",placeholder:"Was wurde besprochen?"});
+  return el("div",{class:"row"},el("div",{class:"field",style:"flex:0 1 130px"},art),el("div",{class:"field"},t),el("button",{class:"btn small",style:"margin:8px 0",onclick:()=>{if(!t.value.trim())return;a.log.push({d:new Date().toISOString(),art:art.value,text:t.value.trim()});save();renderApps();}},"Eintragen"));}
+function ics(a){const ev=[];const f=(d,t)=>{const x=d.replace(/-/g,"");ev.push(["BEGIN:VEVENT","UID:"+a.id+t.length+"@fordernavi","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").slice(0,15)+"Z","DTSTART;VALUE=DATE:"+x,"SUMMARY:"+t+": "+a.titel.replace(/[,;]/g," "),"BEGIN:VALARM","TRIGGER:-P7D","ACTION:DISPLAY","DESCRIPTION:Erinnerung","END:VALARM","END:VEVENT"].join("\r\n"));};
+  if(a.frist)f(a.frist,"Antragsfrist");if(a.nachweis)f(a.nachweis,"Verwendungsnachweis");
+  if(!ev.length){toast("Erst eine Frist eintragen");return;}
+  download("frist-"+a.id+".ics",["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Foerdernavi//DE",...ev,"END:VCALENDAR"].join("\r\n"),"text/calendar");}
+
+/* ---------- Texte ---------- */
+function progOptions(){const s=$("#tProg");const cur=s.value;s.replaceChildren(el("option",{value:""},"– frei, ohne Programm –"));
+  const ids=[...new Set([...store.merk,...store.apps.map(a=>a.pid).filter(Boolean)])];
+  const grp1=el("optgroup",{label:"Merkliste und Anträge"},ids.map(byId).filter(Boolean).map(p=>el("option",{value:p.id},p.t)));
+  const grp2=el("optgroup",{label:"Alle Programme"},DATA.map(p=>el("option",{value:p.id},p.t)));
+  if(ids.length)s.append(grp1);s.append(grp2);s.value=cur;}
+function val(id){return ($(id).value||"").trim();}
+function gen(){const p=byId(val("#tProg"));const k=+val("#tKosten")||0,e=+val("#tEigen")||0;const beantragt=k-e;
+  const L=v=>v||"[bitte ergänzen]";const prog=p?`${p.t} (${p.g})`:"[Förderprogramm]";
+  const beschreibung=`Projektbeschreibung: ${L(val("#tTitel"))}
+
+1. Antragsteller
+${L(val("#tOrg"))}, Ansprechperson: ${L(val("#tPerson"))}
+
+2. Ausgangslage und Bedarf
+${L(val("#tLage"))}
+
+3. Ziele
+${L(val("#tZiel"))}
+
+4. Zielgruppe
+${L(val("#tGruppe"))}
+
+5. Maßnahmen und Zeitplan
+${L(val("#tMass"))}
+Zeitraum: ${L(val("#tZeit"))}
+
+6. Kosten und Finanzierung
+Gesamtkosten: ${k?eur(k):"[bitte ergänzen]"}
+Eigenanteil: ${e?eur(e):"[bitte ergänzen]"}${k&&e?` (${Math.round(e/k*100)} %)`:""}
+Beantragte Förderung: ${k?eur(beantragt):"[bitte ergänzen]"}${p&&p.q!=null&&k&&beantragt/k*100>p.q?`\nHinweis: Die beantragte Quote liegt über der bekannten Höchstquote des Programms (${p.q} %). Bitte prüfen.`:""}${p&&p.max!=null&&beantragt>p.max?`\nHinweis: Der Betrag liegt über dem bekannten Höchstbetrag (${eur(p.max)}).`:""}
+
+7. Nachhaltigkeit
+[Wie geht es nach dem Förderzeitraum weiter?]${$("#tKirche").checked?"\n\n8. Offenheit und Abgrenzung\n"+ABGRENZUNG:""}`;
+  const anschreiben=`${L(val("#tOrg"))}
+[Anschrift]
+
+An
+${p?p.g:"[Fördergeber]"}
+[Anschrift der Förderstelle]
+
+[Ort], ${new Date().toLocaleDateString("de-DE")}
+
+Antrag auf Förderung im Programm ${prog}
+Projekt: ${L(val("#tTitel"))}
+
+Sehr geehrte Damen und Herren,
+
+hiermit beantragen wir eine Förderung in Höhe von ${k?eur(beantragt):"[Betrag]"} für das Projekt „${L(val("#tTitel"))}“ im Zeitraum ${L(val("#tZeit"))}.
+
+${L(val("#tZiel"))}
+
+Die Gesamtkosten betragen ${k?eur(k):"[Betrag]"}; den Eigenanteil von ${e?eur(e):"[Betrag]"} tragen wir selbst. Mit dem Projekt wurde noch nicht begonnen.${$("#tKirche").checked?" Das Angebot steht allen Menschen offen; religiöse Angebote sind nicht Teil des Projekts und werden nicht aus Fördermitteln finanziert.":""}
+
+Die Projektbeschreibung, der Kosten- und Finanzierungsplan sowie die erforderlichen Nachweise liegen bei. Für Rückfragen steht ${L(val("#tPerson"))} gern zur Verfügung.
+
+Mit freundlichen Grüßen
+
+${L(val("#tPerson"))}
+${L(val("#tOrg"))}`;
+  const kontakt=`Betreff: Anfrage zur Förderfähigkeit – ${L(val("#tTitel"))}
+
+Guten Tag,
+
+wir (${L(val("#tOrg"))}) planen das Projekt „${L(val("#tTitel"))}“ und möchten eine Förderung im Programm ${prog} beantragen.
+
+Kurz zum Vorhaben: ${L(val("#tZiel"))}
+Geplanter Zeitraum: ${L(val("#tZeit"))}, Gesamtkosten ca. ${k?eur(k):"[Betrag]"}.
+
+Unsere Fragen:
+1. Sind wir als ${S.wer?WER.find(w=>w[0]===S.wer)[1]:"[Rechtsform]"} antragsberechtigt?
+2. Welche Kosten sind förderfähig, und wie hoch muss der Eigenanteil sein?
+3. Gibt es eine Frist oder einen Stichtag, und dürfen wir vor der Bewilligung beginnen?
+4. Wäre ein kurzes Beratungsgespräch möglich?
+
+Vielen Dank und freundliche Grüße
+${L(val("#tPerson"))}`;
+  const out=$("#tOut");out.replaceChildren();
+  [["Projektbeschreibung",beschreibung],["Anschreiben",anschreiben],["Kontaktanfrage an die Förderstelle",kontakt]].forEach(([h,t])=>out.append(textBlock(h,t)));}
+function textBlock(h,t){const pre=el("div",{class:"out",contenteditable:"true","aria-label":h},t);const status=el("p",{class:"note"});
+  const kiBtn=el("button",{class:"btn small ghost",onclick:()=>kiImprove(h,pre,status,kiBtn)},"Mit KI überarbeiten");kiBtn.hidden=kiProvider()==="aus";
+  return el("div",{class:"panel",style:"margin-top:14px"},el("h2",{},h),el("p",{class:"notice"},"Bitte Texte selbständig individuell anpassen."),el("p",{class:"note"},"Direkt im Feld bearbeitbar."),pre,
+    el("div",{class:"row"},el("button",{class:"btn small",onclick:()=>{navigator.clipboard.writeText(pre.innerText).then(()=>toast("Kopiert"),()=>toast("Kopieren nicht möglich – bitte markieren und kopieren"));}},"Kopieren"),
+      el("button",{class:"btn small ghost",onclick:()=>download(h.replace(/\s+/g,"-").toLowerCase()+".txt",pre.innerText,"text/plain")},"Als Textdatei"),kiBtn),status);}
+
+/* ---------- KI (optional) ---------- */
+let sample=null;
+function kiProvider(){return $("#kiProv").value;}
+function kiSettings(){try{return JSON.parse(sessionStorage.getItem(KEY+":ki")||"{}");}catch(e){return {};}}
+function kiSave(){const o={prov:kiProvider(),key:$("#kiKey").value,model:$("#kiModel").value};try{sessionStorage.setItem(KEY+":ki",JSON.stringify(o));}catch(e){}try{localStorage.setItem(KEY+":kiprov",o.prov);}catch(e){}kiUi();}
+function kiUi(){const pv=kiProvider();$("#kiKeyBox").hidden=!["anthropic","openai"].includes(pv);
+  if(pv==="anthropic"&&!$("#kiModel").value)$("#kiModel").value="claude-sonnet-4-6";
+  if(pv==="openai"&&!$("#kiModel").value)$("#kiModel").value="gpt-4o-mini";
+  const st=$("#kiState");st.textContent=pv==="aus"?"KI ist ausgeschaltet.":pv==="claudeai"?(sample?"Bereit. Beim ersten Aufruf fragt claude.ai nach Ihrer Zustimmung; die Nutzung zählt zu Ihrem Claude-Kontingent.":"Nur verfügbar, wenn die Seite in claude.ai geöffnet ist."):"Aufrufe gehen direkt vom Browser zum Anbieter. Innerhalb von claude.ai sind solche Verbindungen gesperrt – dort „Claude (in claude.ai)“ wählen.";
+  document.querySelectorAll("#tOut .panel .row button:last-child").forEach(b=>b.hidden=pv==="aus");}
+async function kiAsk(prompt,onText){const pv=kiProvider();
+  if(pv==="claudeai"){if(!sample)throw new Error("Claude ist hier nicht verfügbar.");const r=await sample(prompt,{onText:({text})=>onText(text),cache:false});return r.text;}
+  const key=$("#kiKey").value.trim();if(!key)throw new Error("Bitte API-Schlüssel eintragen (Konto & KI).");const model=$("#kiModel").value.trim();
+  if(pv==="anthropic"){const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model,max_tokens:2000,messages:[{role:"user",content:prompt}]})});
+    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||"Fehler "+r.status);return j.content.map(c=>c.text||"").join("");}
+  if(pv==="openai"){const r=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+key},body:JSON.stringify({model,messages:[{role:"user",content:prompt}]})});
+    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||"Fehler "+r.status);return j.choices[0].message.content;}
+  throw new Error("KI ist ausgeschaltet.");}
+async function kiImprove(h,pre,status,btn){const p=byId(val("#tProg"));btn.disabled=true;status.textContent="Wird überarbeitet …";
+  const prompt=`Du hilfst bei einem Förderantrag in Deutschland. Überarbeite den folgenden Text („${h}“) sprachlich: klar, sachlich, überzeugend, ohne Floskeln. Erfinde keine Fakten, Zahlen oder Zusagen. Lass Platzhalter in eckigen Klammern stehen. Markiere jede Stelle, die der Antragsteller noch prüfen oder belegen muss, mit [zu prüfen: …] und nenne kurz, was zu prüfen ist. Verwende keine Gendersprache. Antworte nur mit dem überarbeiteten Text.${p?`\nFörderprogramm: ${p.t} (${p.g}). Hinweise: ${p.hin||""}`:""}\n\nTEXT:\n${pre.innerText}`;
+  const orig=pre.innerText;
+  try{const t=await kiAsk(prompt,txt=>{pre.innerText=txt;});pre.innerText=t;status.textContent="Überarbeitet. Bitte Inhalt prüfen – die KI kann Fehler machen.";}
+  catch(e){pre.innerText=orig;status.textContent=e.code==="not_granted"?"Zugriff auf Claude wurde nicht erlaubt.":e.code==="rate_limited"?"Zu viele Anfragen – bitte später erneut.":"KI nicht erreichbar: "+(e.message||e.code);}
+  finally{btn.disabled=false;}}
+
+/* ---------- Konto ---------- */
+function renderKonto(){const p=$("#kontoPanel");p.replaceChildren(el("h2",{},"Konto"));
+  if(!API){p.append(el("p",{},"Diese Vorschau speichert Merkliste und Anträge im Browser. Nutzerkonten mit Synchronisierung über alle Geräte gibt es, sobald die Plattform auf dem eigenen Server läuft (siehe Projektpaket)."),
+    el("div",{class:"row"},el("button",{class:"btn ghost small",onclick:exportAll},"Daten exportieren")));return;}
+  if(token()){p.append(el("p",{},"Angemeldet"+(ME?" als "+ME.email+(ME.rolle!=="nutzer"?" ("+(ME.rolle==="kommune"?"Partnerkommune "+ME.ort:"Redaktion")+")":""):"")+". Merkliste und Anträge werden synchronisiert."),el("div",{class:"row"},
+    el("button",{class:"btn ghost small",onclick:async()=>{try{await api("/logout",{method:"POST"});}catch(e){}setToken("");ME=null;$("#navRed").hidden=true;renderKonto();renderMerk();}},"Abmelden"),
+    el("button",{class:"btn ghost small",style:"color:var(--danger)",onclick:async()=>{if(!confirm(T("Konto und alle gespeicherten Daten endgültig löschen?")))return;try{await api("/account",{method:"DELETE"});setToken("");toast("Konto gelöscht");renderKonto();}catch(e){toast(e.message);}}},"Konto löschen")));return;}
+  const mail=el("input",{type:"email",id:"kMail",autocomplete:"email"}),pw=el("input",{type:"password",id:"kPw",autocomplete:"current-password"}),msg=el("p",{class:"note"});
+  const go2=async path=>{try{const j=await api(path,{method:"POST",body:JSON.stringify({email:mail.value.trim(),password:pw.value})});setToken(j.token);
+      if(path==="/register")await pushState();else await pullState();await loadMe();renderKonto();toast("Angemeldet");}catch(e){msg.textContent=e.message;}};
+  p.append(el("p",{},"Kostenlos. Ein Konto synchronisiert Merkliste und Anträge über alle Geräte."),
+    el("div",{class:"field"},el("label",{for:"kMail"},"E-Mail"),mail),el("div",{class:"field"},el("label",{for:"kPw"},"Passwort (mind. 10 Zeichen)"),pw),
+    el("div",{class:"row"},el("button",{class:"btn",onclick:()=>go2("/login")},"Anmelden"),el("button",{class:"btn ghost",onclick:()=>go2("/register")},"Konto erstellen")),msg,forgotForm());}
+function exportAll(){download("fordernavi-daten.json",JSON.stringify({merk:store.merk,apps:store.apps,exportiert:new Date().toISOString()},null,2),"application/json");}
+
+/* ---------- Quellenfilter ---------- */
+function zeigeAnzahl(){const e=$("#anzahl");if(!e)return;const n=DATA.length,g=DATA.filter(p=>p.quelle==="geprueft").length;
+  const st=META.import&&META.import.ende?" – Datenstand "+new Date(META.import.ende).toLocaleDateString("de-DE"):"";
+  e.textContent=`Aktuell ${n.toLocaleString("de-DE")} Förderungen in der Datenbank, davon ${g.toLocaleString("de-DE")} einzeln geprüft${st}.`;}
+function renderSrc(){zeigeAnzahl();if(typeof renderStart==="function")renderStart();const box=$("#srcChips");const counts={};DATA.forEach(p=>{const k=srcOf(p);counts[k]=(counts[k]||0)+1;});
+  box.replaceChildren(...SRC.filter(([k])=>counts[k]).map(([k,l])=>chip(l+" ("+counts[k]+")",srcOn.has(k),()=>{srcOn.has(k)?srcOn.delete(k):srcOn.add(k);renderSrc();update();})));}
+
+/* ---------- Konto: Rolle ---------- */
+let ME=null;
+async function loadMe(){ME=null;if(API&&token()){try{ME=await api("/me");}catch(e){if(/Sitzung|angemeldet/.test(e.message))setToken("");}}$("#navRed").hidden=!(ME&&ME.rolle==="redaktion");}
+
+/* ---------- Passwort-Reset ---------- */
+function resetPanel(t){const p=$("#kontoPanel");const pw=el("input",{type:"password",id:"nPw",autocomplete:"new-password"}),msg=el("p",{class:"note",role:"status"});
+  p.replaceChildren(el("h2",{},"Neues Passwort festlegen"),el("div",{class:"field"},el("label",{for:"nPw"},"Neues Passwort (mind. 10 Zeichen)"),pw),
+    el("button",{class:"btn",onclick:async()=>{try{const j=await api("/password/reset",{method:"POST",body:JSON.stringify({token:t,password:pw.value})});setToken(j.token);history.replaceState(null,"",location.pathname);await loadMe();await pullState();renderKonto();toast("Passwort geändert");}catch(e){msg.textContent=e.message;}}},"Passwort speichern"),msg);}
+function forgotForm(){const mail=el("input",{type:"email",id:"fMail",autocomplete:"email"}),msg=el("p",{class:"note",role:"status"});
+  return el("details",{class:"editor"},el("summary",{},"Passwort vergessen?"),el("div",{class:"field"},el("label",{for:"fMail"},"E-Mail des Kontos"),mail),
+    el("button",{class:"btn ghost small",onclick:async()=>{try{const j=await api("/password/forgot",{method:"POST",body:JSON.stringify({email:mail.value.trim()})});msg.textContent=j.hinweis;}catch(e){msg.textContent=e.message;}}},"Link zum Zurücksetzen senden"),msg);}
+
+/* ---------- Redaktion ---------- */
+async function renderRed(){if(!(ME&&ME.rolle==="redaktion"))return;
+  try{const o=await api("/admin/uebersicht");
+    $("#redStat").replaceChildren(el("p",{},`${o.eintraege} Einträge veröffentlicht · ${o.nutzer} Konten · ${o.meldungen_offen} offene Meldungen`),
+      o.import?el("div",{},el("p",{class:"note"},`Letzter Import: ${new Date(o.import.ende).toLocaleString("de-DE")}, ${o.import.gesamt} Einträge`),
+        el("ul",{},o.import.quellen.map(q=>el("li",{},q.quelle+": "+(q.ok?q.anzahl+" Einträge":"Fehler – "+q.fehler+(q.alte_behalten?` (${q.alte_behalten} alte Einträge behalten)`:"")))))):el("p",{class:"note"},"Noch kein Import gelaufen."));
+    $("#redImportNote").textContent=o.import_laeuft?"Import läuft …":"";
+    $("#redQuellen").replaceChildren(...o.quellen.map(q=>el("label",{class:"check"},el("input",{type:"checkbox",checked:q.enabled,onchange:async e=>{try{await api("/admin/quelle",{method:"POST",body:JSON.stringify({key:q.key,enabled:e.target.checked})});toast(q.name+(e.target.checked?" eingeschaltet":" ausgeschaltet"));}catch(x){toast(x.message);e.target.checked=!e.target.checked;}}}),el("span",{},q.name+(q.website?" – "+q.website:"")))));
+  }catch(e){$("#redStat").textContent=e.message;}
+  try{const ms=await api("/admin/meldungen");const box=$("#redMeld");box.replaceChildren();
+    if(!ms.length)box.append(el("p",{class:"note"},"Keine Meldungen."));
+    ms.forEach(m=>box.append(meldEditor(m)));}catch(e){$("#redMeld").textContent=e.message;}}
+function meldEditor(m){
+  const f={t:el("input",{type:"text",value:m.titel}),g:el("input",{type:"text",value:m.geber||""}),ort:el("input",{type:"text",value:m.ort||""}),
+    r:el("select",{},el("option",{value:"lokal"},"örtlich / unbekannt"),el("option",{value:"DE"},"bundesweit"),el("option",{value:"EU"},"EU"),Object.entries(LAENDER).map(([k,v])=>el("option",{value:k,selected:m.land===k},v))),
+    q:el("input",{type:"number",value:m.quote??""}),ea:el("input",{type:"number",value:m.eigenanteil??""}),max:el("input",{type:"number",value:m.max??""}),
+    frist:el("input",{type:"text",value:m.frist||""}),url:el("input",{type:"text",value:m.url||""}),hin:el("textarea",{},m.text||""),
+    z:el("input",{type:"text",value:(m.zielgruppen&&m.zielgruppen.join(","))||"verein"}),th:el("input",{type:"text",value:""}),notiz:el("input",{type:"text",value:m.notiz||""})};
+  const lab=(t,n)=>el("div",{class:"field"},el("label",{},t),n);
+  const num=v=>v===""?null:+v;
+  const send=async status=>{try{await api("/admin/meldungen/"+m.id,{method:"POST",body:JSON.stringify({status,notiz:f.notiz.value,eintrag:status==="freigegeben"?{t:f.t.value,g:f.g.value,e:m.ebene||"Kreis/Stadt",r:f.r.value,ort:f.ort.value?f.ort.value.split(",").map(x=>x.trim()):[],z:f.z.value.split(",").map(x=>x.trim()).filter(Boolean),th:f.th.value.split(",").map(x=>x.trim()).filter(Boolean),a:m.art||"zuschuss",rz:(m.art==="darlehen")?"ja":"nein",q:num(f.q.value),ea:num(f.ea.value),max:num(f.max.value),frist:f.frist.value||"laufend",url:f.url.value,urlOk:true,hin:f.hin.value,kirche:"unklar"}:null})});toast(status==="freigegeben"?"Freigegeben":"Abgelehnt");renderRed();}catch(e){toast(e.message);}};
+  return el("div",{class:"meld"},el("strong",{},m.titel),el("span",{class:"tag",style:"margin-left:8px"},m.status),m.partnerkommune?el("span",{class:"tag ok",style:"margin-left:6px"},"Partnerkommune "+m.partnerkommune):null,
+    el("div",{class:"note"},new Date(m.created*1000).toLocaleString("de-DE")+(m.url?" · ":""),m.url?el("a",{href:m.url,target:"_blank",rel:"noopener"},"Quelle öffnen und prüfen"):""),
+    m.status==="offen"?el("details",{class:"editor"},el("summary",{},"Prüfen und freigeben"),
+      el("div",{class:"grid2"},lab("Titel",f.t),lab("Fördergeber",f.g),lab("Region",f.r),lab("Orte (Komma)",f.ort),lab("Zielgruppen (privat, gruender, selbststaendig, kmu, verein, kirche, kommune, studierende)",f.z),lab("Themen (z. B. sport, kultur, jugend)",f.th),lab("Förderquote %",f.q),lab("Eigenanteil %",f.ea),lab("Höchstbetrag €",f.max),lab("Frist (JJJJ-MM-TT oder Text)",f.frist),lab("Link",f.url),lab("Notiz",f.notiz)),
+      lab("Beschreibung",f.hin),el("p",{class:"note"},"Nur freigeben, wenn die Angaben an der offiziellen Quelle geprüft sind. Der Link wird als Beleg gespeichert."),
+      el("div",{class:"row"},el("button",{class:"btn small",onclick:()=>send("freigegeben")},"Geprüft – freigeben"),el("button",{class:"btn small ghost",onclick:()=>send("abgelehnt")},"Ablehnen"))):null);}
+function korrForm(p){const f={q:el("input",{type:"number",value:p.q??""}),ea:el("input",{type:"number",value:p.ea??""}),max:el("input",{type:"number",value:p.max??""}),frist:el("input",{type:"text",value:p.frist||""}),url:el("input",{type:"text",value:p.url||""}),hin:el("textarea",{},p.hin||""),beleg:el("input",{type:"text",placeholder:"https://… (aufgerufene Quelle)"}),kirche:el("select",{},["unklar","ja","nein"].map(k=>el("option",{selected:p.kirche===k},k))),versteckt:el("input",{type:"checkbox",checked:!!p.versteckt})};
+  const lab=(t,n)=>el("div",{class:"field"},el("label",{},t),n);const num=v=>v===""?null:+v;
+  const save=async gepr=>{const felder={q:num(f.q.value),ea:num(f.ea.value),max:num(f.max.value),frist:f.frist.value,url:f.url.value,hin:f.hin.value,kirche:f.kirche.value,versteckt:f.versteckt.checked};
+    if(gepr){if(!f.beleg.value.trim()){toast("Für „geprüft“ bitte den Beleg-Link angeben");return;}felder.quelle="geprueft";felder.pruef={datum:HEUTE,belege:[f.beleg.value.trim()],durch:"Redaktion"};}
+    try{await api("/admin/eintrag/"+encodeURIComponent(p.id),{method:"PUT",body:JSON.stringify({felder})});toast("Gespeichert");const r=await fetch(API+"/programme");DATA=fix(await r.json());renderSrc();update();}catch(e){toast(e.message);}};
+  $("#kForm").replaceChildren(el("h3",{},p.t),el("p",{class:"note"},"Quelle: "+(QUELLE[p.quelle]||p.quelle)+" · ID "+p.id),
+    el("div",{class:"grid2"},lab("Förderquote %",f.q),lab("Eigenanteil %",f.ea),lab("Höchstbetrag €",f.max),lab("Frist",f.frist),lab("Link",f.url),lab("Für Kirchen möglich",f.kirche),lab("Beleg-Link (für geprüft)",f.beleg)),
+    lab("Beschreibung",f.hin),el("label",{class:"check"},f.versteckt,el("span",{},"Eintrag ausblenden (z. B. Programm beendet)")),
+    el("div",{class:"row"},el("button",{class:"btn small",onclick:()=>save(true)},"Speichern und als geprüft markieren"),el("button",{class:"btn small ghost",onclick:()=>save(false)},"Nur speichern")));}
+
+/* ---------- Projektarten (v. a. für Vereine und Kirchen) ---------- */
+// th = passende Themen, kw = Stichworte in Titel/Beschreibung, sub = typische Bausteine (nur zur Orientierung)
+const PROJEKTE=[
+ ["fluechtling","Flüchtlingshilfe / Integrationszentrum",["soziales","international"],/flücht|geflücht|integration von|migra|zuwander|asyl/i,"Beratung, Begleitung, Begegnung"],
+ ["jugendzentrum","Jugendzentrum / Jugendgruppe",["jugend"],/jugend|junge menschen|kinder- und jugend/i,"wöchentliche Jugendtreffen, Hausaufgabenhilfe, Musikangebote, Freizeitangebote, persönliche Begleitung"],
+ ["musikschule","Kinder- und Jugendmusikschule",["kultur","jugend","bildung"],/musik|instrument|chor|kulturelle bildung|kulturkoffer/i,"Instrumentalunterricht, Ensembles, Konzerte"],
+ ["cafe","Begegnungscafé für alle Bürger",["soziales","ehrenamt"],/begegnung|nachbarschaft|treffpunkt|zusammenhalt|einsam|gemeinwesen|quartier/i,"Zielgruppen: Familien, Senioren, Migranten, Alleinstehende"],
+ ["ehrenamtsausbildung","Ehrenamtsausbildung",["ehrenamt","bildung"],/ehrenamt|engagement|freiwillig|qualifizier/i,"Schulungen, Gewinnung und Bindung von Freiwilligen"],
+ ["sprachcafe","Sprachcafé für Migranten",["soziales","bildung"],/sprach|deutschkurs|deutsch lernen|integration von|migra|zuwander|integrationslots/i,"Deutsch-Konversationsgruppen, Begleitung bei Behörden, Patenschaften, praktische Hilfe im Alltag"],
+ ["familienzentrum","Familienzentrum",["familie","soziales"],/famil|eltern|frühe hilfen|kinder/i,"Elternkurse, Beratung, Treffpunkt"],
+ ["senioren","Seniorenarbeit",["soziales","gesundheit"],/senior|ältere|generation|einsam|pflegebed|pflegende|altenhilfe|demograf/i,"Besuchsdienste, Nachmittage, Mehrgenerationenangebote"],
+ ["hausaufgaben","Hausaufgabenhilfe",["bildung","jugend"],/hausaufgab|nachhilfe|lern|schul|bildung/i,"Lernbegleitung, Lesepaten"],
+ ["ferien","Ferienprogramme für Kinder",["jugend","familie"],/ferien|freizeit|erholung|sommer/i,"Ferienfreizeiten, Tagesprogramme"],
+ ["chor","Chor / Musikprojekte",["kultur"],/musik|chor|orchester|konzert|amateurmusik|ensemble/i,"Kinderchor, Instrumentalunterricht, Gospelchor, öffentliche Konzerte"],
+ ["digital","Digitale Vereinsarbeit",["digital"],/digital|software|technik|online/i,"Vereinssoftware, Technik, Online-Angebote"],
+ ["gebaeude","Gemeindegebäude als Begegnungsstätte",["bauen","denkmal","laendlich"],/\bbau|neubau|umbau|sanier|gebäude|begegnungsstätte|dorfentwicklung|denkmal|barrierefre|barrierearm/i,"Umbau, Sanierung, Barrierefreiheit, Energie"],
+ ["umwelt","Umweltprojekt Gemeinde",["umwelt","energie"],/umwelt|natur|klima|garten|nachhaltig|energie/i,"Gemeinschaftsgarten, Umweltbildung, Energiesparen"],
+ ["jugendbegegnung","Internationale Jugendbegegnung",["international","jugend"],/erasmus|international|austausch|europ|solidarit/i,"Jugendaustausch, Partnerschaften"],
+ ["schulungen","Mitarbeiterschulungen",["bildung","ehrenamt"],/schulung|qualifizier|fortbildung|weiterbildung|jugendleiter|juleica/i,"Jugendleiterkarte, Erste Hilfe, Kinderschutz"],
+ ["frauen","Frauen-/Mütterangebote",["familie","soziales"],/frauen|mütter|mutter|eltern|famil/i,"Müttertreff, Kurse, Beratung"],
+ ["maenner","Männerarbeit / Lebensberatung",["soziales"],/männer|väter|beratung|lebens/i,"Gesprächsgruppen, Beratung"],
+ ["kulturveranstaltung","Öffentlichkeitsarbeit / Kulturveranstaltung",["kultur"],/kultur|veranstaltung|konzert|heimat|medien|brauchtum/i,"Konzerte, Feste, Medienarbeit"],
+ ["auslandsprojekt","Auslandsprojekt / Entwicklungszusammenarbeit",["international","soziales"],/entwicklungszusammenarbeit|entwicklungspolit|globalen süden|partnerorganisation|eine welt|kleinprojektefonds|bengo|nord-süd|privater deutscher träger/i,"Projekte mit Partnern im Globalen Süden, Bildungsarbeit in Deutschland"],
+ ["humanitaer","Humanitäre Hilfe / Katastrophenhilfe",["international","soziales"],/humanitär|katastrophe|nothilfe|krisengebiet|flüchtlingslager/i,"Nothilfe, Wiederaufbau, Versorgung in Krisengebieten"],
+ ["menschenrechte","Menschenrechte, Frieden, Demokratie",["demokratie","international"],/menschenrecht|friedensförder|friedensarbeit|konfliktbearbeitung|krisenprävention|zivik/i,"Friedensarbeit, Menschenrechtsbildung, Zivilgesellschaft stärken"],
+ ["umweltverband","Umwelt- und Naturschutzarbeit eines Verbands",["umwelt"],/naturschutz|umweltverband|verbändeförderung|umweltbildung|biologische vielfalt|artenschutz|artenvielfalt/i,"Kampagnen, Umweltbildung, Beratung, Vernetzung"],
+ ["bibelkurs","Bibelkurs als Bildungsangebot",["bildung"],/erwachsenenbildung|weiterbildung|bildungsveranstaltung|bildungsarbeit|evangelikal|kirchlich/i,"Hinweis: Verkündigung wird öffentlich meist nicht gefördert – nur als offenes Bildungsangebot (z. B. Erwachsenenbildung) oder über kirchliche Fonds."],
+];
+const PROJ=Object.fromEntries(PROJEKTE.map(p=>[p[0],p]));
+// 2 = Stichwort im Titel/Text, 1 = nur Themenbezug, 0 = passt nicht
+function projScore(p,keys){let best=0;const txt=(p.t||"")+" "+(p.hin||"");
+  for(const k of keys){const d=PROJ[k];if(!d)continue;if(d[3].test(txt)&&(p.th||[]).some(t=>d[2].includes(t))){best=2;break;}
+    if(d[3].test(p.t||""))best=Math.max(best,2);else if((p.th||[]).includes(d[2][0]))best=Math.max(best,1);}
+  return best;}
+function projNamen(p,keys){return keys.filter(k=>projScore(p,[k])>0).map(k=>PROJ[k][1]);}
+const projListe=a=>a.join("; ");
+
+/* ---------- Förder-Check: Unternehmen / Forschung ---------- */
+// Forschungszulage 2026 (geprüft 10.11.2026, IHK/BSFZ): 25 %, KMU 35 %; Bemessungsgrundlage max. 12 Mio. €;
+// Auftragsforschung zu 70 %; Eigenleistung 100 €/h (max. 40 h/Woche); +20 % Gemeinkostenpauschale für Vorhaben ab 2026
+function fzRechnung(){const pers=fpNum(C.personal),auf=fpNum(C.auftrag),std=Math.min(fpNum(C.stunden),40*52);
+  const direkt=pers+0.7*auf+100*std;let bg=direkt*(C.neu?1.2:1);const gedeckelt=bg>12e6;bg=Math.min(bg,12e6);
+  return {pers,auf,std,direkt,bg,gedeckelt,zulage:bg*(C.kmu?0.35:0.25)};}
+const REGELN_U=[
+ ["forschungszulage",()=>C.fe,()=>"Sie entwickeln technisch Neues mit ungewissem Ausgang – Rechtsanspruch, rückwirkend bis zu 4 Jahre."],
+ ["zim",()=>C.fe&&C.kmu,()=>"Mittelständisches Unternehmen mit F&E-Projekt – Zuschuss (Alternative oder Ergänzung für andere Kosten)."],
+ ["eic-accelerator",()=>C.fe&&C.kmu,()=>"Nur für bahnbrechende Innovationen mit Wachstumsplan – sehr wettbewerbsintensiv."],
+ ["exist-stipendium",()=>C.gruendung&&C.hochschule,()=>"Gründung aus Hochschule oder Forschungseinrichtung."],
+ ["kfw-067",()=>C.gruendung,()=>"Startkapital als Kredit."],
+ ["bafa-knowhow",()=>C.gruendung||C.beratung,()=>"Zuschuss zu Unternehmensberatung."],
+ ["ba-gruendungszuschuss",()=>C.gruendung&&C.alg1,()=>"Gründung aus dem ALG-I-Bezug."],
+ ["jc-einstiegsgeld",()=>C.gruendung&&C.grundsicherung,()=>"Gründung aus der Grundsicherung."],
+ ["kfw-270",()=>has("pv"),()=>"Solaranlage/Speicher: Kredit bis 100 %."],
+];
+
+/* ---------- Förder-Check: Fragen statt Filtern ---------- */
+let uidN=0;
+const C={fuer:"privat",land:"",kinder:0,baby:false,allein:false,einkommen:"mittel",grundsicherung:false,alg1:false,wohnen:"miete",
+  vorhaben:new Set(),pflegegrad:0,ehrenamt:false,betreuung:false,vthemen:new Set(),ort:"",fe:false,kmu:true,personal:"",auftrag:"",stunden:"",neu:true,gruendung:false,hochschule:false,beratung:false};
+const VORHABEN=[["heizung","Heizung tauschen"],["sanieren","Dämmen / Fenster / Sanieren"],["pv","Solaranlage / Speicher"],["barriere","Barrierefrei umbauen"],["renovierung","Handwerker / Renovierung"],["haushaltshilfe","Haushaltshilfe / Pflege im Haushalt"],["kauf","Haus / Wohnung kaufen oder bauen"],["studium","Schule / Studium"],["weiterbildung","Weiterbildung / Meister"],["gruendung","Selbstständig machen"]];
+const VEREIN_VORHABEN=[["jugend","Kinder- und Jugendarbeit, Freizeiten"],["kultur","Musik, Chor, Kultur"],["soziales","Integration, Flüchtlingshilfe, Senioren"],["ehrenamt","Ehrenamtliche gewinnen und schulen"],["bauen","Gebäude bauen oder sanieren"],["energie","Energie, Heizung, Solar"],["digital","Digitalisierung, Technik"],["international","Internationale Begegnung"],["umwelt","Umwelt, Garten, Schöpfung"],["demokratie","Demokratie, Gemeinwesen"]];
+const has=k=>C.vorhaben.has(k);const gering=()=>C.einkommen==="gering";
+const REGELN=[
+ ["kindergeld",()=>C.kinder>0,()=>`Für ${C.kinder} Kind(er) je 259 € im Monat.`],
+ ["kinderzuschlag",()=>C.kinder>0&&gering(),()=>"Bei kleinem Einkommen zusätzlich bis 297 € je Kind."],
+ ["elterngeld",()=>C.baby&&C.einkommen!=="hoch",()=>"Kind unter 1 Jahr oder Geburt geplant."],
+ ["unterhaltsvorschuss",()=>C.allein&&C.kinder>0,()=>"Alleinerziehend: wenn der andere Elternteil zu wenig Unterhalt zahlt."],
+ ["st-alleinerziehende",()=>C.allein&&C.kinder>0,()=>"Steuerklasse II / Entlastungsbetrag."],
+ ["bildung-teilhabe",()=>C.kinder>0&&(gering()||C.grundsicherung),()=>"Bei Grundsicherung, Kinderzuschlag oder Wohngeld."],
+ ["wohngeld",()=>gering()&&!C.grundsicherung&&C.wohnen!=="kauf",()=>"Kleines Einkommen, keine Grundsicherung – Wohngeld prüfen."],
+ ["st-kinderbetreuung",()=>C.betreuung,()=>"Kita, Hort, Tagesmutter: 80 % der Kosten absetzbar."],
+ ["st-handwerker",()=>has("renovierung")||has("barriere")||has("heizung")||has("sanieren"),()=>"Arbeitskosten von Handwerkern – nicht für bereits geförderte Maßnahmen."],
+ ["st-haushaltsnah",()=>has("haushaltshilfe")||C.pflegegrad>0,()=>"Haushaltshilfe, Pflege- oder Betreuungsdienste im Haushalt."],
+ ["kfw-458",()=>C.wohnen==="eigentum"&&has("heizung"),()=>"Eigentum + Heizungstausch."],
+ ["bafa-beg-em",()=>C.wohnen==="eigentum"&&has("sanieren"),()=>"Eigentum + Dämmung/Fenster."],
+ ["bafa-energieberatung",()=>C.wohnen==="eigentum"&&(has("sanieren")||has("heizung")),()=>"Vor größeren Sanierungen sinnvoll (iSFP-Bonus)."],
+ ["kfw-358",()=>C.wohnen==="eigentum"&&(has("sanieren")||has("heizung")),()=>"Finanziert den Eigenanteil zu einem Zuschuss."],
+ ["kfw-261",()=>C.wohnen==="eigentum"&&has("sanieren"),()=>"Bei Komplettsanierung zum Effizienzhaus."],
+ ["st-35c-sanierung",()=>C.wohnen==="eigentum"&&(has("sanieren")||has("heizung")),()=>"Alternative zur KfW/BAFA-Förderung."],
+ ["kfw-270",()=>(C.wohnen==="eigentum"||C.fuer!=="privat")&&has("pv"),()=>"Solaranlage/Speicher: Kredit bis 100 %."],
+ ["kfw-159",()=>has("barriere"),()=>"Barrieren abbauen, unabhängig vom Alter."],
+ ["pflege-wohnumfeld",()=>has("barriere")&&C.pflegegrad>=1,()=>`Pflegegrad ${C.pflegegrad}: bis 4.180 € je Maßnahme.`],
+ ["pflegegeld",()=>C.pflegegrad>=2,()=>`Pflegegrad ${C.pflegegrad}.`],
+ ["pflege-entlastungsbetrag",()=>C.pflegegrad>=1,()=>"Ab Pflegegrad 1, 131 € im Monat."],
+ ["pflege-jahresbetrag",()=>C.pflegegrad>=2,()=>"Wenn die Pflegeperson ausfällt oder Kurzzeitpflege nötig ist."],
+ ["kfw-300",()=>has("kauf")&&C.kinder>0,()=>"Familie + Neubau/Ersterwerb Neubau; Einkommensgrenze beachten."],
+ ["kfw-308",()=>has("kauf")&&C.kinder>0,()=>"Familie + Kauf eines sanierungsbedürftigen Altbaus."],
+ ["kfw-124",()=>has("kauf"),()=>"Bau oder Kauf selbstgenutzten Wohneigentums."],
+ ["kfw-297",()=>has("kauf"),()=>"Nur bei klimafreundlichem Neubau."],
+ ["wohnungsbaupraemie",()=>has("kauf")&&C.einkommen!=="hoch",()=>"Bausparen: 10 % Prämie bis 70 € (Paare 140 €) im Jahr, Einkommensgrenze beachten."],
+ ["wohn-riester",()=>has("kauf"),()=>"Riester-Zulagen für selbstgenutztes Wohneigentum."],
+ ["st-denkmal-afa",()=>C.denkmal&&(C.wohnen!=="miete"||has("kauf")),()=>"Denkmalgeschütztes Gebäude: erhöhte Abschreibung."],
+ ["hessen-darlehen",()=>has("kauf")&&C.land==="HE",()=>"Landesdarlehen für Wohneigentum in Hessen."],
+ ["he-hessengeld",()=>has("kauf")&&C.land==="HE",()=>"Erster Erwerb in Hessen: bis 10.000 € je Käufer + 5.000 € je Kind."],
+ ["bafoeg",()=>has("studium"),()=>"Schule oder Studium."],
+ ["deutschlandstipendium",()=>has("studium"),()=>"Studium, leistungsabhängig."],
+ ["aufstiegs-bafoeg",()=>has("weiterbildung"),()=>"Meister-, Techniker- oder vergleichbare Fortbildung."],
+ ["by-meisterbonus",()=>has("weiterbildung")&&C.land==="BY",()=>"Bestandene Meisterprüfung in Bayern."],
+ ["bildungsgutschein",()=>has("weiterbildung")&&(C.alg1||C.grundsicherung),()=>"Bei Arbeitslosigkeit oder Grundsicherung."],
+ ["ba-gruendungszuschuss",()=>has("gruendung")&&C.alg1,()=>"Gründung aus dem ALG-I-Bezug."],
+ ["jc-einstiegsgeld",()=>has("gruendung")&&C.grundsicherung,()=>"Gründung aus der Grundsicherung."],
+ ["kfw-067",()=>has("gruendung"),()=>"Startkapital als Kredit."],
+ ["bafa-knowhow",()=>has("gruendung"),()=>"Zuschuss zur Gründungs- und Unternehmensberatung."],
+ ["exist-stipendium",()=>has("gruendung")&&has("studium"),()=>"Innovative Gründung aus der Hochschule."],
+ ["st-ehrenamt",()=>C.ehrenamt,()=>"Aufwandsentschädigung im Ehrenamt steuerfrei bis 3.300 € / 960 €."],
+];
+function foerderbankFuer(land){return DATA.filter(p=>p.id.startsWith("foerderbank-")&&p.r===land);}
+function checkErgebnis(){
+  if(C.fuer==="verein"){const t=C.vthemen;const land=C.land;
+    const res=DATA.filter(p=>((p.z||[]).includes("verein")||(p.z||[]).includes("kirche"))&&(p.c==="EU"||p.c==="DE")&&(!land||["DE","EU","lokal"].includes(p.r)||p.r===land)&&(!t.size||projScore(p,[...t])>0)
+        &&!(p.ort&&p.ort.length&&C.ort&&!p.ort.some(o=>norm(C.ort).includes(norm(o))||norm(o).includes(norm(C.ort))))&&!(isoFrist(p.frist)&&p.frist<HEUTE))
+      .sort((a,b)=>(t.size?projScore(b,[...t])-projScore(a,[...t]):0)||rank(a)-rank(b));
+    return res.map(p=>({p,grund:t.size?"Passt zu: "+projListe(projNamen(p,[...t])):"Vereine / Kirchen",sicher:p.rz==="nein"&&p.ea!=null}));}
+  const out=[];for(const[id,cond,why] of (C.fuer==="unternehmen"?REGELN_U:REGELN)){const p=byId(id);if(p&&cond())out.push({p,grund:why(),sicher:["kindergeld","pflegegeld","pflege-entlastungsbetrag","st-ehrenamt"].includes(id)});}
+  const finanz=C.fuer==="unternehmen"?(C.gruendung||C.fe):(has("kauf")||has("sanieren")||has("heizung")||has("barriere"));
+  if(C.land&&finanz)foerderbankFuer(C.land).forEach(p=>out.push({p,grund:"Ihre Landesförderbank: zinsgünstige Kredite, oft kombinierbar mit KfW.",sicher:false}));
+  if(C.fuer==="unternehmen"&&C.gruendung){const b=byId("buergschaftsbanken");if(b)out.push({p:b,grund:"Wenn Sicherheiten für einen Kredit fehlen.",sicher:false});["wibank-guw","wibank-mikrodarlehen"].forEach(id=>{const p=byId(id);if(p&&C.land==="HE")out.push({p,grund:"Hessisches Förderdarlehen für Gründung und Wachstum.",sicher:false});});}
+  return out;}
+function renderCheck(){const pnl=$("#stepPanel");pnl.replaceChildren();
+  const q=(label,node,help)=>{const id="cq"+(++uidN);node.id=id;return el("div",{class:"field"},el("label",{for:id},label),node,help?el("span",{class:"help"},help):null);};
+  const chips=(arr,getset)=>el("div",{class:"chips"},arr.map(([k,l])=>chip(T(l),getset(k),()=>{getset(k,true);renderCheck();renderCheckResults();})));
+  const one=(obj,key)=>(k,set)=>set?(obj[key]=k):obj[key]===k;const many=(set)=>(k,t)=>t?(set.has(k)?set.delete(k):set.add(k)):set.has(k);
+  pnl.append(el("h2",{},T("Förder-Check: Beantworten Sie ein paar Fragen")),
+    el("p",{class:"note"},T("Nur eine Vorprüfung auf Grundlage Ihrer Angaben – maßgeblich ist die Prüfung durch die jeweilige Stelle. Ihre Angaben bleiben in Ihrem Browser.")),
+    el("h3",{},T("Für wen?")),chips([["privat","Privatperson / Familie"],["verein","Verein / Kirche / NGO"],["unternehmen","Unternehmen / Gründung / Forschung"]],one(C,"fuer")),
+    q(T("Bundesland"),el("select",{onchange:e=>{C.land=e.target.value;renderCheckResults();}},el("option",{value:""},"–"),Object.entries(LAENDER).map(([k,v])=>el("option",{value:k,selected:C.land===k},v)))));
+  if(C.fuer==="privat"){
+    pnl.append(el("div",{class:"grid2"},
+      q(T("Kinder unter 18 im Haushalt"),el("input",{type:"number",min:"0",max:"15",value:C.kinder,oninput:e=>{C.kinder=+e.target.value||0;renderCheckResults();}})),
+      q(T("Einkommen des Haushalts"),el("select",{onchange:e=>{C.einkommen=e.target.value;renderCheckResults();}},[["gering","eher gering / knapp"],["mittel","mittel"],["hoch","hoch (zvE über 175.000 €)"]].map(([k,l])=>el("option",{value:k,selected:C.einkommen===k},T(l))))),
+      q(T("Wohnsituation"),el("select",{onchange:e=>{C.wohnen=e.target.value;renderCheckResults();}},[["miete","zur Miete"],["eigentum","im eigenen Haus / eigene Wohnung"],["kauf","Kauf oder Bau geplant"]].map(([k,l])=>el("option",{value:k,selected:C.wohnen===k},T(l))))),
+      q(T("Pflegegrad einer Person im Haushalt"),el("select",{onchange:e=>{C.pflegegrad=+e.target.value;renderCheckResults();}},[0,1,2,3,4,5].map(n=>el("option",{value:n,selected:C.pflegegrad===n},n?T("Pflegegrad")+" "+n:T("keiner")))))),
+      ...[["denkmal","Gebäude steht unter Denkmalschutz"],["baby","Baby unter 1 Jahr oder Geburt geplant"],["allein","alleinerziehend"],["grundsicherung","Bezug von Grundsicherung (Bürgergeld)"],["alg1","Bezug von Arbeitslosengeld I"],["betreuung","Kosten für Kita, Hort oder Tagesmutter"],["ehrenamt","Aufwandsentschädigung für Ehrenamt / Übungsleitung"]]
+        .map(([k,l])=>el("label",{class:"check"},el("input",{type:"checkbox",checked:C[k],onchange:e=>{C[k]=e.target.checked;renderCheckResults();}}),el("span",{},T(l)))),
+      el("h3",{},T("Was haben Sie vor? (mehrere möglich)")),chips(VORHABEN,many(C.vorhaben)));
+  }else if(C.fuer==="unternehmen"){
+    const cb=(k,l)=>el("label",{class:"check"},el("input",{type:"checkbox",checked:C[k],onchange:e=>{C[k]=e.target.checked;renderCheck();}}),el("span",{},l));
+    pnl.append(cb("fe","Wir entwickeln technisch Neues (Produkt, Verfahren, Software), dessen Gelingen zu Beginn ungewiss ist"),
+      cb("kmu","Kleines oder mittleres Unternehmen (unter 250 Beschäftigte und max. 50 Mio. € Umsatz oder 43 Mio. € Bilanzsumme)"),
+      C.fe?el("div",{class:"grid2"},
+        q("F&E-Personalkosten pro Jahr (€)",el("input",{type:"number",min:"0",value:C.personal,oninput:e=>{C.personal=e.target.value;renderCheckResults();}}),"Bruttolöhne inkl. Arbeitgeberanteil, anteilig für F&E-Zeit"),
+        q("Auftragsforschung pro Jahr (€)",el("input",{type:"number",min:"0",value:C.auftrag,oninput:e=>{C.auftrag=e.target.value;renderCheckResults();}}),"zählt zu 70 %"),
+        q("Eigene F&E-Stunden als Einzelunternehmer/Gesellschafter pro Jahr",el("input",{type:"number",min:"0",value:C.stunden,oninput:e=>{C.stunden=e.target.value;renderCheckResults();}}),"100 € je Stunde, max. 40 h/Woche")):null,
+      C.fe?cb("neu","Vorhaben beginnt nach dem 31.12.2025 (dann +20 % Gemeinkostenpauschale)"):null,
+      cb("gruendung","Gründung geplant oder Unternehmen jünger als 5 Jahre"),cb("hochschule","Gründung aus Hochschule oder Forschungseinrichtung"),
+      cb("beratung","Externe Unternehmensberatung gewünscht"),cb("alg1","Bezug von Arbeitslosengeld I"),cb("grundsicherung","Bezug von Grundsicherung"));
+  }else{
+    pnl.append(q(T("Ort (optional)"),el("input",{type:"text",value:C.ort,oninput:e=>{C.ort=e.target.value;renderCheckResults();}})),
+      el("h3",{},T("Was möchten Sie umsetzen? (mehrere möglich)")),chips(PROJEKTE.map(x=>[x[0],x[1]]),many(C.vthemen)),
+      C.vthemen.has("bibelkurs")?el("p",{class:"notice"},PROJ.bibelkurs[4]):null);}
+  renderCheckResults();}
+function renderCheckResults(){const r=checkErgebnis();const box=$("#results");box.replaceChildren();
+  $("#resTitle").textContent=T("Ergebnis des Förder-Checks");$("#resSum").textContent=r.length+" "+T("Treffer");
+  if(!r.length){box.append(el("div",{class:"empty"},T("Noch keine Treffer – bitte weitere Angaben machen.")));return;}
+  // Nur Monatsbeträge, die sich aus den Angaben eindeutig ergeben (Kindergeld, Pflegegeld nach Grad, Entlastungsbetrag)
+  const PG={2:347,3:599,4:800,5:990};let summe=0;const teile=[];const ids=new Set(r.map(x=>x.p.id));
+  if(ids.has("kindergeld")){summe+=259*C.kinder;teile.push("Kindergeld "+eur(259*C.kinder));}
+  if(ids.has("pflegegeld")&&PG[C.pflegegrad]){summe+=PG[C.pflegegrad];teile.push("Pflegegeld "+eur(PG[C.pflegegrad]));}
+  if(ids.has("pflege-entlastungsbetrag")){summe+=131;teile.push("Entlastungsbetrag 131 €");}
+  if(C.fuer==="unternehmen"&&C.fe){const f=fzRechnung();
+    box.append(el("div",{class:"panel",style:"margin-bottom:14px"},el("h3",{},"Forschungszulage – unverbindliche Schätzung"),
+      el("div",{class:"tablewrap"},el("table",{style:"border-collapse:collapse"},...[["Personalkosten",eur(f.pers)],["Auftragsforschung × 70 %",eur(0.7*f.auf)],["Eigenleistung "+f.std+" h × 100 €",eur(100*f.std)],["Gemeinkostenpauschale",C.neu?"+ 20 %":"–"],["Bemessungsgrundlage",eur(f.bg)+(f.gedeckelt?" (gedeckelt)":"")],["Forschungszulage ("+(C.kmu?"35":"25")+" %)",eur(f.zulage)]].map(([a,b],i)=>el("tr",{},el("td",{style:"padding:3px 16px 3px 0"},a),el("td",{style:"padding:3px 0;"+(i===5?"font-weight:700":"")},b))))),
+      el("p",{class:"note"},"Nur eine Rechenhilfe nach den Regeln ab 2026. Ob Ihre Arbeit als Forschung und Entwicklung gilt (neuartig, ungewiss, planmäßig), entscheidet die Bescheinigungsstelle Forschungszulage. Keine Steuerberatung.")));}
+  if(C.fuer==="privat"&&summe)box.append(el("p",{class:"notice"},T("Sicher bezifferbar pro Monat: ")+eur(summe)+" ("+teile.join(" + ")+")"+T(". Weitere Leistungen hängen von Einkommen und Einzelfall ab.")));
+  r.slice(0,LIMIT).forEach(x=>{const c=card(x.p);c.prepend(el("p",{class:"tag "+(x.sicher?"ok":"warn"),style:"display:inline-block;margin:0 0 8px"},(x.sicher?T("voraussichtlich: "):T("prüfen: "))+x.grund));box.append(c);});
+  if(r.length>LIMIT)box.append(el("button",{class:"btn ghost",onclick:()=>{LIMIT+=30;renderCheckResults();}},T("Weitere anzeigen")));}
+function setMode(m){S.mode=m;$("#modeFragen").setAttribute("aria-pressed",m==="fragen");$("#modeFiltern").setAttribute("aria-pressed",m==="filtern");
+  $("#steps").hidden=m==="fragen";document.querySelector("fieldset.srcfilter").hidden=m==="fragen";$(".search").hidden=m==="fragen";
+  try{localStorage.setItem(KEY+":modus",m);}catch(e){}
+  if(m==="fragen"){LIMIT=30;renderCheck();}else{$("#resTitle").textContent=T("Passende Programme");renderStep();update();}}
+
+/* ---------- Mustertexte ---------- */
+const MUSTER={
+ cafe:{titel:"Begegnungscafé – offener Treffpunkt für alle",lage:"In unserem Stadtteil fehlt ein niedrigschwelliger Ort, an dem sich Menschen unterschiedlichen Alters und unterschiedlicher Herkunft begegnen können. Viele ältere und alleinstehende Menschen berichten von Einsamkeit; neu zugezogene Familien finden schwer Anschluss.",
+  ziel:"Ein wöchentlich geöffnetes, kostenloses Begegnungscafé, das Einsamkeit verringert, Nachbarschaft stärkt und Menschen mit Unterstützungsbedarf an bestehende Beratungsangebote vermittelt.",gruppe:"Senioren, Familien, Alleinstehende und Neuzugezogene aus dem Stadtteil; erwartet ca. 25–40 Besucher je Öffnungstag",
+  mass:"Wöchentliche Öffnung (4 Stunden) mit Kaffee und Kuchen; monatlicher Themennachmittag (z. B. Gesundheit, Behördengänge); Schulung von 8 ehrenamtlichen Gastgebern; Anschaffung von Geschirr, Mobiliar und Spielen; Öffentlichkeitsarbeit mit Flyern und Aushängen."},
+ jugend:{titel:"Sommerfreizeit und wöchentlicher Jugendtreff",lage:"Für Jugendliche zwischen 12 und 17 Jahren gibt es im Ort kaum offene Freizeitangebote. Familien mit kleinem Einkommen können sich Ferienfreizeiten häufig nicht leisten.",
+  ziel:"Jugendlichen einen verlässlichen Treffpunkt und eine bezahlbare Ferienfreizeit bieten, soziale Kompetenzen stärken und Beteiligung ermöglichen.",gruppe:"Jugendliche von 12 bis 17 Jahren, ca. 20 Teilnehmer, davon mindestens ein Drittel aus Familien mit geringem Einkommen",
+  mass:"Wöchentlicher Jugendtreff mit Spiel, Sport und Gesprächsangeboten; einwöchige Sommerfreizeit mit Programm zu Teamarbeit und Umwelt; Beteiligung der Jugendlichen bei der Planung; Schulung der Betreuer (Juleica)."},
+ sprache:{titel:"Sprachcafé und Alltagsbegleitung für Zugewanderte",lage:"Im Ort leben zahlreiche Geflüchtete und Zugewanderte, die nach den Integrationskursen kaum Gelegenheit haben, Deutsch im Alltag zu üben, und Unterstützung bei Behördengängen brauchen.",
+  ziel:"Sprachpraxis im Alltag, Orientierung und Kontakte zu Einheimischen – als Ergänzung zu den Regelangeboten.",gruppe:"Zugewanderte Erwachsene und Familien, ca. 30 Personen; 10 ehrenamtliche Sprachpaten",
+  mass:"Wöchentliches Sprachcafé in Kleingruppen; Begleitung zu Ämtern und Ärzten durch geschulte Ehrenamtliche; Qualifizierung der Ehrenamtlichen (interkulturelle Kompetenz); Kinderbetreuung während der Treffen; Kooperation mit der kommunalen Integrationsstelle."},
+ musik:{titel:"Kinderchor und Instrumentalgruppe „Musik verbindet“",lage:"Viele Kinder im Einzugsgebiet haben keinen Zugang zu musikalischer Bildung, weil Musikschulkosten für die Familien zu hoch sind.",
+  ziel:"Kostenlose musikalische Bildung für Kinder, Förderung von Selbstvertrauen und Gemeinschaft; öffentliche Konzerte für die Nachbarschaft.",gruppe:"Kinder von 6 bis 12 Jahren, ca. 25 Teilnehmer",
+  mass:"Wöchentliche Chor- und Instrumentalproben unter Leitung einer Musikpädagogin; Anschaffung von Leihinstrumenten; zwei öffentliche Konzerte pro Jahr; Kooperation mit einer Grundschule."},
+ ehrenamt:{titel:"Ehrenamt stärken: Gewinnung und Qualifizierung von Freiwilligen",lage:"Unsere sozialen Angebote werden von wenigen Ehrenamtlichen getragen, die an ihre Grenzen kommen. Neue Ehrenamtliche fehlen, besonders jüngere.",
+  ziel:"15 neue Ehrenamtliche gewinnen, qualifizieren und langfristig binden.",gruppe:"Interessierte Bürger, bestehende Ehrenamtliche",
+  mass:"Informationsabende und Social-Media-Kampagne; Schulungsreihe (Erste Hilfe, Kinderschutz, Gesprächsführung); Einführung eines digitalen Einsatzplans; Dankeschön-Veranstaltung."},
+ energie:{titel:"Energetische Sanierung des Gemeindehauses",lage:"Das Gebäude wird von mehreren gemeinnützigen Gruppen genutzt (Jugendtreff, Seniorennachmittag, Sprachcafé). Heizung und Fenster sind veraltet; die Energiekosten belasten den Verein stark.",
+  ziel:"Energieverbrauch und CO₂-Ausstoß deutlich senken und das Haus als offenen Treffpunkt langfristig erhalten.",gruppe:"Alle Nutzergruppen des Hauses, ca. 150 Menschen pro Woche",
+  mass:"Energieberatung; Austausch der Heizung gegen eine Wärmepumpe; Dämmung des Daches; neue Fenster; Photovoltaikanlage."},
+};
+function mustertextOptions(){const s=$("#tMuster");if(!s)return;s.replaceChildren(el("option",{value:""},"– ohne Vorlage –"),...Object.entries(MUSTER).map(([k,m])=>el("option",{value:k},m.titel)));}
+function mustertextLaden(k){const m=MUSTER[k];if(!m)return;
+  const set=(id,v)=>{const e=$(id);if(e&&!e.value.trim())e.value=v;};
+  set("#tTitel",m.titel);set("#tLage",m.lage);set("#tZiel",m.ziel);set("#tGruppe",m.gruppe);set("#tMass",m.mass);
+  toast("Vorlage eingefügt – bitte an Ihr Projekt anpassen");}
+const ABGRENZUNG="Die geförderten Angebote stehen allen Menschen unabhängig von Religion, Weltanschauung und Herkunft offen; eine Teilnahme an religiösen Angeboten ist keine Voraussetzung. Gottesdienste und Verkündigung sind nicht Teil dieses Projekts und werden nicht aus den Fördermitteln finanziert. Die Kosten werden getrennt erfasst.";
+
+Object.assign(MUSTER,{
+ fluechtling:{titel:"Integrationstreff: Beratung, Begleitung und Begegnung für Geflüchtete",lage:"Geflüchtete Familien im Ort haben nach der Erstversorgung kaum Ansprechpartner für Alltagsfragen; Ehrenamtliche helfen bisher unkoordiniert.",ziel:"Eine feste Anlaufstelle, die Orientierung gibt, an Fachstellen vermittelt und Begegnung mit Einheimischen schafft.",gruppe:"Geflüchtete und Zugewanderte aller Altersgruppen, ca. 40 Personen; 12 Ehrenamtliche",mass:"Wöchentliche offene Sprechstunde; Begleitung zu Ämtern; Vermittlung an Migrationsberatung und Jobcenter; monatliches Begegnungsfest; Schulung der Ehrenamtlichen; Kooperation mit der kommunalen Integrationsstelle."},
+ familienzentrum:{titel:"Familientreff mit Elternkursen und Beratung",lage:"Junge Familien, besonders Alleinerziehende und Zugezogene, finden im Ort wenig Unterstützung und Austausch.",ziel:"Familien stärken, Isolation verringern und den Zugang zu Beratungsangeboten erleichtern.",gruppe:"Eltern mit Kindern von 0 bis 10 Jahren, ca. 30 Familien",mass:"Wöchentlicher Eltern-Kind-Treff; Elternkurs (8 Abende); Sprechstunde mit Familienberatung in Kooperation mit einer Fachstelle; Kinderbetreuung während der Kurse; Second-Hand-Börse."},
+ senioren:{titel:"Mehrgenerationen-Nachmittag und Besuchsdienst gegen Einsamkeit",lage:"Viele ältere Menschen leben allein, sind weniger mobil und haben kaum soziale Kontakte.",ziel:"Einsamkeit im Alter verringern, Teilhabe ermöglichen und Kontakte zwischen Generationen fördern.",gruppe:"Senioren ab 65, ca. 35 Personen; Jugendliche als Ehrenamtliche",mass:"Zweiwöchentlicher Nachmittag mit Programm (Gedächtnistraining, Bewegung, Vorträge); Fahrdienst; Besuchsdienst durch geschulte Ehrenamtliche; Handy-Sprechstunde von Jugendlichen für Ältere."},
+ hausaufgaben:{titel:"Hausaufgabenhilfe und Lernbegleitung",lage:"Kinder aus Familien mit wenig Unterstützung zu Hause fallen in der Schule zurück; Nachhilfe ist für viele Familien zu teuer.",ziel:"Bessere schulische Chancen durch verlässliche, kostenlose Lernbegleitung.",gruppe:"Grundschul- und Unterstufenkinder, ca. 20 Kinder; 8 Lernpaten",mass:"Hausaufgabenhilfe an drei Nachmittagen pro Woche; Lesepatenschaften; Schulung der Lernpaten; Abstimmung mit Schulen und Eltern; Lernmaterial und kleiner Imbiss."},
+ ferien:{titel:"Ferienprogramm für Kinder",lage:"In den Sommerferien fehlt vielen Kindern ein bezahlbares, betreutes Angebot; berufstätige Eltern brauchen Entlastung.",ziel:"Kindern erholsame, bildende Ferientage bieten und Familien entlasten.",gruppe:"Kinder von 6 bis 12 Jahren, ca. 40 Teilnehmer pro Woche, Ermäßigung für Familien mit kleinem Einkommen",mass:"Zwei Ferienwochen mit Tagesprogramm (Natur, Sport, Kreativ, Ausflug); geschulte Betreuer (Juleica); Mittagessen; Abschlussfest für Familien."},
+ digital:{titel:"Digitale Vereinsarbeit: Technik und Schulung für das Ehrenamt",lage:"Verwaltung, Kommunikation und Terminplanung laufen auf Papier und privaten Geräten; Datenschutz ist nicht gesichert.",ziel:"Ehrenamtliche entlasten, Datenschutz sichern und neue, jüngere Ehrenamtliche über digitale Wege erreichen.",gruppe:"Vorstand und ca. 40 Ehrenamtliche",mass:"Einführung einer datenschutzkonformen Vereinssoftware; Anschaffung von Laptop und Beamer; Schulungen (Software, Datenschutz, Social Media); Aufbau einer Website mit Online-Anmeldung."},
+ umwelt:{titel:"Gemeinschaftsgarten und Umweltbildung",lage:"Auf dem Grundstück liegt eine ungenutzte Fläche; im Viertel fehlen Grünflächen und Angebote zur Umweltbildung.",ziel:"Einen offenen Gemeinschaftsgarten anlegen, Artenvielfalt fördern und Umweltbildung für alle Generationen anbieten.",gruppe:"Familien, Kinder, Senioren aus dem Viertel, ca. 60 Personen",mass:"Anlage von Hochbeeten, Blühwiese und Insektenhotel; Regenwassernutzung; monatliche Gartenaktionen und Workshops; Kooperation mit Kita und Schule."},
+ jugendbegegnung:{titel:"Internationale Jugendbegegnung",lage:"Jugendliche aus dem Ort haben kaum Gelegenheit, Gleichaltrige aus anderen Ländern kennenzulernen und Fremdsprachen anzuwenden.",ziel:"Interkulturelles Lernen, Toleranz und europäisches Bewusstsein durch eine Begegnung mit einer Partnergruppe fördern.",gruppe:"Jugendliche von 14 bis 20 Jahren, je 15 Teilnehmer aus beiden Ländern",mass:"Vorbereitungstreffen; 8-tägige Begegnung mit Workshops zu einem gemeinsamen Thema; gemeinsame Präsentation; Nachbereitung und Bericht; Partnergruppe aus [Land]."},
+ schulungen:{titel:"Schulungsreihe für Mitarbeiter und Ehrenamtliche",lage:"Viele Ehrenamtliche arbeiten mit Kindern, Jugendlichen und Hilfesuchenden, ohne ausreichend geschult zu sein.",ziel:"Qualität und Sicherheit der Angebote erhöhen, Ehrenamtliche stärken und binden.",gruppe:"ca. 25 Ehrenamtliche und Mitarbeiter",mass:"Jugendleiter-Grundkurs (Juleica); Kinderschutz-Schulung mit Schutzkonzept; Erste Hilfe; Gesprächsführung; Fahrtkosten und Referentenhonorare."},
+ frauen:{titel:"Treffpunkt für Frauen und Mütter",lage:"Frauen, besonders Mütter kleiner Kinder und Zugewanderte, haben wenig Raum für Austausch, Weiterbildung und Entlastung.",ziel:"Austausch, Stärkung und Bildung für Frauen in verschiedenen Lebenslagen.",gruppe:"Frauen und Mütter, ca. 25 Teilnehmer, mit Kinderbetreuung",mass:"Wöchentliches Frühstückstreffen; Kurse (Gesundheit, Finanzen, Erziehung); Kinderbetreuung parallel; Vermittlung an Beratungsstellen."},
+ maenner:{titel:"Männergruppe und Lebensberatung",lage:"Männer in Krisen (Trennung, Arbeitslosigkeit, Krankheit) nutzen Beratung selten; es fehlen niedrigschwellige Angebote.",ziel:"Männern einen geschützten Raum für Austausch bieten und den Weg zu Beratung erleichtern.",gruppe:"Männer aller Altersgruppen, ca. 15 Teilnehmer",mass:"Monatliche Gesprächsgruppe; Themenabende (Vatersein, Gesundheit, Arbeit); offene Beratungssprechstunde mit qualifizierter Fachkraft; Vermittlung an Fachstellen."},
+ kulturveranstaltung:{titel:"Kulturveranstaltungen für den Ort",lage:"Im Ort gibt es wenige kulturelle Veranstaltungen, die für alle zugänglich und kostenlos sind.",ziel:"Kulturelle Teilhabe ermöglichen und das Gemeinschaftsleben im Ort stärken.",gruppe:"Bürger aller Generationen, ca. 300 Besucher pro Jahr",mass:"Vier öffentliche Veranstaltungen pro Jahr (Konzert, Lesung, Theater, Fest); Honorare für Künstler; Technikmiete; Öffentlichkeitsarbeit; barrierefreier Zugang."},
+ gebaeude:{titel:"Umbau des Gemeindehauses zur offenen Begegnungsstätte",lage:"Das Gebäude wird bereits von mehreren Gruppen genutzt, ist aber nicht barrierefrei und für offene Angebote ungeeignet.",ziel:"Einen barrierefreien, offenen Treffpunkt für den Ort schaffen, der Vereinen und Initiativen zur Verfügung steht.",gruppe:"Alle Bürger; regelmäßige Nutzung durch ca. 10 Gruppen",mass:"Barrierefreier Zugang und WC; Umbau des Saals mit Küche; Ausstattung; Nutzungskonzept für Vereine und Initiativen."},
+ bibelkurs:{titel:"Offener Gesprächskreis „Bibel als Kulturgut“",lage:"Viele Menschen kennen biblische Texte nur bruchstückhaft, obwohl sie Sprache, Kunst und Werte unserer Kultur prägen.",ziel:"Offenes Bildungsangebot zu Geschichte, Literatur und Wirkung biblischer Texte – ohne Bekenntnisvoraussetzung.",gruppe:"Erwachsene unabhängig von Religion, ca. 15 Teilnehmer",mass:"Kursreihe mit 8 Abenden zu kulturgeschichtlichen Themen; Referenten; Begleitmaterial. HINWEIS: Öffentliche Förderprogramme schließen Verkündigung meist aus. Nur ehrlich als Bildungsangebot beantragen, wenn es tatsächlich offen und bildungsorientiert ist; sonst kirchliche Fonds oder Eigenmittel nutzen."},
+});
+
+/* ---------- Kosten- und Finanzierungsplan ---------- */
+const FP={ausgaben:[{t:"",b:""}],eigen:"",spenden:"",stunden:"",satz:"15",beitraege:"",foerder:[]};
+function fpNum(v){return +String(v||"").replace(",",".")||0;}
+function renderFP(){const box=$("#fpBox");if(!box)return;box.replaceChildren();
+  const row=(arr,i,obj)=>el("div",{class:"row"},el("div",{class:"field"},el("input",{type:"text",placeholder:"Kostenposition, z. B. Honorar Musikpädagogin",value:obj.t,oninput:e=>{obj.t=e.target.value;fpRechnen();},"aria-label":"Kostenposition"})),
+    el("div",{class:"field",style:"flex:0 1 150px"},el("input",{type:"number",min:"0",placeholder:"€",value:obj.b,oninput:e=>{obj.b=e.target.value;fpRechnen();},"aria-label":"Betrag in Euro"})),
+    el("button",{class:"btn small ghost",style:"margin:8px 0",onclick:()=>{arr.splice(i,1);renderFP();},"aria-label":"Position entfernen"},"✕"));
+  box.append(el("h3",{},"Ausgaben"),...FP.ausgaben.map((o,i)=>row(FP.ausgaben,i,o)),el("button",{class:"btn small ghost",onclick:()=>{FP.ausgaben.push({t:"",b:""});renderFP();}},"+ Kostenposition"));
+  const f=(l,k,h)=>el("div",{class:"field"},el("label",{for:"fp_"+k},l),el("input",{id:"fp_"+k,type:"number",min:"0",value:FP[k],oninput:e=>{FP[k]=e.target.value;fpRechnen();}}),h?el("span",{class:"help"},h):null);
+  box.append(el("h3",{},"Eigene Mittel"),el("div",{class:"grid2"},f("Eigenmittel (Kasse) €","eigen"),f("Spenden €","spenden"),f("Teilnehmerbeiträge €","beitraege"),f("Ehrenamtliche Stunden","stunden","Ob Eigenleistung anerkannt wird, regelt die jeweilige Richtlinie."),f("Stundensatz Eigenleistung €","satz")));
+  const opts=[...new Set([...store.merk,...store.apps.map(a=>a.pid).filter(Boolean)])].map(byId).filter(Boolean);
+  box.append(el("h3",{},"Beantragte Förderungen"),el("p",{class:"note"},"Aus Merkliste und Anträgen. Vorschlag = Förderquote × Gesamtkosten, begrenzt auf den Höchstbetrag; Betrag anpassbar."),
+    ...FP.foerder.map((x,i)=>{const p=byId(x.id);return el("div",{class:"row"},el("div",{class:"field"},el("span",{},p?p.t:x.id)),
+      el("div",{class:"field",style:"flex:0 1 150px"},el("input",{type:"number",min:"0",value:x.b,oninput:e=>{x.b=e.target.value;fpRechnen();},"aria-label":"Förderbetrag"})),
+      el("button",{class:"btn small ghost",style:"margin:8px 0",onclick:()=>{FP.foerder.splice(i,1);renderFP();},"aria-label":"Förderung entfernen"},"✕"));}),
+    opts.length?el("div",{class:"row"},el("div",{class:"field"},el("select",{id:"fpAdd"},opts.map(p=>el("option",{value:p.id},p.t)))),el("button",{class:"btn small",style:"margin:8px 0",onclick:()=>{const id=$("#fpAdd").value,p=byId(id);const k=fpKosten();let b=p&&p.q!=null?k*p.q/100:0;if(p&&p.max!=null)b=Math.min(b||p.max,p.max);FP.foerder.push({id,b:Math.round(b)||""});renderFP();}},"Hinzufügen")):el("p",{class:"note"},"Erst Programme merken oder Anträge anlegen."),
+    el("div",{id:"fpErgebnis"}),
+    el("div",{class:"row"},el("button",{class:"btn small",onclick:()=>{$("#tKosten").value=fpKosten();$("#tEigen").value=Math.round(fpEigen());toast("In die Texte übernommen");}},"Summen in die Texte übernehmen"),
+      el("button",{class:"btn small ghost",onclick:fpCsv},"Als Tabelle (CSV) speichern")));
+  fpRechnen();}
+const fpKosten=()=>FP.ausgaben.reduce((s,a)=>s+fpNum(a.b),0);
+const fpEigen=()=>fpNum(FP.eigen)+fpNum(FP.spenden)+fpNum(FP.beitraege)+fpNum(FP.stunden)*fpNum(FP.satz);
+function fpRechnen(){const box=$("#fpErgebnis");if(!box)return;const k=fpKosten(),e=fpEigen(),f=FP.foerder.reduce((s,x)=>s+fpNum(x.b),0),diff=e+f-k;
+  const warn=[];FP.foerder.forEach(x=>{const p=byId(x.id);if(!p||!k)return;const b=fpNum(x.b);
+    if(p.max!=null&&b>p.max)warn.push(`${p.t}: über dem bekannten Höchstbetrag (${eur(p.max)}).`);
+    if(p.q!=null&&b/k*100>p.q+0.5)warn.push(`${p.t}: ${Math.round(b/k*100)} % beantragt, bekannte Höchstquote ${p.q} %.`);
+    if(p.ea!=null&&k&&e/k*100<p.ea-0.5)warn.push(`${p.t}: verlangt mindestens ${p.ea} % Eigenanteil, geplant sind ${Math.round(e/k*100)} %.`);});
+  if(FP.foerder.length>1)warn.push("Mehrere Förderungen: Doppelförderung derselben Kosten ist meist unzulässig – Kombinationshinweise der Programme beachten und alle Förderer im Antrag angeben.");
+  box.replaceChildren(...[el("div",{class:"tablewrap"},el("table",{style:"border-collapse:collapse;margin:10px 0"},
+    ...[["Gesamtkosten",eur(k)],["Eigene Mittel",eur(e)+(k?` (${Math.round(e/k*100)} %)`:"")],["Förderungen",eur(f)+(k?` (${Math.round(f/k*100)} %)`:"")],[diff<0?"Deckungslücke":diff>0?"Überfinanzierung":"Ausgeglichen",eur(Math.abs(diff))]]
+      .map(([a,b])=>el("tr",{},el("td",{style:"padding:4px 16px 4px 0"},a),el("td",{style:"padding:4px 0;font-weight:700"},b))))),
+    diff>0?el("p",{class:"notice"},"Überfinanzierung: Fördermittel würden gekürzt – Förderbeträge oder Eigenmittel anpassen."):null,
+    diff<0?el("p",{class:"notice"},"Deckungslücke: Weitere Mittel nötig, sonst ist der Finanzierungsplan nicht ausgeglichen."):null].filter(Boolean),
+    ...warn.map(w=>el("p",{class:"notice"},w)));
+  [...box.childNodes].forEach(n=>{if(n.nodeType===3&&n.textContent==="null")n.remove();});}
+function fpCsv(){const r=[["Art","Position","Betrag"]];FP.ausgaben.forEach(a=>r.push(["Ausgabe",a.t,fpNum(a.b)]));
+  [["Eigenmittel",FP.eigen],["Spenden",FP.spenden],["Teilnehmerbeiträge",FP.beitraege],["Eigenleistung ("+fpNum(FP.stunden)+" h × "+fpNum(FP.satz)+" €)",fpNum(FP.stunden)*fpNum(FP.satz)]].forEach(([t,b])=>r.push(["Einnahme",t,fpNum(b)]));
+  FP.foerder.forEach(x=>r.push(["Förderung",(byId(x.id)||{}).t||x.id,fpNum(x.b)]));
+  download("finanzierungsplan.csv","\ufeff"+r.map(z=>z.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n"),"text/csv");}
+
+/* ---------- Verwendungsnachweis ---------- */
+function nachweis(a){const p=a.pid?byId(a.pid):null;
+  const sach=`Sachbericht zum Verwendungsnachweis
+Projekt: ${a.titel}
+Förderprogramm: ${p?p.t+" ("+p.g+")":"[Programm]"}
+Bewilligungsbescheid vom: [Datum], Aktenzeichen: [Az.]
+Bewilligungszeitraum: [von] bis [bis]
+
+1. Durchgeführte Maßnahmen
+[Was wurde wann umgesetzt? Abweichungen vom Antrag mit Begründung]
+
+2. Erreichte Ziele und Zielgruppen
+[Teilnehmer/Besucher, erreichte Wirkung, Kennzahlen aus dem Antrag]
+
+3. Öffentlichkeitsarbeit
+[Hinweis auf die Förderung, z. B. Logo auf Flyern, Pressebericht]
+
+4. Finanzielle Abwicklung
+[Gesamtausgaben laut Belegliste, Einnahmen, Eigenanteil, Abweichungen vom Finanzplan]
+
+5. Nachhaltigkeit
+[Wie geht es nach dem Förderzeitraum weiter?]
+
+Wir bestätigen, dass die Ausgaben notwendig waren, wirtschaftlich und sparsam verfahren wurde und die Angaben mit den Büchern und Belegen übereinstimmen.
+
+[Ort, Datum]            [Unterschrift vertretungsberechtigte Person]`;
+  download("sachbericht-"+a.id+".txt",sach,"text/plain");
+  setTimeout(()=>download("belegliste-"+a.id+".csv","\ufeffNr.;Belegdatum;Zahlungsdatum;Empfänger;Zweck / Kostenposition laut Finanzplan;Betrag €\r\n1;;;;;\r\n2;;;;;\r\n","text/csv"),400);
+  toast("Sachbericht und Belegliste als Vorlagen gespeichert");}
+
+/* ---------- Fristen aller gemerkten Programme als Kalender ---------- */
+function icsMerkliste(){const ev=[];const stamp=new Date().toISOString().replace(/[-:]/g,"").slice(0,15)+"Z";
+  store.merk.map(byId).filter(p=>p&&isoFrist(p.frist)&&p.frist>=HEUTE).forEach(p=>ev.push(["BEGIN:VEVENT","UID:"+p.id+"@fordernavi","DTSTAMP:"+stamp,"DTSTART;VALUE=DATE:"+p.frist.replace(/-/g,""),"SUMMARY:Frist: "+p.t.replace(/[,;]/g," "),"BEGIN:VALARM","TRIGGER:-P14D","ACTION:DISPLAY","DESCRIPTION:Förderfrist in 14 Tagen","END:VALARM","END:VEVENT"].join("\r\n")));
+  store.apps.forEach(a=>{[["frist","Antragsfrist"],["nachweis","Verwendungsnachweis"]].forEach(([f,l])=>{if(a[f])ev.push(["BEGIN:VEVENT","UID:"+a.id+f+"@fordernavi","DTSTAMP:"+stamp,"DTSTART;VALUE=DATE:"+a[f].replace(/-/g,""),"SUMMARY:"+l+": "+a.titel.replace(/[,;]/g," "),"BEGIN:VALARM","TRIGGER:-P7D","ACTION:DISPLAY","DESCRIPTION:Erinnerung","END:VALARM","END:VEVENT"].join("\r\n"));});});
+  if(!ev.length){toast("Keine Fristen mit Datum in Merkliste oder Anträgen");return;}
+  download("foerderfristen.ics",["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Foerdernavi//DE","X-WR-CALNAME:Förderfristen",...ev,"END:VCALENDAR"].join("\r\n"),"text/calendar");}
+
+/* ---------- Sprache (Oberfläche Deutsch/Englisch; Förderdaten bleiben in Originalsprache) ---------- */
+let LANG="de";
+const EN={"Finden":"Find","Merkliste":"Saved","Anträge":"Applications","Texte":"Texts","Konto & KI":"Account & AI","Impressum":"Imprint","Redaktion":"Editors",
+ "Welche Förderung passt zu Ihrem Vorhaben?":"Which funding fits your project?","Vier kurze Fragen, dann sehen Sie passende Programme mit Förderquote, Eigenanteil und Rückzahlungspflicht auf einen Blick.":"Answer a few questions or filter yourself – see funding rate, own contribution and repayment at a glance.",
+ "Wer":"Who","Wo":"Where","Was":"What","Bedingungen":"Conditions","Weiter":"Next","Zurück":"Back","Ergebnisse ansehen":"Show results","Passende Programme":"Matching programmes",
+ "Mit Fragen zum Ergebnis":"Guided questions","Selbst filtern":"Filter myself","Ergebnis des Förder-Checks":"Funding check result","Treffer":"results",
+ "Förder-Check: Beantworten Sie ein paar Fragen":"Funding check: answer a few questions","Nur eine Vorprüfung auf Grundlage Ihrer Angaben – maßgeblich ist die Prüfung durch die jeweilige Stelle. Ihre Angaben bleiben in Ihrem Browser.":"Only a preliminary check based on your answers – the funding body decides. Your answers stay in your browser.",
+ "Für wen?":"For whom?","Privatperson / Familie":"Private person / family","Verein / Kirche":"Association / church","Bundesland":"German state","Kinder unter 18 im Haushalt":"Children under 18 in household",
+ "Einkommen des Haushalts":"Household income","eher gering / knapp":"low","mittel":"medium","hoch (zvE über 175.000 €)":"high (taxable income over €175,000)","Wohnsituation":"Housing","zur Miete":"renting","im eigenen Haus / eigene Wohnung":"own home","Kauf oder Bau geplant":"planning to buy or build",
+ "Pflegegrad einer Person im Haushalt":"Care level of a household member","keiner":"none","Pflegegrad":"care level","Baby unter 1 Jahr oder Geburt geplant":"baby under 1 or expected","alleinerziehend":"single parent","Bezug von Grundsicherung (Bürgergeld)":"receiving basic income support","Bezug von Arbeitslosengeld I":"receiving unemployment benefit I",
+ "Kosten für Kita, Hort oder Tagesmutter":"childcare costs","Aufwandsentschädigung für Ehrenamt / Übungsleitung":"allowance for volunteering / coaching","Was haben Sie vor? (mehrere möglich)":"What are you planning? (multiple)","Was möchten Sie umsetzen? (mehrere möglich)":"What do you want to do? (multiple)","Ort (optional)":"Town (optional)",
+ "voraussichtlich: ":"likely: ","prüfen: ":"check: ","Weitere anzeigen":"Show more","Noch keine Treffer – bitte weitere Angaben machen.":"No results yet – please add more details.",
+ "Heizung tauschen":"Replace heating","Dämmen / Fenster / Sanieren":"Insulation / windows / renovation","Solaranlage / Speicher":"Solar / storage","Barrierefrei umbauen":"Accessibility conversion","Handwerker / Renovierung":"Tradespeople / renovation","Haushaltshilfe / Pflege im Haushalt":"Household help / home care","Haus / Wohnung kaufen oder bauen":"Buy or build a home","Schule / Studium":"School / university","Weiterbildung / Meister":"Further training","Selbstständig machen":"Start a business",
+ "Kinder- und Jugendarbeit, Freizeiten":"Children and youth work","Verein / Kirche / NGO":"Association / church / NGO","Musik, Chor, Kultur":"Music, choir, culture","Integration, Flüchtlingshilfe, Senioren":"Integration, refugees, seniors","Ehrenamtliche gewinnen und schulen":"Recruit and train volunteers","Gebäude bauen oder sanieren":"Build or renovate buildings","Energie, Heizung, Solar":"Energy, heating, solar","Digitalisierung, Technik":"Digital, equipment","Internationale Begegnung":"International exchange","Umwelt, Garten, Schöpfung":"Environment, garden","Demokratie, Gemeinwesen":"Democracy, community",
+ "Sicher bezifferbar pro Monat: ":"Clearly quantifiable per month: ",". Weitere Leistungen hängen von Einkommen und Einzelfall ab.":". Other benefits depend on income and individual case."};
+Object.assign(EN,{"+ Kostenposition": "+ Cost item", "100 % gefördert": "100 % funded", "100 € je Stunde, max. 40 h/Woche": "€100 per hour, max. 40 h/week", "= Hinweis auf eine Förderart, die es örtlich oft gibt.": "= note on a type of funding that often exists locally.", "= Startdaten aus dem Wissen eines Sprachmodells, können veraltet oder falsch sein;": "= starter data from a language model’s knowledge, may be outdated or wrong;", "= automatisch aus offizieller Schnittstelle;": "= automatically from an official interface;", "= gegen offizielle Quelle abgeglichen;": "= checked against an official source;", "API-Schlüssel": "API key", "Abgelaufene Fristen ausblenden": "Hide expired deadlines", "Abgelehnt": "Rejected", "Abgeschlossen": "Completed", "Aktuelle Modellnamen stehen in der Dokumentation des Anbieters.": "Current model names are listed in the provider’s documentation.", "Alle": "All", "Alle Angaben ohne Gewähr. Maßgeblich sind allein die Förderrichtlinie und der Bescheid des Fördergebers. Fördernavi ist keine Rechts- oder Steuerberatung.": "All information without guarantee. Only the funding guideline and the funder’s decision are binding. Fördernavi is not legal or tax advice.", "Alle Daten exportieren": "Export all data", "Als Tabelle (CSV) speichern": "Save as table (CSV)", "Als Textdatei": "As text file", "Anbieter": "Provider", "Angebote oder Kostenvoranschläge": "Quotes or cost estimates", "Anschreiben": "Cover letter", "Ansprechperson": "Contact person", "Antrag angelegt": "Application created", "Antrag anlegen": "Create application", "Antrag eingereicht (Datum notieren)": "Application submitted (note the date)", "Antrag ohne Programm anlegen": "Create application without programme", "Antragsberechtigung geprüft": "Eligibility checked", "Antragsfrist": "Application deadline", "Antragsteller (Name, Verein, Gemeinde)": "Applicant (name, association, congregation)", "Antragsteller ist eine Kirche, Freikirche oder ein kirchlicher Verein – Abgrenzung religiöser Angebote in den Text aufnehmen": "Applicant is a church, free church or church association – include separation from religious activities in the text", "Antragstexte erstellen": "Create application texts", "Anträge verwalten": "Manage applications", "Art": "Type", "Art der Förderung": "Type of funding", "Aufrufe gehen direkt vom Browser zum Anbieter. Innerhalb von claude.ai sind solche Verbindungen gesperrt – dort „Claude (in claude.ai)“ wählen.": "Requests go directly from your browser to the provider. Inside claude.ai such connections are blocked – choose “Claude (in claude.ai)” there.", "Auftragsforschung pro Jahr (€)": "Contract research per year (€)", "Auftragsforschung × 70 %": "Contract research × 70 %", "Aus": "Off", "Aus Merkliste und Anträgen. Vorschlag = Förderquote × Gesamtkosten, begrenzt auf den Höchstbetrag; Betrag anpassbar.": "From saved list and applications. Suggestion = funding rate × total costs, capped at the maximum; amount editable.", "Ausgaben": "Expenses", "Ausgangslage – welches Problem oder welcher Bedarf besteht?": "Starting point – what problem or need exists?", "Ausgeglichen": "Balanced", "Ausgeschaltete Quellen werden beim nächsten Import nicht abgerufen. DSEE erst nach Freigabe durch die DSEE einschalten.": "Disabled sources are skipped in the next import. Only enable DSEE after permission from DSEE.", "Baden-Württemberg": "Baden-Württemberg", "Bauen & Sanieren": "Building & renovation", "Bayern": "Bavaria", "Beantragte Förderungen": "Requested funding", "Beantragter Betrag in €": "Requested amount in €", "Bearbeiten": "Edit", "Begegnungscafé für alle Bürger": "Community café for all", "Belgien": "Belgium", "Bemessungsgrundlage": "Assessment basis", "Beratung": "Consulting", "Beratung, Begleitung, Begegnung": "Advice, accompaniment, encounter", "Besonders gesucht: Förderungen von Kreisen, Städten, Gemeinden und örtlichen Stiftungen. Kommunen können ein Partnerkonto bekommen – Kontakt über das Impressum.": "Especially wanted: funding from districts, cities, municipalities and local foundations. Municipalities can get a partner account – contact via the imprint.", "Besuchsdienste, Nachmittage, Mehrgenerationenangebote": "Visiting services, afternoons, intergenerational activities", "Betrag in Euro": "Amount in euros", "Bewilligt": "Approved", "Bewilligungsbescheid abgelegt": "Grant decision filed", "Bezug von Grundsicherung": "Receiving basic income support", "Bibelkurs als Bildungsangebot": "Bible course as an educational offer", "Bildung & Weiterbildung": "Education & training", "Brandenburg": "Brandenburg", "Bremen": "Bremen", "Brief": "Letter", "Bruttolöhne inkl. Arbeitgeberanteil, anteilig für F&E-Zeit": "Gross wages incl. employer share, pro rata for R&D time", "Bulgarien": "Bulgaria", "Bund": "Federal", "Bundesland (Name)": "German state (name)", "Bundesland wählen": "Choose German state", "ChatGPT über eigenen API-Schlüssel": "ChatGPT with your own API key", "Checkliste": "Checklist", "Chor / Musikprojekte": "Choir / music projects", "Claude (in claude.ai, ohne Schlüssel)": "Claude (in claude.ai, no key)", "Claude über eigenen API-Schlüssel": "Claude with your own API key", "Dann rechnet jede Karte Förderbetrag und Eigenanteil in Euro aus.": "Each card then calculates the funding amount and own contribution in euros.", "Darlehen": "Loan", "Darlehen bis": "Loan up to", "Das Linkmuster findet man auf dem Server mit: python -m importer.run --probe-url <Startseite>": "Find the link pattern on the server with: python -m importer.run --probe-url <start page>", "Daten aus der Förderdatenbank des Bundes stehen unter CC BY 4.0. Quelle: Förderdatenbank des Bundes, Bundesministerium für Wirtschaft und Energie,": "Data from the Federal funding database is licensed CC BY 4.0. Source: Förderdatenbank des Bundes, Federal Ministry for Economic Affairs and Energy,", "Daten exportieren": "Export data", "Daten importieren": "Import data", "Datenquellen": "Data sources", "Datenquellen und Lizenzen": "Data sources and licences", "Datenschutz": "Privacy", "Datenstand:": "Data status:", "Demokratie": "Democracy", "Denkmal": "Heritage", "Deutschland": "Germany", "Die Antragstexte werden auf Deutsch erzeugt, weil deutsche Förderstellen Anträge auf Deutsch verlangen.": "Application texts are generated in German because German funding bodies require applications in German.", "Die Plattform funktioniert vollständig ohne KI. Wer möchte, kann Texte zusätzlich von einer KI überarbeiten lassen.": "The platform works fully without AI. If you like, an AI can additionally revise texts.", "Diese Datenbank ist im Aufbau. Direkt in den großen Quellen weitersuchen:": "This database is under construction. Continue searching directly in the major sources:", "Diese Vorschau speichert Merkliste und Anträge im Browser. Nutzerkonten mit Synchronisierung über alle Geräte gibt es, sobald die Plattform auf dem eigenen Server läuft (siehe Projektpaket).": "This preview stores the saved list and applications in your browser. User accounts with sync across devices are available once the platform runs on its own server (see project package).", "Digitale Vereinsarbeit": "Digital association work", "Digitalisierung": "Digitalisation", "Direkt im Feld bearbeitbar.": "Editable directly in the field.", "Dänemark": "Denmark", "E-Mail": "Email", "E-Mail des Kontos": "Account email", "E-Mail: [kontakt@example.org]": "Email: [kontakt@example.org]", "EU, Nationale Agenturen in Deutschland": "EU, national agencies in Germany", "EU-weit": "EU-wide", "Ebene": "Level", "Egal": "Any", "Ehrenamt": "Volunteering", "Ehrenamtliche Stunden": "Volunteer hours", "Ehrenamtsausbildung": "Volunteer training", "Eigenanteil": "Own contribution", "Eigenanteil gesichert": "Own contribution secured", "Eigenanteil in % (falls bekannt)": "Own contribution in % (if known)", "Eigenanteil in €": "Own contribution in €", "Eigenanteil prüfen": "Check own contribution", "Eigenanteil – wie viel können Sie selbst tragen?": "Own contribution – how much can you cover yourself?", "Eigene F&E-Stunden als Einzelunternehmer/Gesellschafter pro Jahr": "Own R&D hours as sole trader/partner per year", "Eigene Mittel": "Own funds", "Eigenmittel (Kasse) €": "Own funds (cash) €", "Eigenmittel, Spenden, Eigenleistung – je nach Programm zulässig.": "Own funds, donations, own work – allowed depending on the programme.", "Eingereicht": "Submitted", "Eintrag korrigieren oder als geprüft markieren": "Correct entry or mark as checked", "Eintrag suchen": "Search entry", "Eintragen": "Add", "Elternkurse, Beratung, Treffpunkt": "Parenting courses, advice, meeting place", "Energie & Heizung": "Energy & heating", "Estland": "Estonia", "Externe Unternehmensberatung gewünscht": "External business consulting wanted", "F&E-Personalkosten pro Jahr (€)": "R&D staff costs per year (€)", "Familie & Kinder": "Family & children", "Familie / Alleinerziehende": "Family / single parents", "Familienzentrum": "Family centre", "Ferienfreizeiten, Tagesprogramme": "Holiday camps, day programmes", "Ferienprogramme für Kinder": "Holiday programmes for children", "Finanzierung, Kredite, Bürgschaften": "Financing, loans, guarantees", "Finnland": "Finland", "Flüchtlingshilfe / Integrationszentrum": "Refugee aid / integration centre", "Forschung & Innovation": "Research & innovation", "Forschungszulage – unverbindliche Schätzung": "Research allowance – non-binding estimate", "Frankreich": "France", "Frauen-/Mütterangebote": "Women’s / mothers’ activities", "Frist": "Deadline", "Frist Verwendungsnachweis": "Deadline for proof of use", "Frist für Verwendungsnachweis notiert": "Deadline for proof of use noted", "Fristen aller gemerkten Programme und Anträge in den Kalender (.ics)": "Deadlines of all saved programmes and applications to calendar (.ics)", "Fristen in Kalender": "Deadlines to calendar", "Förder-Check: Kinder, Wohnen, Pflege, Vorhaben …": "Funding check: children, housing, care, plans …", "Förderdatenbank der DSEE": "DSEE funding database", "Förderdatenbank des Bundes": "Federal funding database", "Fördergeber": "Funder", "Fördernavi ist kostenlos und werbefrei. Spenden helfen, die Daten aktuell zu halten.": "Fördernavi is free and ad-free. Donations help keep the data up to date.", "Förderprogramm": "Funding programme", "Förderquote in % (falls bekannt)": "Funding rate in % (if known)", "Förderquote unbekannt": "Funding rate unknown", "Förderrichtlinie vollständig gelesen": "Funding guideline fully read", "Förderung bis": "Funding up to", "Förderung melden": "Report funding", "Förderung melden, die hier fehlt": "Report funding that is missing here", "Förderungen": "Funding", "Füllen Sie die Felder aus. Das Werkzeug erzeugt eine Projektbeschreibung, ein Anschreiben und eine Kontaktanfrage an die Förderstelle. Alles funktioniert ohne KI; die KI-Überarbeitung ist optional.": "Fill in the fields. The tool creates a project description, a cover letter and a contact request to the funding body. Everything works without AI; AI revision is optional.", "Füllt leere Felder mit einem Beispiel, das Sie anpassen.": "Fills empty fields with an example you adapt.", "Für wen ist die Förderung?": "Who is the funding for?", "Gebäude steht unter Denkmalschutz": "Building is a listed monument", "Gemeindegebäude als Begegnungsstätte": "Community building as meeting place", "Gemeinkostenpauschale": "Overhead flat rate", "Gemeinschaftsgarten, Umweltbildung, Energiesparen": "Community garden, environmental education, saving energy", "Geprüfte Grunddaten": "Checked core data", "Gesamtkosten": "Total costs", "Gesamtkosten in €": "Total costs in €", "Gesprächsgruppen, Beratung": "Discussion groups, advice", "Gesundheit & Pflege": "Health & care", "Grenzt örtliche Programme ein; EU- und landesweite Programme bleiben sichtbar.": "Narrows local programmes; EU-wide and nationwide programmes remain visible.", "Griechenland": "Greece", "Gründer": "Founder", "Gründung": "Start-up", "Gründung aus Hochschule oder Forschungseinrichtung": "Spin-off from university or research institute", "Gründung geplant oder Unternehmen jünger als 5 Jahre": "Start-up planned or company younger than 5 years", "Haftung": "Liability", "Hamburg": "Hamburg", "Hauptmenü": "Main menu", "Hausaufgabenhilfe": "Homework help", "Hessen": "Hesse", "Hinweis: Verkündigung wird öffentlich meist nicht gefördert – nur als offenes Bildungsangebot (z. B. Erwachsenenbildung) oder über kirchliche Fonds.": "Note: preaching is usually not publicly funded – only as an open educational offer (e.g. adult education) or via church funds.", "Hinzufügen": "Add", "Höchstbetrag": "Maximum", "Höchstbetrag begrenzt die Förderung": "Maximum limits the funding", "Höchstbetrag in €": "Maximum in €", "Idee": "Idea", "Import jetzt starten": "Start import now", "Impressum und Spenden": "Imprint and donations", "In Vorbereitung": "In preparation", "In den Ergebnissen suchen": "Search the results", "Inklusion": "Inclusion", "Instrumentalunterricht, Ensembles, Konzerte": "Instrument lessons, ensembles, concerts", "Irland": "Ireland", "Italien": "Italy", "Jeder Antrag hat Status, Fristen, Checkliste und ein Kontaktprotokoll. Fristen lassen sich in den Kalender übernehmen.": "Each application has a status, deadlines, checklist and contact log. Deadlines can be added to your calendar.", "Jugendarbeit": "Youth work", "Jugendaustausch, Partnerschaften": "Youth exchange, partnerships", "Jugendleiterkarte, Erste Hilfe, Kinderschutz": "Youth leader card, first aid, child protection", "Jugendzentrum / Jugendgruppe": "Youth centre / youth group", "KI ist ausgeschaltet.": "AI is switched off.", "KI-Unterstützung (optional)": "AI support (optional)", "KI-Wissen, ungeprüft": "AI knowledge, unchecked", "Kein Eigenanteil": "No own contribution", "Keine personenbezogenen Daten Dritter eingeben. Texte, die an eine KI gehen, verarbeitet der jeweilige Anbieter.": "Do not enter personal data of third parties. Texts sent to an AI are processed by the respective provider.", "Kennzeichnung jedes Eintrags:": "Labelling of each entry:", "Kinder- und Jugendmusikschule": "Children’s and youth music school", "Kinderchor, Instrumentalunterricht, Gospelchor, öffentliche Konzerte": "Children’s choir, instrument lessons, gospel choir, public concerts", "Kirche / Freikirche": "Church / free church", "Kleines oder mittleres Unternehmen (unter 250 Beschäftigte und max. 50 Mio. € Umsatz oder 43 Mio. € Bilanzsumme)": "Small or medium-sized enterprise (under 250 employees and max. €50 m turnover or €43 m balance sheet)", "Kleines/mittleres Unternehmen": "Small/medium-sized enterprise", "Kommune": "Municipality", "Kommune (Partner)": "Municipality (partner)", "Kontakt zur Förderstelle aufgenommen": "Contacted the funding body", "Kontaktanfrage an die Förderstelle": "Contact request to the funding body", "Kontaktprotokoll": "Contact log", "Konto": "Account", "Konto und KI": "Account and AI", "Kontoinhaber: [Name]": "Account holder: [name]", "Konzerte, Feste, Medienarbeit": "Concerts, festivals, media work", "Kopieren": "Copy", "Kosten- und Finanzierungsplan": "Cost and financing plan", "Kosten- und Finanzierungsplan erstellt": "Cost and financing plan prepared", "Kostenposition": "Cost item", "Kostenposition, z. B. Honorar Musikpädagogin": "Cost item, e.g. fee for music teacher", "Kreis oder Stadt": "District or city", "Kreis/Stadt": "District/city", "Kroatien": "Croatia", "Kultur & Heimat": "Culture & heritage", "Kurzbeschreibung": "Short description", "Kurzname (a–z, 0–9, -)": "Short name (a–z, 0–9, -)", "Land": "State", "Lebensunterhalt": "Living costs", "Lernbegleitung, Lesepaten": "Learning support, reading mentors", "Lettland": "Latvia", "Link zur offiziellen Seite *": "Link to official page *", "Linkmuster der Detailseiten (Regex)": "Link pattern of detail pages (regex)", "Litauen": "Lithuania", "Lotterie": "Lottery", "Luxemburg": "Luxembourg", "Ländlicher Raum": "Rural areas", "Löschen": "Delete", "Malta": "Malta", "Maßnahmen – was genau wird getan?": "Activities – what exactly will be done?", "Mecklenburg-Vorpommern": "Mecklenburg-Western Pomerania", "Mehrfachauswahl möglich. Ohne Auswahl werden alle Themen gezeigt.": "Multiple selection possible. Without a selection all topics are shown.", "Meldungen prüfen": "Review reports", "Meldungen werden vor der Veröffentlichung von der Redaktion geprüft.": "Reports are checked by the editors before publication.", "Merken": "Save", "Mit KI überarbeiten": "Revise with AI", "Mitarbeiterschulungen": "Staff training", "Modellname": "Model name", "Mustervorlage (optional)": "Template (optional)", "Männerarbeit / Lebensberatung": "Men’s work / life counselling", "Müttertreff, Kurse, Beratung": "Mothers’ group, courses, advice", "Nach Projektart filtern (optional, besonders für Vereine, Kirchen und NGOs)": "Filter by project type (optional, especially for associations and churches)", "Nachweis der Gemeinnützigkeit (falls Verein/Kirche)": "Proof of non-profit status (if association/church)", "Name des Programms *": "Programme name *", "Nicht fündig geworden?": "Nothing found?", "Nicht vor Bewilligung mit dem Projekt beginnen (vorzeitiger Maßnahmebeginn)": "Do not start the project before approval (premature start)", "Niederlande": "Netherlands", "Niedersachsen": "Lower Saxony", "Noch keine Anträge. Legen Sie bei einem Programm „Antrag anlegen“ an.": "No applications yet. Use “Create application” on a programme.", "Noch nichts gemerkt. Unter „Finden“ bei einem Programm auf „Merken“ tippen.": "Nothing saved yet. Under “Find”, tap “Save” on a programme.", "Nordrhein-Westfalen": "North Rhine-Westphalia", "Notizen": "Notes", "Nur Darlehen": "Loans only", "Nur eine Rechenhilfe nach den Regeln ab 2026. Ob Ihre Arbeit als Forschung und Entwicklung gilt (neuartig, ungewiss, planmäßig), entscheidet die Bescheinigungsstelle Forschungszulage. Keine Steuerberatung.": "Only a calculation aid based on the rules from 2026. Whether your work counts as research and development (novel, uncertain, planned) is decided by the certification body BSFZ. Not tax advice.", "Nur ohne Rückzahlung": "Non-repayable only", "Nutzer": "User", "Ob Eigenleistung anerkannt wird, regelt die jeweilige Richtlinie.": "Whether own work is recognised depends on the guideline.", "Offizielle Seite": "Official page", "Ort": "Town", "Ort (bei Kommune)": "Town (for municipality)", "Pauschale": "Lump sum", "PayPal – in Vorbereitung": "PayPal – in preparation", "Personalkosten": "Staff costs", "Platzhalter": "Placeholder", "Platzhalter – vor Veröffentlichung nach § 5 DDG und § 18 MStV vollständig ausfüllen.": "Placeholder – complete fully before publication (§ 5 DDG, § 18 MStV).", "Polen": "Poland", "Portugal": "Portugal", "Position entfernen": "Remove item", "Preis / Wettbewerb": "Prize / competition", "Privatperson": "Private person", "Programme mit unbekanntem Eigenanteil trotzdem zeigen (als „prüfen“ markiert)": "Show programmes with unknown own contribution anyway (marked “check”)", "Projektauswahl zurücksetzen": "Reset project selection", "Projektbeschreibung": "Project description", "Projektkosten in € (optional)": "Project costs in € (optional)", "Projekttitel": "Project title", "Quote und Eigenanteil unbekannt – Richtlinie prüfen": "Rate and own contribution unknown – check guideline", "Rechnet Gesamtkosten, Eigenanteil und Förderquote aus und warnt bei Überschreitung bekannter Grenzen.": "Calculates total costs, own contribution and funding rate and warns when known limits are exceeded.", "Region oder Ort (optional)": "Region or town (optional)", "Rheinland-Pfalz": "Rhineland-Palatinate", "Rolle": "Role", "Rolle speichern": "Save role", "Rollen vergeben": "Assign roles", "Rumänien": "Romania", "Rückzahlung": "Repayable", "Saarland": "Saarland", "Sachsen": "Saxony", "Sachsen-Anhalt": "Saxony-Anhalt", "Satzung / Registerauszug": "Statutes / register extract", "Schleswig-Holstein": "Schleswig-Holstein", "Schulungen, Gewinnung und Bindung von Freiwilligen": "Training, recruiting and retaining volunteers", "Schweden": "Sweden", "Schüler / Studenten": "Pupil / student", "Selbstständig": "Self-employed", "Seniorenarbeit": "Work with seniors", "Servicesuche Bund (Verwaltungsleistungen)": "Federal service search (public services)", "Slowakei": "Slovakia", "Slowenien": "Slovenia", "Sonstiges": "Other", "Soziales": "Social", "Sozialleistung": "Social benefit", "Spanien": "Spain", "Spenden €": "Donations €", "Spendenquittungen sind nur möglich, wenn der Betreiber als gemeinnützig anerkannt ist.": "Donation receipts are only possible if the operator is recognised as non-profit.", "Sport": "Sport", "Sprachcafé für Migranten": "Language café for migrants", "Sprache umschalten / switch language": "Switch language / Sprache umschalten", "Staat": "Country", "Stadt, Gemeinde oder PLZ (optional)": "City, municipality or postcode (optional)", "Startseite der Förderübersicht": "Start page of the funding overview", "Status": "Status", "Steuern sparen": "Saving tax", "Steuervorteil": "Tax benefit", "Stiftung": "Foundation", "Stipendium": "Scholarship", "Stundensatz Eigenleistung €": "Hourly rate own work €", "Suchweg wählen": "Choose search method", "Summen in die Texte übernehmen": "Transfer totals to texts", "Teilnehmerbeiträge €": "Participant fees €", "Telefon": "Phone", "Telefon: [optional]": "Phone: [optional]", "Termin": "Meeting", "Text vorbereiten": "Prepare text", "Texte erstellen": "Create texts", "Texte erzeugen": "Generate texts", "Thüringen": "Thuringia", "Titel": "Title", "Titel eingeben": "Enter title", "Tschechien": "Czechia", "Umbau, Sanierung, Barrierefreiheit, Energie": "Conversion, renovation, accessibility, energy", "Umwelt & Natur": "Environment & nature", "Umweltprojekt Gemeinde": "Community environmental project", "Ungarn": "Hungary", "Unternehmen / Gründung / Forschung": "Company / start-up / research", "Unterstützen": "Support", "Verantwortlich für den Inhalt: [Name, Anschrift]": "Responsible for content: [name, address]", "Verein / gemeinnützige Organisation / NGO": "Association / non-profit organisation / NGO", "Vereinssoftware, Technik, Online-Angebote": "Association software, equipment, online services", "Verwaltungsleistungen für diesen Ort live abrufen": "Fetch public services for this town live", "Verwendungsnachweis": "Proof of use", "Verwendungsnachweis vorbereiten": "Prepare proof of use", "Verwendungszweck: Spende Fördernavi": "Reference: donation Fördernavi", "Von Merkliste entfernen": "Remove from saved list", "Vorhaben beginnt nach dem 31.12.2025 (dann +20 % Gemeinkostenpauschale)": "Project starts after 31.12.2025 (then +20 % overhead flat rate)", "Was soll gefördert werden?": "What should be funded?", "Was wurde besprochen?": "What was discussed?", "Website anlegen": "Create website entry", "Website hinzufügen (Kreis, Stadt, Stiftung)": "Add website (district, city, foundation)", "Weitere Anbieter – in Vorbereitung": "Other providers – in preparation", "Welche Bedingungen?": "Which conditions?", "Wir entwickeln technisch Neues (Produkt, Verfahren, Software), dessen Gelingen zu Beginn ungewiss ist": "We develop something technically new (product, process, software) whose success is uncertain at the start", "Wird nur für diese Browsersitzung gespeichert und direkt an den Anbieter gesendet, nie an unseren Server.": "Stored only for this browser session and sent directly to the provider, never to our server.", "Wo findet das Vorhaben statt?": "Where does the project take place?", "Wohnen & Eigentum": "Housing & home ownership", "Zeigt Programme, die zu mindestens einem gewählten Projekt passen. Die kleinen Zeilen nennen typische Bausteine.": "Shows programmes matching at least one selected project. The small lines name typical components.", "Zeitraum": "Period", "Ziel – was soll am Ende anders sein?": "Goal – what should be different at the end?", "Zielgruppe und Anzahl erreichter Personen": "Target group and number of people reached", "Zielgruppe, Ort, Thema, Eigenanteil": "Target group, place, topic, own contribution", "Zielgruppen: Familien, Senioren, Migranten, Alleinstehende": "Target groups: families, seniors, migrants, single people", "Zuschuss": "Grant", "Zuschuss + Darlehen": "Grant + loan", "Zuschuss, Pauschale, Stipendium": "Grant, lump sum, scholarship", "Zypern": "Cyprus", "[Name / Organisation]": "[Name / organisation]", "[PLZ Ort]": "[Postcode town]", "[Platzhalter für die Datenschutzerklärung.] Ohne Konto bleiben Merkliste und Anträge nur in diesem Browser gespeichert.": "[Placeholder for the privacy policy.] Without an account, the saved list and applications stay only in this browser.", "[Straße Hausnummer]": "[Street number]", "bis 10 %": "up to 10 %", "bis 20 %": "up to 20 %", "bis 30 %": "up to 30 %", "bis 50 %": "up to 50 %", "bis 80 %": "up to 80 %", "bundesweit": "nationwide", "geprüft": "checked", "keine Rückzahlung": "non-repayable", "ohne Eigenanteil": "no own contribution", "teilweise Rückzahlung": "partly repayable", "teilweise geprüft": "partly checked", "z. B. 31.03.2027 oder laufend": "e.g. 31.03.2027 or ongoing", "z. B. Wärmepumpe, Jugendfreizeit, Beratung": "e.g. heat pump, youth camp, consulting", "zählt zu 70 %": "counts at 70 %", "· Belege:": "· Evidence:", "· Link zur Startseite des Fördergebers, nicht aufgerufen": "· Link to the funder’s homepage, not opened", "Öffentlichkeitsarbeit / Kulturveranstaltung": "Public relations / cultural event", "Österreich": "Austria", "Übersicht": "Overview", "Überweisung:": "Bank transfer:", "örtlich": "local", "– Bund, Länder, EU": "– federal, states, EU", "– Deutschland": "– Germany", "– Engagement, Ehrenamt, Stiftungen, Preise": "– civic engagement, volunteering, foundations, prizes", "– Spanien": "– Spain", "– frei, ohne Programm –": "– free, without programme –", "– ohne Vorlage –": "– no template –", "„Kommune“ ist ein Partnerkonto einer Verwaltung; deren Meldungen werden markiert und vorrangig geprüft.": "“Municipality” is a partner account of an administration; its reports are flagged and checked first.", "Ab Pflegegrad 1, 131 € im Monat.": "From care level 1, €131 per month.", "Alleinerziehend: wenn der andere Elternteil zu wenig Unterhalt zahlt.": "Single parent: if the other parent pays too little maintenance.", "Alternative zur KfW/BAFA-Förderung.": "Alternative to KfW/BAFA funding.", "Angemeldet": "Signed in", "Arbeitskosten von Handwerkern – nicht für bereits geförderte Maßnahmen.": "Labour costs of tradespeople – not for measures already funded.", "Aufwandsentschädigung im Ehrenamt steuerfrei bis 3.300 € / 960 €.": "Volunteer allowance tax-free up to €3,300 / €960.", "Barrieren abbauen, unabhängig vom Alter.": "Remove barriers, regardless of age.", "Bau oder Kauf selbstgenutzten Wohneigentums.": "Building or buying an owner-occupied home.", "Bausparen: 10 % Prämie bis 70 € (Paare 140 €) im Jahr, Einkommensgrenze beachten.": "Building savings: 10 % bonus up to €70 (couples €140) per year, note the income limit.", "Bei Arbeitslosigkeit oder Grundsicherung.": "If unemployed or receiving basic income support.", "Bei Grundsicherung, Kinderzuschlag oder Wohngeld.": "With basic income support, child supplement or housing benefit.", "Bei Komplettsanierung zum Effizienzhaus.": "For full renovation to an efficiency house.", "Bei kleinem Einkommen zusätzlich bis 297 € je Kind.": "With low income, additionally up to €297 per child.", "Bestandene Meisterprüfung in Bayern.": "Passed master craftsman exam in Bavaria.", "Bitte Namen und einen Link (https://…) zur offiziellen Seite angeben.": "Please give a name and a link (https://…) to the official page.", "Bitte zuerst Stadt, Gemeinde oder PLZ eingeben.": "Please enter a city, municipality or postcode first.", "Danke! Die Redaktion prüft die Meldung.": "Thank you! The editors will check the report.", "Datei nicht lesbar": "File not readable", "Daten importiert": "Data imported", "Denkmalgeschütztes Gebäude: erhöhte Abschreibung.": "Listed building: increased depreciation.", "Download abgebrochen": "Download cancelled", "Eigentum + Dämmung/Fenster.": "Owner + insulation/windows.", "Eigentum + Heizungstausch.": "Owner + heating replacement.", "Erst eine Frist eintragen": "Enter a deadline first", "Erster Erwerb in Hessen: bis 10.000 € je Käufer + 5.000 € je Kind.": "First purchase in Hesse: up to €10,000 per buyer + €5,000 per child.", "Familie + Kauf eines sanierungsbedürftigen Altbaus.": "Family + purchase of an old building needing renovation.", "Familie + Neubau/Ersterwerb Neubau; Einkommensgrenze beachten.": "Family + new build/first purchase of new build; note the income limit.", "Finanziert den Eigenanteil zu einem Zuschuss.": "Finances the own contribution to a grant.", "Frage das Verwaltungsportal ab …": "Querying the public services portal …", "Für „geprüft“ bitte den Beleg-Link angeben": "For “checked” please give the evidence link", "Gespeichert": "Saved", "Gespeichert.": "Saved.", "Gespeichert. In dieser Version bleiben Meldungen im Browser; auf dem eigenen Server gehen sie an die Redaktion.": "Saved. In this version reports stay in the browser; on your own server they go to the editors.", "Gründung aus Hochschule oder Forschungseinrichtung.": "Spin-off from university or research institute.", "Gründung aus dem ALG-I-Bezug.": "Start-up while receiving unemployment benefit I.", "Gründung aus der Grundsicherung.": "Start-up while receiving basic income support.", "Haushaltshilfe, Pflege- oder Betreuungsdienste im Haushalt.": "Household help, care or support services at home.", "Ihr E-Mail-Programm öffnet sich mit der Meldung. Bitte absenden.": "Your email program opens with the report. Please send it.", "Import gestartet. Das kann einige Minuten dauern.": "Import started. This may take a few minutes.", "In die Texte übernommen": "Transferred to texts", "Innovative Gründung aus der Hochschule.": "Innovative spin-off from university.", "Keine Fristen mit Datum in Merkliste oder Anträgen": "No dated deadlines in saved list or applications", "Kind unter 1 Jahr oder Geburt geplant.": "Child under 1 or birth planned.", "Kita, Hort, Tagesmutter: 80 % der Kosten absetzbar.": "Day care, after-school care, childminder: 80 % of costs deductible.", "Kleines Einkommen, keine Grundsicherung – Wohngeld prüfen.": "Low income, no basic income support – check housing benefit.", "Konto gelöscht": "Account deleted", "Kopieren nicht möglich – bitte markieren und kopieren": "Copying not possible – please select and copy", "Kopiert": "Copied", "Landesdarlehen für Wohneigentum in Hessen.": "State loan for home ownership in Hesse.", "Meister-, Techniker- oder vergleichbare Fortbildung.": "Master craftsman, technician or comparable training.", "Mittelständisches Unternehmen mit F&E-Projekt – Zuschuss (Alternative oder Ergänzung für andere Kosten).": "SME with R&D project – grant (alternative or supplement for other costs).", "Nur bei klimafreundlichem Neubau.": "Only for climate-friendly new builds.", "Nur für bahnbrechende Innovationen mit Wachstumsplan – sehr wettbewerbsintensiv.": "Only for breakthrough innovations with a growth plan – very competitive.", "Passwort geändert": "Password changed", "Riester-Zulagen für selbstgenutztes Wohneigentum.": "Riester allowances for owner-occupied homes.", "Sachbericht und Belegliste als Vorlagen gespeichert": "Narrative report and receipt list saved as templates", "Schule oder Studium.": "School or university.", "Sie entwickeln technisch Neues mit ungewissem Ausgang – Rechtsanspruch, rückwirkend bis zu 4 Jahre.": "You develop something technically new with an uncertain outcome – legal entitlement, retroactive up to 4 years.", "Solaranlage/Speicher: Kredit bis 100 %.": "Solar system/storage: loan up to 100 %.", "Startkapital als Kredit.": "Start-up capital as a loan.", "Steuerklasse II / Entlastungsbetrag.": "Tax class II / relief amount.", "Studium, leistungsabhängig.": "University, merit-based.", "Vor größeren Sanierungen sinnvoll (iSFP-Bonus).": "Useful before major renovations (iSFP bonus).", "Vorlage eingefügt – bitte an Ihr Projekt anpassen": "Template inserted – please adapt to your project", "Wenn die Pflegeperson ausfällt oder Kurzzeitpflege nötig ist.": "If the carer is unavailable or short-term care is needed.", "Wird überarbeitet …": "Revising …", "Zuschuss zu Unternehmensberatung.": "Grant for business consulting.", "Zuschuss zur Gründungs- und Unternehmensberatung.": "Grant for start-up and business consulting.", "Überarbeitet. Bitte Inhalt prüfen – die KI kann Fehler machen.": "Revised. Please check the content – the AI can make mistakes.", "Vereine / Kirchen": "Associations / churches", "Ihre Landesförderbank: zinsgünstige Kredite, oft kombinierbar mit KfW.": "Your state development bank: low-interest loans, often combinable with KfW.", "Wenn Sicherheiten für einen Kredit fehlen.": "If collateral for a loan is missing.", "Hessisches Förderdarlehen für Gründung und Wachstum.": "Hessian development loan for start-up and growth.", "Städte und Kreise (automatisch gefunden)": "Cities and districts (found automatically)", "EU Funding & Tenders": "EU Funding & Tenders", "Verwaltungsleistungen (Bund, Land, Kommune)": "Public services (federal, state, municipal)", "Ratsinformationssysteme der Kommunen": "Municipal council information systems", "Frankreich: Aides-territoires": "France: Aides-territoires", "Spanien: BDNS": "Spain: BDNS", "Websites (Kreise, Städte, Stiftungen)": "Websites (districts, cities, foundations)", "Geprüfte Meldungen": "Checked reports", "Verwaltung": "Administration", "National": "National", "Kreis/Stadt ": "District/city", "Steuern sparen ": "Saving tax", "Gebäude bauen oder sanieren": "Build or renovate buildings", "Import aus offizieller Schnittstelle": "Imported from official interface", "automatisch von Website gelesen, ungeprüft": "read automatically from website, unchecked", "Nutzermeldung, ungeprüft": "user report, unchecked", "Bürgschaft": "Guarantee", "Beteiligung": "Equity", "Ergebnisse ansehen": "Show results", "Gezeigt werden Programme für Kirchen und – weil eine Freikirche meist ein eingetragener gemeinnütziger Verein ist – alle Programme für Vereine. Einschätzung: Religiöse Verkündigung wird in der Regel nicht gefördert; soziale, kulturelle, Bildungs- und Jugendprojekte oft schon. Programme mit bekanntem Ausschluss von Kirchen werden ausgeblendet.": "Shown are programmes for churches and – since a free church is usually a registered non-profit association – all programmes for associations. Assessment: religious preaching is usually not funded; social, cultural, educational and youth projects often are. Programmes known to exclude churches are hidden.", "Kombinieren: ": "Combining: ", "Gründung, Freiberufler und KMU": "Start-up, freelancers and SMEs", "Fristen aller gemerkten Programme": "Deadlines of all saved programmes", "Eigenleistung": "Own work", "Datenstand": "Data status", "Eigenanteil ": "Own contribution ", "Förderung bis ": "Funding up to "});
+Object.assign(EN,{"Kostenlos. Ein Konto synchronisiert Merkliste und Anträge über alle Geräte.": "Free. An account syncs your saved list and applications across all devices.", "Passwort (mind. 10 Zeichen)": "Password (min. 10 characters)", "Anmelden": "Sign in", "Konto erstellen": "Create account", "Passwort vergessen?": "Forgot password?", "Link zum Zurücksetzen senden": "Send reset link", "Abmelden": "Sign out", "Konto löschen": "Delete account", "Neues Passwort festlegen": "Set new password", "Neues Passwort (mind. 10 Zeichen)": "New password (min. 10 characters)", "Passwort speichern": "Save password", "Falls ein Konto existiert, wurde eine E-Mail verschickt.": "If an account exists, an email has been sent.", "Prüfen und freigeben": "Review and approve", "Geprüft – freigeben": "Checked – approve", "Ablehnen": "Reject", "Quelle öffnen und prüfen": "Open and check source", "Nur freigeben, wenn die Angaben an der offiziellen Quelle geprüft sind. Der Link wird als Beleg gespeichert.": "Only approve if the details have been checked against the official source. The link is saved as evidence.", "Speichern und als geprüft markieren": "Save and mark as checked", "Nur speichern": "Save only", "Eintrag ausblenden (z. B. Programm beendet)": "Hide entry (e.g. programme ended)", "Für Kirchen möglich": "Possible for churches", "Beleg-Link (für geprüft)": "Evidence link (for checked)", "Keine Meldungen.": "No reports.", "Noch kein Import gelaufen.": "No import has run yet.", "Region": "Region", "Orte (Komma)": "Towns (comma-separated)", "Themen (z. B. sport, kultur, jugend)": "Topics (e.g. sport, kultur, jugend)", "Beschreibung": "Description", "Notiz": "Note", "Link": "Link", "Förderquote %": "Funding rate %", "Eigenanteil %": "Own contribution %", "Höchstbetrag €": "Maximum €", "Frist (JJJJ-MM-TT oder Text)": "Deadline (YYYY-MM-DD or text)", "Titel ": "Title", "Überfinanzierung: Fördermittel würden gekürzt – Förderbeträge oder Eigenmittel anpassen.": "Over-financing: funding would be reduced – adjust funding amounts or own funds.", "Deckungslücke: Weitere Mittel nötig, sonst ist der Finanzierungsplan nicht ausgeglichen.": "Funding gap: more funds needed, otherwise the financing plan is not balanced.", "Mehrere Förderungen: Doppelförderung derselben Kosten ist meist unzulässig – Kombinationshinweise der Programme beachten und alle Förderer im Antrag angeben.": "Several funding sources: double funding of the same costs is usually not allowed – observe the programmes’ combination notes and name all funders in the application.", "Deckungslücke": "Funding gap", "Überfinanzierung": "Over-financing", "Erst Programme merken oder Anträge anlegen.": "Save programmes or create applications first.", "Summen in die Texte übernehmen ": "Transfer totals to texts", "Live-Abfrage nicht möglich (": "Live query not possible (", ") – ": ") – ", "direkt in der Servicesuche Bund suchen": "search directly in the federal service search", "Gespeichert in diesem Browser. Mit einem Konto auch auf anderen Geräten.": "Saved in this browser. With an account also on other devices.", "Mit Ihrem Konto synchronisiert.": "Synced with your account.", "Speichern im Browser ist hier nicht möglich – Daten gehen beim Schließen verloren. Bitte exportieren.": "Saving in the browser is not possible here – data is lost when closing. Please export.", "Bereit. Beim ersten Aufruf fragt claude.ai nach Ihrer Zustimmung; die Nutzung zählt zu Ihrem Claude-Kontingent.": "Ready. On first use claude.ai asks for your consent; usage counts towards your Claude quota.", "Nur verfügbar, wenn die Seite in claude.ai geöffnet ist.": "Only available when the page is opened in claude.ai.", "Zugriff auf Claude wurde nicht erlaubt.": "Access to Claude was not allowed.", "Zu viele Anfragen – bitte später erneut.": "Too many requests – please try again later.", "Keine Programme erfüllen alle Bedingungen.": "No programmes meet all conditions.", "Versuchen Sie einen höheren Eigenanteil, blenden Sie Programme mit unbekanntem Eigenanteil ein oder wählen Sie weniger Themen.": "Try a higher own contribution, show programmes with unknown own contribution or choose fewer topics.", "Gemerkt": "Saved", "Von der Merkliste entfernt": "Removed from saved list", "Antrag löschen?": "Delete application?", "Konto und alle gespeicherten Daten endgültig löschen?": "Permanently delete account and all stored data?", "Bitte mindestens den Namen angeben": "Please enter at least the name", "Website angelegt (ausgeschaltet). Nach Prüfung einschalten.": "Website created (disabled). Enable after checking.", "Import läuft …": "Import running …"});
+Object.assign(EN,{"Fristen in den nächsten 30 Tagen":"Deadlines in the next 30 days","Fristen in den nächsten 30 Tagen – passend zu Ihrer Auswahl":"Deadlines in the next 30 days – matching your selection","Schnell finden":"Quick lists","Frist läuft bald ab":"Deadline soon","Ohne Eigenanteil":"No own contribution","Neu hinzugefügt":"Newly added",
+ "Kleinförderung bis 5.000 €":"Small grants up to €5,000","Hohe Fördersummen":"High funding amounts","Preise & Wettbewerbe":"Prizes & competitions","Steuervorteile":"Tax benefits","Meine gespeicherten Suchen":"My saved searches",
+ "Kostenlos abonnieren: ":"Subscribe for free: ","Förderfristen im Kalender":"Funding deadlines in your calendar","Kalenderdatei":"Calendar file","Newsfeed neue Förderungen":"News feed of new funding","English version":"English version",
+ "Suche speichern":"Save search","Suche teilen":"Share search","Drucken / PDF":"Print / PDF","Suche gespeichert":"Search saved","Link kopiert":"Link copied","Name für diese Suche, z. B. „Jugendarbeit Riedstadt“:":"Name for this search, e.g. “Youth work Riedstadt”:",
+ "Passung – ":"match – ","Warum?":"Why?","Zielgruppe passt genau":"Target group matches exactly","Zielgruppe passt (über Vereinsprogramme)":"Target group matches (via association programmes)","Programm Ihres Ortes":"Programme of your town","Programm Ihres Bundeslandes":"Programme of your state",
+ "gilt bundes- oder EU-weit":"applies nationwide or EU-wide","örtliches Programm – Gebiet prüfen":"local programme – check area","Projektart passt genau":"Project type matches exactly","Thema passt":"Topic matches","ohne Rückzahlung, Eigenanteil bekannt":"non-repayable, own contribution known",
+ "Eigenanteil bekannt":"Own contribution known","Eigenanteil unbekannt – Richtlinie prüfen":"Own contribution unknown – check guideline","Angaben einzeln geprüft":"Details individually checked","Angaben aus offizieller Quelle":"Details from official source","Angaben automatisch gelesen":"Details read automatically",
+ "Förderfinder der Aktion Mensch":"Aktion Mensch funding finder","Stiftungssuche":"Foundation search","Kostenlose Beratung":"Free advice","bengo (Engagement Global)":"bengo (Engagement Global)",
+ "– Inklusion und soziale Projekte":"– inclusion and social projects","– Stiftungen nach Zweck und Region":"– foundations by purpose and region","– Beratung für Entwicklungsprojekte von Vereinen, kostenloses Infotelefon 0800 188 7 188":"– advice for development projects of associations, free hotline 0800 188 7 188",
+ "Deutsche Stiftung für Engagement und Ehrenamt":"German Foundation for Engagement and Volunteering","– Förderung und Beratung für Vereine":"– funding and advice for associations","Industrie- und Handelskammer bzw. Handwerkskammer vor Ort – Fördermittelberatung für Gründer und Unternehmen":"Local chamber of commerce or chamber of crafts – funding advice for founders and companies",
+ "Themen:":"Topics:","Tag":"day","Tage":"days","Als Tabelle (CSV)":"As table (CSV)"," Tag":" day"," Tage":" days","Suche löschen: ":"Delete search: "});
+Object.assign(EN,{"Privatperson / Familie":"Private person / family","auch Alleinerziehende, Schüler, Studenten, Pflege":"also single parents, pupils, students, care","Unternehmen / Selbstständige / Gründer":"Company / self-employed / founder","Gründung, Freiberufler, kleine und mittlere Unternehmen":"Start-up, freelancers, small and medium-sized enterprises","auch Stiftungen und gemeinnützige GmbH":"also foundations and non-profit companies","als Gemeinde oder eingetragener Verein":"as congregation or registered association","Stadt, Gemeinde, Kreis":"City, municipality, district",
+ "Bitte Texte selbständig individuell anpassen.":"Please adapt the texts individually yourself.","Die Vorlagen sind nur ein Ausgangspunkt – Angaben, Zahlen und Formulierungen müssen zu Ihrem Vorhaben und zur Förderrichtlinie passen.":"The templates are only a starting point – details, figures and wording must fit your project and the funding guideline.",
+ "Nach Projektart filtern (optional, besonders für Vereine, Kirchen und NGOs)":"Filter by project type (optional, especially for associations, churches and NGOs)"});
+Object.assign(EN,{"Auslandsprojekt / Entwicklungszusammenarbeit":"Projects abroad / development cooperation","Projekte mit Partnern im Globalen Süden, Bildungsarbeit in Deutschland":"Projects with partners in the Global South, educational work in Germany","Humanitäre Hilfe / Katastrophenhilfe":"Humanitarian aid / disaster relief","Nothilfe, Wiederaufbau, Versorgung in Krisengebieten":"Emergency aid, reconstruction, supplies in crisis areas","Menschenrechte, Frieden, Demokratie":"Human rights, peace, democracy","Friedensarbeit, Menschenrechtsbildung, Zivilgesellschaft stärken":"Peace work, human rights education, strengthening civil society","Umwelt- und Naturschutzarbeit eines Verbands":"Environmental and nature conservation work of an association","Kampagnen, Umweltbildung, Beratung, Vernetzung":"Campaigns, environmental education, advice, networking","Frist:":"Deadline:","(abgelaufen)":"(expired)","laufend":"ongoing"});
+const T=s=>LANG==="en"&&EN[s]?EN[s]:s;
+// Alle Oberflächentexte (nicht die Förderdaten) werden über EN übersetzt; Muster für zusammengesetzte Texte
+const EN_MUSTER=[[/^· Quelle: (.*)$/,"· Source: $1"],[/^Alle (\d+) anzeigen$/,"Show all $1"],[/^(.+) \((\d+)\)$/,(m,a,b)=>EN[a]?EN[a]+" ("+b+")":m],[/^(.+) · (\d+) neu$/,"$1 · $2 new"],[/^✕ (.+)$/,(m,a)=>"✕ "+(EN[a]||a)],[/^Achtung: Frist in (\d+) Tagen$/,"Attention: deadline in $1 days"],[/^Suche löschen: (.*)$/,"Delete search: $1"],[/^Aktuell ([\d.]+) Förderungen in der Datenbank, davon ([\d.]+) einzeln geprüft(?: – Datenstand (.*))?\.$/,(m,a,b,c)=>`Currently ${a} funding programmes in the database, ${b} of them individually checked${c?" – data as of "+c:""}.`],[/^(\d+) % Förderung, (\d+) % Eigenanteil$/,"$1 % funding, $2 % own contribution"],[/^(\d+) % Darlehen, (\d+) % Eigenanteil$/,"$1 % loan, $2 % own contribution"],
+ [/^Beleg (\d+) zu (.*)$/,"Evidence $1 for $2"],[/^(voraussichtlich|prüfen|likely|check): (.*)$/,(m,a,b)=>({voraussichtlich:"likely",prüfen:"check"}[a]||a)+": "+((trText(b)||b).trim())],
+ [/^(.+) \((\d+)\)$/,(m,a,b)=>EN[a]?EN[a]+" ("+b+")":m],[/^Weitere anzeigen$/,"Show more"],[/^(\d+) von (\d+) Einträgen$/,"$1 of $2 entries"],[/^(\d+) Treffer$/,"$1 results"],[/^Frist: (.*)$/,"Deadline: $1"],[/ · Frist: /," · Deadline: "],
+ [/^Antragsfrist: (.*?)( \(in (\d+) Tagen\))?$/,(m,a,b,c)=>"Application deadline: "+a+(c?` (in ${c} days)`:"")],[/^Checkliste (\d+)\/(\d+)$/,"Checklist $1/$2"],[/^Weitere (\d+) von noch (\d+) anzeigen$/,"Show $1 more of $2 remaining"],
+ [/^nur (.*)$/,"only $1"],[/^Eigenleistung (\d+) h × 100 €$/,"Own work $1 h × €100"],[/^Forschungszulage \((\d+) %\)$/,"Research allowance ($1 %)"],[/^Grunddaten geprüft (.*) bis (.*)$/,"Core data checked $1 to $2"],
+ [/^Datenstand (.*?): /,"Data as of $1: "],[/ nicht erreichbar/g," unavailable"],[/^Für (.*?) zeigt Fördernavi EU-Programme(.*)$/,(m,a,b)=>`For ${a} Fördernavi shows EU programmes${b.includes("nationalen")?" and programmes from the national database":""}. National, regional and local funding is ${b.includes("teilweise")?"only partly":"not yet"} covered.`],
+ [/^Passt zu: (.*)$/,(m,a)=>"Matches: "+a.split("; ").map(x=>EN[x]||x).join("; ")],[/^Passt zu Projekt: (.*)$/,(m,a)=>"Matches project: "+a.split("; ").map(x=>EN[x]||x).join("; ")],[/^Für (\d+) Kind\(er\) je 259 € im Monat\.$/,"€259 per month for each of $1 child(ren)."],[/^Pflegegrad (\d)\.?$/,"Care level $1"],
+ [/^Sicher bezifferbar pro Monat: (.*)$/,"Clearly quantifiable per month: $1"],[/(\d+) Leistungen für (.*) ergänzt\./,"$1 services added for $2."],[/^Angemeldet als (.*?)\. Merkliste/,"Signed in as $1. Saved list"],[/ – (\d+) gewählt$/," – $1 selected"],
+ [/^Datenstand: $/,"Data status: "],[/^Gespeichert in diesem Browser\./,"Saved in this browser."]];
+const NO_TR=".hint,.card h3,.out,textarea,[data-notr],#kForm h3,.meld strong,.app strong,.legend b";
+let trBusy=false;
+function trText(orig){const k=orig.trim();if(!k)return null;if(EN[k])return orig.replace(k,EN[k]);
+  for(const[re,rep] of EN_MUSTER){if(re.test(k)){re.lastIndex=0;return orig.replace(k,k.replace(re,rep));}}return null;}
+function trNode(root){if(!root)return;trBusy=true;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
+  while((n=w.nextNode())){const par=n.parentElement;if(!par||par.closest(NO_TR)||par.closest("script,style"))continue;
+    if(LANG==="en"){const base=n.__de!==undefined?n.__de:n.nodeValue;const t=trText(base);if(t!==null){n.__de=base;if(n.nodeValue!==t)n.nodeValue=t;}}
+    else if(n.__de!==undefined){n.nodeValue=n.__de;delete n.__de;}}
+  (root.querySelectorAll?root.querySelectorAll("[placeholder],[aria-label],[title]"):[]).forEach(e=>{for(const a of ["placeholder","aria-label","title"]){if(!e.hasAttribute(a))continue;
+    const key="__de_"+a;if(LANG==="en"){const base=e[key]!==undefined?e[key]:e.getAttribute(a);const t=trText(base);if(t!==null){e[key]=base;e.setAttribute(a,t);}}
+    else if(e[key]!==undefined){e.setAttribute(a,e[key]);delete e[key];}}});
+  trBusy=false;}
+new MutationObserver(ms=>{if(trBusy||LANG!=="en")return;ms.forEach(m=>{m.addedNodes.forEach(x=>trNode(x.nodeType===3?x.parentElement:x));if(m.type==="characterData")trNode(m.target.parentElement);});})
+  .observe(document.body,{childList:true,subtree:true,characterData:true});
+function applyLang(){document.documentElement.lang=LANG;document.querySelectorAll("[data-i18n]").forEach(e=>{e.firstChild.textContent=T(e.dataset.i18n);});
+  $("#langBtn").textContent=LANG==="de"?"EN":"DE";try{localStorage.setItem(KEY+":lang",LANG);}catch(e){}
+  trNode(document.body);document.title=LANG==="en"?"Fördernavi – find, apply for and manage funding":"Fördernavi – Förderungen finden, beantragen, verwalten";
+  if(S.mode==="fragen")renderCheck();else{renderStep();update();}}
+
+/* ---------- Startseite: Fristen-Countdown, Schnelllisten, gespeicherte Suchen ---------- */
+const tageBis=f=>Math.round((new Date(f+"T00:00:00")-new Date(HEUTE+"T00:00:00"))/864e5);
+const SCHNELL=[["frist","Frist läuft bald ab",p=>isoFrist(p.frist)&&tageBis(p.frist)>=0&&tageBis(p.frist)<=30],
+ ["ohneEA","Ohne Eigenanteil",p=>p.ea===0&&p.rz==="nein"],
+ ["neu","Neu hinzugefügt",p=>p.seit&&tageBis(p.seit)>=-30],
+ ["klein","Kleinförderung bis 5.000 €",p=>p.max!=null&&p.max<=5000&&p.rz==="nein"],
+ ["hoch","Hohe Fördersummen",p=>p.max!=null&&p.max>=100000],
+ ["preis","Preise & Wettbewerbe",p=>p.a==="preis"],
+ ["steuer","Steuervorteile",p=>p.a==="steuer"]];
+const SCHNELL_F=Object.fromEntries(SCHNELL.map(x=>[x[0],x[2]]));
+function renderStart(){const box=$("#startBox");if(!box)return;box.replaceChildren();
+  // Fristen der nächsten 30 Tage
+  const aktiv=!!(S.wer||S.land||S.ort||S.themen.size||S.projekte.size||S.ohneRueck||S.ea!=="egal"||S.art!=="alle");
+  const imFenster=p=>isoFrist(p.frist)&&tageBis(p.frist)>=0&&tageBis(p.frist)<=30;
+  const euForschung=S.wer==="unternehmen"||["forschung","digital","international"].some(t=>S.themen.has(t));
+  const bald=(aktiv?DATA.filter(p=>imFenster(p)&&match(p)&&(p.src!=="eu_sedia"||euForschung)):DATA.filter(p=>imFenster(p)&&p.src!=="eu_sedia"&&srcOn.has(srcOf(p))&&(p.c==="EU"||p.c===S.staat))).sort((a,b)=>a.frist<b.frist?-1:1);
+  if(bald.length)box.append(el("div",{class:"countdown"},el("h2",{class:"klein"},aktiv?"Fristen in den nächsten 30 Tagen – passend zu Ihrer Auswahl":"Fristen in den nächsten 30 Tagen"),
+    el("div",{class:"cd-list"},bald.slice(0,8).map(p=>el("button",{type:"button",class:"cd",onclick:()=>{S.q=p.t;$("#q").value=p.t;setMode("filtern");$("#resTitle").scrollIntoView({behavior:"smooth"});}},
+      el("span",{class:"cd-tage"},String(tageBis(p.frist)),el("small",{},tageBis(p.frist)===1?" Tag":" Tage")),el("span",{class:"cd-titel","data-notr":""},p.t),el("span",{class:"cd-geber","data-notr":""},p.g)))),
+    bald.length>8?el("button",{type:"button",class:"btn small ghost",onclick:()=>setListe("frist")},`Alle ${bald.length} anzeigen`):null));
+  // Schnelllisten
+  box.append(el("div",{},el("h2",{class:"klein"},"Schnell finden"),el("div",{class:"chips"},SCHNELL.map(([k,l,f])=>{const n=DATA.filter(f).length;return n?chip(l+" ("+n+")",S.liste===k,()=>setListe(S.liste===k?null:k)):null;}))));
+  // Gespeicherte Suchen mit Hinweis auf neue Treffer
+  const su=store.suchen||[];if(su.length)box.append(el("div",{},el("h2",{class:"klein"},"Meine gespeicherten Suchen"),el("div",{class:"chips"},su.map((x,i)=>{const n=neueTreffer(x);
+    return el("span",{class:"saved"},chip(x.name+(n?` · ${n} neu`:""),false,()=>sucheLaden(i)),el("button",{type:"button",class:"btn small ghost","aria-label":"Suche löschen: "+x.name,onclick:()=>{store.suchen.splice(i,1);save();renderStart();}},"✕"));}))));
+  // Abos (nur auf der veröffentlichten Seite vorhanden)
+  if(ABO)box.append(el("p",{class:"note abo"},"Kostenlos abonnieren: ",el("a",{href:"webcal://"+location.host+location.pathname.replace(/[^/]*$/,"")+"fristen.ics"},"Förderfristen im Kalender"),
+    " · ",el("a",{href:"fristen.ics",download:""},"Kalenderdatei"),"  · ",el("a",{href:"feed.xml"},"Newsfeed neue Förderungen"),"  · ",el("a",{href:"en/"},"English version")));}
+function setListe(k){S.liste=k;setMode("filtern");renderStart();update();$("#resTitle").scrollIntoView({behavior:"smooth"});}
+let ABO=false;fetch("fristen.ics",{method:"HEAD"}).then(r=>{if(r.ok){ABO=true;renderStart();}}).catch(()=>{});
+
+/* ---------- Suche speichern, teilen, laden ---------- */
+const zustand=()=>({wer:S.wer,staat:S.staat,land:S.land,ort:S.ort,themen:[...S.themen],projekte:[...S.projekte],art:S.art,ohneRueck:S.ohneRueck,ea:S.ea,unbekannt:S.unbekannt,kosten:S.kosten,q:S.q,liste:S.liste});
+function zustandRoh(z){Object.assign(S,{wer:z.wer||null,staat:z.staat||"DE",land:z.land||"",ort:z.ort||"",themen:new Set(z.themen||[]),projekte:new Set(z.projekte||[]),art:z.art||"alle",ohneRueck:!!z.ohneRueck,ea:z.ea||"egal",unbekannt:z.unbekannt!==false,kosten:z.kosten||"",q:z.q||"",liste:z.liste||null});}
+function zustandSetzen(z){zustandRoh(z);$("#q").value=S.q;setMode("filtern");renderStart();}
+function treffer(z){const alt=zustand();zustandRoh(z);const ids=DATA.filter(match).map(p=>p.id);zustandRoh(alt);return ids;}
+function neueTreffer(x){const bek=new Set(x.ids||[]);return treffer(x.z).filter(id=>!bek.has(id)).length;}
+function sucheSpeichern(){const name=prompt(T("Name für diese Suche, z. B. „Jugendarbeit Riedstadt“:"));if(!name)return;
+  store.suchen=store.suchen||[];const z=zustand();store.suchen.push({name:name.slice(0,60),z,ids:DATA.filter(match).map(p=>p.id),datum:HEUTE});save();renderStart();toast("Suche gespeichert");}
+function sucheLaden(i){const x=store.suchen[i];zustandSetzen(x.z);x.ids=DATA.filter(match).map(p=>p.id);save();renderStart();$("#resTitle").scrollIntoView({behavior:"smooth"});}
+function sucheTeilen(){const url=location.href.split("#")[0]+"#s="+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(zustand())))));
+  (navigator.share?navigator.share({title:"Fördernavi",url}).catch(()=>{}):navigator.clipboard.writeText(url).then(()=>toast("Link kopiert"),()=>prompt("Link:",url)));}
+function hashLaden(){const h=location.hash.slice(1);if(!h)return;const m=Object.fromEntries(h.split("&").map(x=>x.split("=")));
+  try{if(m.s)zustandSetzen(JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m.s))))));
+    else if(m.thema){S.themen=new Set([m.thema]);setMode("filtern");}}catch(e){}}
+
+/* ---------- Passung in Prozent (nachvollziehbare Regeln, keine KI) ---------- */
+function passung(p){let pkt=0,max=0;const g=[];
+  if(S.wer){max+=25;const zz=p.z||[];if(zz.some(z=>WER_Z[S.wer].includes(z))){const direkt=zz.includes(WER_Z[S.wer][0]);pkt+=direkt?25:20;g.push(direkt?"Zielgruppe passt genau":"Zielgruppe passt (über Vereinsprogramme)");}}
+  if(S.land||S.ort){max+=20;if(p.ort&&p.ort.length&&S.ort){pkt+=20;g.push("Programm Ihres Ortes");}else if(p.r===S.land){pkt+=20;g.push("Programm Ihres Bundeslandes");}else if(p.r==="DE"||p.r==="EU"||p.c===S.staat){pkt+=14;g.push("gilt bundes- oder EU-weit");}else{pkt+=8;g.push("örtliches Programm – Gebiet prüfen");}}
+  if(S.themen.size||S.projekte.size){max+=25;const ps=S.projekte.size?projScore(p,[...S.projekte]):0;const th=(p.th||[]).some(t=>S.themen.has(t));
+    if(ps===2){pkt+=25;g.push("Projektart passt genau");}else if(ps===1||th){pkt+=18;g.push("Thema passt");}}
+  if(S.ohneRueck||S.ea!=="egal"){max+=20;if(p.ea!=null){pkt+=20;g.push(p.rz==="nein"?"ohne Rückzahlung, Eigenanteil bekannt":"Eigenanteil bekannt");}else{pkt+=10;g.push("Eigenanteil unbekannt – Richtlinie prüfen");}}
+  if(!max)return null;max+=10;
+  const q=p.quelle==="geprueft"?10:p.quelle==="teilgeprueft"||p.quelle==="import"?7:4;pkt+=q;g.push(q===10?"Angaben einzeln geprüft":q===7?"Angaben aus offizieller Quelle":"Angaben automatisch gelesen");
+  if(isoFrist(p.frist)&&tageBis(p.frist)>=0&&tageBis(p.frist)<=14)g.push("Achtung: Frist in "+tageBis(p.frist)+" Tagen");
+  return {pct:Math.round(pkt/max*100),g};}
+
+/* ---------- Export: Tabelle und Druck/PDF ---------- */
+function exportCsv(liste,name){const kopf=["Titel","Fördergeber","Ebene","Region","Art","Rückzahlung","Förderquote %","Eigenanteil %","Höchstbetrag €","Frist","Link","Datenstand"];
+  const zeilen=liste.map(p=>[p.t,p.g,p.e,p.r,ART[p.a]||p.a,p.rz,p.q??"",p.ea??"",p.max??"",p.frist||"",p.url||"",QUELLE[p.quelle]||p.quelle]);
+  download(name,"\ufeff"+[kopf,...zeilen].map(z=>z.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n"),"text/csv");}
+function drucken(){window.print();}
+
+/* ---------- Navigation ---------- */
+function go(v){document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.view===v?"page":"false"));
+  if(v==="merkliste")renderMerk();if(v==="antraege")renderApps();if(v==="texte"){progOptions();mustertextOptions();renderFP();}if(v==="konto")renderKonto();if(v==="redaktion")renderRed();window.scrollTo(0,0);}
+function counts(){$("#cMerk").textContent=store.merk.length||"";$("#cApp").textContent=store.apps.length||"";}
+function renderAll(){counts();update();renderMerk();renderApps();}
+
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.view)));
+document.querySelectorAll("[data-goto]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();go(a.dataset.goto);}));
+$("#q").addEventListener("input",e=>{S.q=e.target.value.trim();update();});
+$("#appNew").addEventListener("click",()=>newApp(null));
+$("#exportAll").addEventListener("click",exportAll);
+$("#importFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.apps))throw 0;store.merk=j.merk||[];store.apps=j.apps;save();renderAll();toast("Daten importiert");}catch(x){toast("Datei nicht lesbar");}e.target.value="";});
+$("#tGen").addEventListener("click",gen);
+$("#kiProv").addEventListener("change",kiSave);$("#kiKey").addEventListener("change",kiSave);$("#kiModel").addEventListener("change",kiSave);
+$("#mSend").addEventListener("click",async()=>{const n=id=>{const v=val(id);return v===""?null:+v;};
+  const m={titel:val("#mTitel"),geber:val("#mGeber"),ebene:val("#mEbene"),land:val("#mLand"),ort:val("#mOrt"),art:val("#mArt"),quote:n("#mQuote"),eigenanteil:n("#mEA"),max:n("#mMax"),frist:val("#mFrist"),url:val("#mUrl"),text:val("#mText"),zielgruppen:S.wer?WER_Z[S.wer]:[]};
+  if(!m.titel||!/^https?:\/\//.test(m.url)){$("#mNote").textContent="Bitte Namen und einen Link (https://…) zur offiziellen Seite angeben.";return;}
+  if(API){try{await api("/meldungen",{method:"POST",body:JSON.stringify(m)});$("#mNote").textContent="Danke! Die Redaktion prüft die Meldung.";}catch(e){$("#mNote").textContent=e.message;return;}}
+  else if(META.kontakt){const body=Object.entries(m).filter(([k,v])=>v!==null&&v!==""&&!(Array.isArray(v)&&!v.length)).map(([k,v])=>k+": "+v).join("\n");
+    location.href="mailto:"+META.kontakt+"?subject="+encodeURIComponent("Fördernavi-Meldung: "+m.titel)+"&body="+encodeURIComponent(body);$("#mNote").textContent="Ihr E-Mail-Programm öffnet sich mit der Meldung. Bitte absenden.";}
+  else{store.meldungen.push(m);save();$("#mNote").textContent="Gespeichert. In dieser Version bleiben Meldungen im Browser; auf dem eigenen Server gehen sie an die Redaktion.";}
+  ["#mTitel","#mGeber","#mOrt","#mUrl","#mText","#mQuote","#mEA","#mMax","#mFrist"].forEach(x=>$(x).value="");});
+
+$("#redImport").addEventListener("click",async()=>{try{await api("/admin/import",{method:"POST"});$("#redImportNote").textContent="Import gestartet. Das kann einige Minuten dauern.";setTimeout(renderRed,5000);}catch(e){$("#redImportNote").textContent=e.message;}});
+$("#wAdd").addEventListener("click",async()=>{try{const j=await api("/admin/website",{method:"POST",body:JSON.stringify({name:val("#wName"),start_url:val("#wStart"),link_muster:val("#wMuster"),ort:val("#wOrt"),geber:val("#wGeber"),gebiet:val("#wLand")})});$("#wNote").textContent=j.hinweis;renderRed();}catch(e){$("#wNote").textContent=e.message;}});
+$("#rSet").addEventListener("click",async()=>{try{await api("/admin/rolle",{method:"POST",body:JSON.stringify({email:val("#rMail"),rolle:val("#rRolle"),ort:val("#rOrt")})});$("#rNote").textContent="Gespeichert.";}catch(e){$("#rNote").textContent=e.message;}});
+$("#kSuche").addEventListener("input",e=>{const q=e.target.value.trim().toLowerCase();const box=$("#kTreffer");box.replaceChildren();if(q.length<3)return;
+  DATA.filter(p=>p.t.toLowerCase().includes(q)).slice(0,8).forEach(p=>box.append(el("button",{class:"btn small ghost",style:"margin:4px 6px 4px 0",onclick:()=>korrForm(p)},p.t)));});
+$("#hideExpired").addEventListener("change",()=>update());
+$("#mLand").append(...Object.entries(LAENDER).map(([k,v])=>el("option",{value:k},v)));
+
+/* ---------- Datenstand ---------- */
+(function(){const q=META.import;const pd=SEED.map(e=>e.pruef&&e.pruef.datum).filter(Boolean).sort();let t="Grunddaten geprüft "+(pd.length?fmtFrist(pd[0])+" bis "+fmtFrist(pd[pd.length-1]):"");
+  if(q&&q.ende){t=`Datenstand ${new Date(q.ende).toLocaleDateString("de-DE")}: `+q.quellen.map(x=>x.quelle+(x.ok?" "+x.anzahl:" nicht erreichbar")).join(", ");}
+  $("#stand").textContent=t;})();
+
+/* ---------- Nationale Quellen ---------- */
+function renderNational(){const u=$("#nationalLinks");if(!u)return;u.replaceChildren(...(NATIONAL[S.staat]||[]).map(([t,h])=>el("li",{},el("a",{href:h,target:"_blank",rel:"noopener"},t)," – "+STAATEN[S.staat])));}
+
+/* ---------- PVOG live: Verwaltungsleistungen für jeden deutschen Ort ---------- */
+const PVOG="https://pvog.fitko.net/suchdienst/api";
+const PVOG_BEGRIFFE=["Förderung","Zuschuss","Kindergeld","Wohngeld","Vereinsförderung","Beihilfe"];
+const GELD=/geld|zuschuss|zuschüsse|förder|beihilfe|prämie|bonus|erstattung|unterhalt|pflege|stipend|zulage|vorschuss|teilhabe|kostenübernahme|ermäßigung/i;
+function jwalk(o,f){if(Array.isArray(o))o.forEach(x=>jwalk(x,f));else if(o&&typeof o==="object"){f(o);Object.values(o).forEach(x=>jwalk(x,f));}}
+const jtext=v=>typeof v==="string"?v:v&&typeof v==="object"?(v.de||v.value||v.text||v.name||Object.values(v).find(x=>typeof x==="string")||""):Array.isArray(v)&&v.length?jtext(v[0]):"";
+async function pvogLive(){const note=$("#pvogNote");const ort=(S.ort||"").trim();
+  if(!ort){note.textContent="Bitte zuerst Stadt, Gemeinde oder PLZ eingeben.";return;}
+  note.textContent="Frage das Verwaltungsportal ab …";
+  try{const q=/^\d{5}$/.test(ort)?"plz="+ort:"ort="+encodeURIComponent(ort);
+    const loc=await (await fetch(PVOG+"/v3/locations/details?"+q,{headers:{Accept:"application/json"}})).json();
+    let ars=null;jwalk(loc,d=>{for(const[k,v] of Object.entries(d))if(!ars&&/ars/i.test(k)&&typeof v==="string"&&/^\d{12}$/.test(v))ars=v;});
+    if(!ars)throw new Error("Ort nicht gefunden");
+    const neu=[],seen=new Set(DATA.map(p=>p.id));
+    for(const b of PVOG_BEGRIFFE){const j=await (await fetch(PVOG+"/v7/servicedescriptions/"+ars+"?q="+encodeURIComponent(b),{headers:{Accept:"application/json"}})).json();
+      jwalk(j,d=>{const t=jtext(d.leistungsname||d.leistungsbezeichnung||d.bezeichnung||d.title||d.titel||d.name),i=jtext(d.lbid||d.leistungId||d.id);
+        if(!t||!i||t.length>250||!GELD.test(t))return;const id="pvog-"+i;if(seen.has(id))return;seen.add(id);
+        neu.push({id,t,g:"Zuständige Verwaltung für "+ort,e:"Verwaltung",r:"lokal",c:"DE",ort:[ort],z:["privat","familie","verein"],th:[],a:/zuschuss|förder|prämie/i.test(t)?"zuschuss":"sozialleistung",rz:"nein",q:null,ea:null,max:null,frist:"laufend",url:"https://servicesuche.bund.de",urlOk:true,hin:(jtext(d.kurztext||d.teaser||d.beschreibung)||"Leistungsbeschreibung der Verwaltung.").replace(/<[^>]+>/g," ").slice(0,380)+" (Live aus dem Portalverbund; Bedingungen in der Leistungsbeschreibung prüfen.)",kirche:"unklar",quelle:"import",src:"pvog"});});}
+    DATA=fix(DATA.concat(neu));renderSrc();update();note.textContent=neu.length+" Leistungen für "+ort+" ergänzt.";}
+  catch(e){note.replaceChildren("Live-Abfrage nicht möglich (",e.message||"Verbindung blockiert",") – ",el("a",{href:"https://servicesuche.bund.de",target:"_blank",rel:"noopener"},"direkt in der Servicesuche Bund suchen"),".");}}
+
+$("#modeFragen").addEventListener("click",()=>setMode("fragen"));
+$("#tbSpeichern").addEventListener("click",sucheSpeichern);$("#tbTeilen").addEventListener("click",sucheTeilen);
+$("#tbCsv").addEventListener("click",()=>exportCsv(LETZTE,"foerdernavi-ergebnisse.csv"));$("#tbDruck").addEventListener("click",drucken);
+$("#tbListe").addEventListener("click",()=>setListe(null));
+$("#merkCsv").addEventListener("click",()=>exportCsv(store.merk.map(byId).filter(Boolean),"foerdernavi-merkliste.csv"));
+$("#merkDruck").addEventListener("click",()=>{go("merkliste");setTimeout(drucken,100);});
+addEventListener("hashchange",()=>{hashLaden();update();});
+$("#modeFiltern").addEventListener("click",()=>setMode("filtern"));
+$("#merkIcs").addEventListener("click",icsMerkliste);
+$("#tMuster").addEventListener("change",e=>mustertextLaden(e.target.value));
+$("#langBtn").addEventListener("click",()=>{LANG=LANG==="de"?"en":"de";applyLang();});
+
+/* ---------- Start ---------- */
+load();
+(function(){const k=kiSettings();let prov=k.prov;try{prov=prov||localStorage.getItem(KEY+":kiprov");}catch(e){}if(prov)$("#kiProv").value=prov;if(k.key)$("#kiKey").value=k.key;if(k.model)$("#kiModel").value=k.model;})();
+try{LANG=localStorage.getItem(KEY+":lang")||((document.querySelector('meta[name="start-lang"]')||{}).content)||"de";}catch(e){}
+renderStep();renderSrc();renderNational();renderAll();kiUi();
+let startModus="filtern";try{startModus=localStorage.getItem(KEY+":modus")||"filtern";}catch(e){}
+setMode(startModus);hashLaden();if(location.hash)update();renderStart();if(LANG!=="de")applyLang();
+if(API){fetch(API+"/programme").then(r=>r.ok?r.json():null).then(j=>{if(Array.isArray(j)&&j.length){DATA=fix(j);renderSrc();update();}}).catch(()=>{});
+  loadMe().then(()=>{if(token())pullState();});
+  const rt=new URLSearchParams(location.search).get("reset");if(rt){go("konto");resetPanel(rt);}}
+if(window.claude&&window.claude.use){
+  claude.use("sample").then(s=>{sample=s;kiUi();}).catch(()=>{});
+  claude.use("downloads").then(d=>{dl=d;}).catch(()=>{});
+}
+</script>
+</body>
+</html>
