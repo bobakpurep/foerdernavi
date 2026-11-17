@@ -172,12 +172,28 @@ def kirche_from(text):
     return "unklar"
 
 
+EINHEIT = re.compile(r"\s*(?:pro|je|/)\s*(?:fahrplan)?(?:km\b|kilometer|m²|m2\b|qm\b|quadratmeter|stunde|std\b|tag\b|teilnehm|person|kopf|kind\b|kwh|tonne|hektar|ha\b|stück|monat|woche|einwohner|platz\b|bett)")
+VOLUMEN = re.compile(r"\s*(?:programmvolumen|gesamtvolumen|fördervolumen insgesamt|insgesamt|im haushalt|stehen zur verfügung|bundesweit)")
+
+
 def max_from(text):
-    m = re.search(r"(?:höchstens|bis zu|maximal)\s+([\d.,]+)\s*(mio\.?|millionen)?\s*(?:euro|eur|€)", (text or "").lower())
-    if not m:
-        return None
-    n = float(m.group(1).replace(".", "").replace(",", "."))
-    return int(n * 1_000_000) if m.group(2) else int(n)
+    """Höchstbetrag heuristisch: „bis zu / höchstens / maximal“ + Betrag in Euro. Verworfen werden Sätze pro Mengeneinheit
+    („1,46 Euro pro Kilometer“, „je m²“), Gesamtvolumen ganzer Programme und Werte unter 100 €. Versteht Mio./Mrd."""
+    t = (text or "").lower()
+    for m in re.finditer(r"(?:höchstens|bis zu|maximal|max\.)\s+(?:(?:eur|euro|€)\s*([\d.,]+)\s*(mio\.?|millionen|mrd\.?|milliarden)?|([\d.,]+)\s*(mio\.?|millionen|mrd\.?|milliarden)?\s*(?:euro|eur|€))", t):
+        zahl, einheit = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
+        nach = t[m.end():m.end() + 40]
+        if EINHEIT.match(nach) or VOLUMEN.match(nach):
+            continue
+        try:
+            n = float(zahl.replace(".", "").replace(",", "."))
+        except ValueError:
+            continue
+        einheit = einheit or ""
+        n *= 1_000_000_000 if einheit.startswith(("mrd", "milliarden")) else 1_000_000 if einheit else 1
+        if n >= 100:
+            return int(n)
+    return None
 
 
 def make_entry(*, id, titel, geber, text, gebiet="", berechtigte="", bereich="", foerderart="", url=None,
