@@ -30,8 +30,8 @@ GEBIET = {"_bundesweit": "DE", "bundesweit": "DE", "baden_wuerttemberg": "BW", "
           "sachsen": "SN", "de_st": "ST", "sachsen_anhalt": "ST", "schlesig_holstein": "SH", "schleswig_holstein": "SH",
           "thueringen": "TH"}
 BERECHTIGTE = {"existenzgruenderin": "gruender", "privatperson": "privat", "unternehmen": "kmu", "kommune": "kommune",
-               "oeffentliche_einrichtung": "kommune", "verband_vereinigung": "verein", "hochschule": "studierende",
-               "bildungseinrichtung": "verein", "forschungseinrichtung": "kmu"}
+               "oeffentliche_einrichtung": "kommune", "verband_vereinigung": "verein", "hochschule": "hochschule",   # Einrichtung, nicht Studenten
+               "bildungseinrichtung": "verein", "forschungseinrichtung": "hochschule"}
 BEREICH = {"energieeffizienz_erneuerbare_energien": "energie", "existenzgruendung_festigung": "gruendung",
            "aus_weiterbildung": "bildung", "beratung": "beratung", "digitalisierung": "digital",
            "forschung_innovation_themenoffen": "forschung", "forschung_innovation_themenspezifisch": "forschung",
