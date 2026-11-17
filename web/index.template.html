@@ -392,7 +392,9 @@ const STATUS=[["idee","Idee"],["vorbereitung","In Vorbereitung"],["eingereicht",
 const CHECK=["Förderrichtlinie vollständig gelesen","Antragsberechtigung geprüft","Nicht vor Bewilligung mit dem Projekt beginnen (vorzeitiger Maßnahmebeginn)","Kosten- und Finanzierungsplan erstellt","Eigenanteil gesichert","Nachweis der Gemeinnützigkeit (falls Verein/Kirche)","Satzung / Registerauszug","Angebote oder Kostenvoranschläge","Projektbeschreibung","Kontakt zur Förderstelle aufgenommen","Antrag eingereicht (Datum notieren)","Bewilligungsbescheid abgelegt","Frist für Verwendungsnachweis notiert"];
 
 // Fehlende Listenfelder ergänzen, damit Filter nie an unvollständigen Einträgen abbrechen
-const fix=arr=>arr.map(p=>Object.assign(p,{z:Array.isArray(p.z)?p.z:[],th:Array.isArray(p.th)?p.th:[],c:p.c||(p.r==="EU"?"EU":"DE")}));
+// Ältere Importe ordneten die FDB-Zielgruppe "Hochschule" (Einrichtung) fälschlich Studenten zu – hier korrigiert
+const zFix=p=>{let z=Array.isArray(p.z)?p.z:[];if(p.src==="fdb"&&z.includes("studierende"))z=z.map(x=>x==="studierende"?"hochschule":x);return z;};
+const fix=arr=>arr.map(p=>Object.assign(p,{z:zFix(p),th:Array.isArray(p.th)?p.th:[],c:p.c||(p.r==="EU"?"EU":"DE")}));
 let DATA=fix(SEED.slice());
 const SRC=[["basis","Geprüfte Grunddaten"],["fdb","Förderdatenbank des Bundes"],["eu_sedia","EU Funding & Tenders"],["dsee","DSEE"],["pvog","Verwaltungsleistungen (Bund, Land, Kommune)"],["kommunen","Städte und Kreise (automatisch gefunden)"],["oparl","Ratsinformationssysteme der Kommunen"],["frankreich","Frankreich: Aides-territoires"],["spanien","Spanien: BDNS"],["web","Websites (Kreise, Städte, Stiftungen)"],["meldung","Geprüfte Meldungen"]];
 const srcOf=p=>p.id.startsWith("meldung-")?"meldung":!p.src?"basis":["fdb","eu_sedia","dsee","pvog","kommunen","oparl","frankreich","spanien"].includes(p.src)?p.src:"web";
